@@ -39,10 +39,10 @@ namespace ASI.Basecode.Services.Services
             {
                 _mapper.Map(model, user);
                 user.Password = PasswordManager.EncryptPassword(model.Password);
-                user.CreatedTime = DateTime.Now;
-                user.UpdatedTime = DateTime.Now;
-                user.CreatedBy = System.Environment.UserName;
-                user.UpdatedBy = System.Environment.UserName;
+                user.CreatedDate = DateTime.Now;
+                user.UpdatedDate = DateTime.Now;
+                //user.CreatedBy = System.Environment.UserName;
+                //user.UpdatedBy = System.Environment.UserName;
 
                 _repository.AddUser(user);
             }
