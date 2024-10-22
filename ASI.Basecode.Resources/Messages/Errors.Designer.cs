@@ -61,6 +61,15 @@ namespace ASI.Basecode.Resources.Messages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to RoomName already exists! Please change the Room Name or update the contents of the existing one..
+        /// </summary>
+        public static string RoomExists {
+            get {
+                return ResourceManager.GetString("RoomExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Server error occured!.
         /// </summary>
         public static string ServerError {

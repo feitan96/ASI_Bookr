@@ -23,5 +23,31 @@
             Success = 0,
             Failed = 1,
         }
+
+        public enum RoomType
+        {
+            MeetingRoom, //Has TV
+            PrivateRoom, //Personal space for any work
+            StudyRoom,   //Designed for studying
+            ConferenceRoom, //Has TV and whiteboard
+            WorkshopRoom, //Has whiteboard only
+        }
+
+        public enum Location
+        {
+            Hive,            // A buzzing hub for collaboration and creativity
+            FocusRoom,       // A dedicated space for quiet work and concentration
+            Lounge,          // A casual area for relaxation and informal meetings
+            InnovationLab,   // A room designed for brainstorming and project development
+            ResourceCenter   // A place equipped with tools and materials for research and study
+        }
+
+        public enum BookingStatus
+        {
+            Approved,
+            Disapproved,
+            Cancelled
+        }
+
     }
 }
