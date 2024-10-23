@@ -1,18 +1,73 @@
-.gradient-custom-2 {
+@import url('https://fonts.googleapis.com/css2?family=Hanuman:wght@300;400;700;900&display=swap');
+
+.gradient-login {
     /* fallback for old browsers */
-    background: #ff0000; /* Red */
+    background: #FEC601; /* Red */
     /* Chrome 10-25, Safari 5.1-6 */
-    background: -webkit-linear-gradient(to right, #ff0000, #000000); /* Red, Black */
+    background: -webkit-linear-gradient(180deg, #FEC601, #FFFFFF); /* Red, Black */
     /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-    background: linear-gradient(to right, #ff0000, #000000); /* Red, Black */
+    background: linear-gradient(180deg, #FEC601, #FFFFFF); /* Red, Black */
+}
+
+label {
+    font-weight: 700;
+}
+
+.greeting {
+    font-family: "Hanuman", serif;
+    font-weight: 700;
+    font-size: 45px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.form-control {
+    width: 400px;
+    border-radius: 10px;
+    border: none;
+    outline: none !important;
 }
 
 .login-btn {
-    width: 180px;
+    width: 400px;
+    border-radius: 25px;
+    background-color: var(--background-color4);
+    color: white;
 }
 
-.register-box {
-    width: 600px;
+.cit-logo {
+    width: 240px;
+    position: absolute;
+    top: 329px;
+    right: 0px;
+}
+
+.geometric-right {
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    overflow-y: hidden;
+}
+
+.float-animation {
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+button:hover{
+    color: gray !important;
 }
 
 @media (min-width: 768px) {
@@ -22,7 +77,7 @@
 }
 
 @media (min-width: 769px) {
-    .gradient-custom-2 {
+    .gradient-login {
         border-top-right-radius: .3rem;
         border-bottom-right-radius: .3rem;
     }
