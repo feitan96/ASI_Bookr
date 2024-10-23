@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="RoomExists" xml:space="preserve">
+    <value>RoomName already exists! Please change the Room Name or update the contents of the existing one.</value>
+  </data>
   <data name="ServerError" xml:space="preserve">
     <value>Server error occured!</value>
   </data>
