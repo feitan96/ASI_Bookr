@@ -35,33 +35,30 @@
     <tbody>
         @foreach (var user in Model)
         {
-            if (!user.IsDeleted)
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => user.UserId)
-                    </td>
-                    <td>
-                        @user.FirstName @user.LastName
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => user.Email)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => user.Role)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => user.PhoneNumber)
-                    </td>
-                    @* <td>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => user.UserId)
+                </td>
+                <td>
+                    @user.FirstName @user.LastName
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => user.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => user.Role)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => user.PhoneNumber)
+                </td>
+                @* <td>
             <img src="@item.ImageUrl" alt="Image" width="100" height="100" />
             </td> *@
-                    <td>
-                        @Html.ActionLink("Edit", "Edit", new { id = user.Id }) |
-                        @Html.ActionLink("Delete", "Delete", new { id = user.Id })
-                    </td>
-                </tr>
-            }
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = user.Id }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = user.Id })
+                </td>
+            </tr>
         }
     </tbody>
 </table>

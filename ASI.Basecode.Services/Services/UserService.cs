@@ -36,7 +36,7 @@ namespace ASI.Basecode.Services.Services
 
         public List<UserViewModel> GetAllUser()
         {
-            var users = _repository.GetUsers().Select(s => new UserViewModel
+            var users = _repository.GetUsers().Where(x => x.IsDeleted == false).Select(s => new UserViewModel
             {
                 Id = s.Id,
                 UserId = s.UserId,
@@ -45,7 +45,6 @@ namespace ASI.Basecode.Services.Services
                 Email = s.Email,
                 Role = s.Role,
                 PhoneNumber = s.PhoneNumber,
-                IsDeleted = s.IsDeleted == true
             }).ToList();
 
             return users;
@@ -95,12 +94,21 @@ namespace ASI.Basecode.Services.Services
             var user = _repository.GetUsers().Where(x => x.Id.Equals(model.Id)).FirstOrDefault();
             if(user != null)
             {
-                _mapper.Map(model, user);
-                user.Password = PasswordManager.EncryptPassword(model.Password);
-                user.UpdatedDate = DateTime.Now;
-                //user.UpdatedBy = userId;
+                try
+                {
+                    if (!_repository.UserExists(model.UserId))
+                    {
+                        _mapper.Map(model, user);
+                        user.Password = PasswordManager.EncryptPassword(model.Password);
+                        user.UpdatedDate = DateTime.Now;
+                        //user.UpdatedBy = userId;
 
-                _repository.UpdateUser(user);
+                        _repository.UpdateUser(user);
+                    }
+                }catch (Exception)
+                {
+                    throw new InvalidDataException(Resources.Messages.Errors.UserExists);
+                }
             }
         }
         public void SoftDelete(int Id)
