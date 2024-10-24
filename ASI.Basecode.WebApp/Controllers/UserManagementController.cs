@@ -71,8 +71,12 @@ namespace ASI.Basecode.WebApp.Controllers
         {
             try
             {
-                _userService.AddUser(model);
+                _userService.AddUser(model, int.Parse(Id));
                 return RedirectToAction("Index");
+            }
+            catch (ArgumentNullException ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
             }
             catch (InvalidDataException ex)
             {
@@ -82,14 +86,28 @@ namespace ASI.Basecode.WebApp.Controllers
             {
                 TempData["ErrorMessage"] = Resources.Messages.Errors.ServerError;
             }
+            ViewBag.Roles = Roles();
             return View();
         }
 
         [HttpPost]
         public IActionResult Edit(UserViewModel model)
         {
-            _userService.UpdateUser(model, UserId);
-            return RedirectToAction("Index");
+            try
+            {
+                _userService.UpdateUser(model, int.Parse(Id));
+                return RedirectToAction("Index");
+            }
+            catch (ArgumentNullException ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
+            catch (InvalidDataException ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;;
+            }
+            ViewBag.Roles = Roles();
+            return View();
         }
 
         [HttpPost]

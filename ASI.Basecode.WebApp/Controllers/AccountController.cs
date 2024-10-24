@@ -83,27 +83,21 @@ namespace ASI.Basecode.WebApp.Controllers
         {
             this._session.SetString("HasSession", "Exist");
 
-            //User user = null;
+            User user = new() { Id = 0, Email = "email@gmail.com", FirstName = "First Name", LastName = "Last Name", Password = "Password" };
 
-            User user = new() { Id = 0, UserId = "0", FirstName = "First Name", LastName = "Last Name", Password = "Password" };
-            
-            //await this._signInManager.SignInAsync(user);
-            //this._session.SetString("UserName", model.UserId);
-
-            //return RedirectToAction("Index", "Home");
-
-            var loginResult = _userService.AuthenticateUser(model.UserId, model.Password, ref user);
+            if (model == null) throw new InvalidDataException(Resources.Messages.Errors.ServerError);
+            var loginResult = _userService.AuthenticateUser(model.Email, model.Password, ref user);
             if (loginResult == LoginResult.Success)
             {
                 // 認証OK
                 await this._signInManager.SignInAsync(user);
-                this._session.SetString("UserName", user.UserId);
+                this._session.SetString("Name", $"{user.FirstName} {user.LastName}");
                 return RedirectToAction("Index", "Home");
             }
             else
             {
                 // 認証NG
-                TempData["ErrorMessage"] = "Incorrect UserId or Password";
+                TempData["ErrorMessage"] = "Incorrect Email or Password";
                 return View();
             }
             //return View();
@@ -122,7 +116,7 @@ namespace ASI.Basecode.WebApp.Controllers
         {
             try
             {
-                _userService.AddUser(model);
+                _userService.AddUser(model, int.Parse(Id));
                 return RedirectToAction("Login", "Account");
             }
             catch(InvalidDataException ex)

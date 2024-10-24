@@ -23,6 +23,12 @@
             Success = 0,
             Failed = 1,
         }
+        public enum Roles
+        {
+            Admin,
+            SuperAdmin,
+            User
+        }
 
         public enum RoomType
         {

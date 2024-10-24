@@ -23,11 +23,11 @@ namespace ASI.Basecode.Services.Services
             _repository = repository;
         }
 
-        public LoginResult AuthenticateUser(string userId, string password, ref User user)
+        public LoginResult AuthenticateUser(string email, string password, ref User user)
         {
             user = new User();
             var passwordKey = PasswordManager.EncryptPassword(password);
-            user = _repository.GetUsers().Where(x => x.UserId == userId &&
+            user = _repository.GetUsers().Where(x => x.Email == email &&
                                                      x.Password == passwordKey && 
                                                      x.IsDeleted == false).FirstOrDefault();
 
@@ -39,7 +39,6 @@ namespace ASI.Basecode.Services.Services
             var users = _repository.GetUsers().Where(x => x.IsDeleted == false).Select(s => new UserViewModel
             {
                 Id = s.Id,
-                UserId = s.UserId,
                 FirstName = s.FirstName,
                 LastName = s.LastName,
                 Email = s.Email,
@@ -54,7 +53,6 @@ namespace ASI.Basecode.Services.Services
             var user = _repository.GetUsers().Where(x => x.Id.Equals(Id)).Select(s => new UserViewModel
             {
                 Id = s.Id,
-                UserId = s.UserId,
                 FirstName = s.FirstName,
                 LastName = s.LastName,
                 Email = s.Email,
@@ -66,50 +64,36 @@ namespace ASI.Basecode.Services.Services
             return user;
         }
 
-        public void AddUser(UserViewModel model)
+        public void AddUser(UserViewModel model, int userId)
         {
-            var user = new User();
-            try
-            {
-                if (!_repository.UserExists(model.UserId))
-                {
-                    _mapper.Map(model, user);
-                    user.Password = PasswordManager.EncryptPassword(model.Password);
-                    user.CreatedDate = DateTime.Now;
-                    user.UpdatedDate = DateTime.Now;
-                    user.IsDeleted = false;
-                    //user.CreatedBy = System.Environment.UserName;
-                    //user.UpdatedBy = System.Environment.UserName;
+            if (_repository.UserExists(model.Email)) throw new InvalidDataException(Resources.Messages.Errors.UserExists);
 
-                    _repository.AddUser(user);
-                }
-            }
-            catch (Exception)
-            {
-                throw new InvalidDataException(Resources.Messages.Errors.UserExists);
-            }
+            var user = new User();
+            _mapper.Map(model, user);
+            user.Password = PasswordManager.EncryptPassword(model.Password);
+            user.CreatedDate = DateTime.Now;
+            user.UpdatedDate = DateTime.Now;
+            user.IsDeleted = false;
+            user.CreatedBy = userId;
+            user.UpdatedBy = userId;
+            user.UserId = "None"; //remove once UserId in DB is remove
+
+            _repository.AddUser(user);
         }
-        public void UpdateUser(UserViewModel model, string userId)
+        public void UpdateUser(UserViewModel model, int userId)
         {
             var user = _repository.GetUsers().Where(x => x.Id.Equals(model.Id)).FirstOrDefault();
-            if(user != null)
+            if (model.Email != user.Email)
             {
-                try
-                {
-                    if (!_repository.UserExists(model.UserId))
-                    {
-                        _mapper.Map(model, user);
-                        user.Password = PasswordManager.EncryptPassword(model.Password);
-                        user.UpdatedDate = DateTime.Now;
-                        //user.UpdatedBy = userId;
-
-                        _repository.UpdateUser(user);
-                    }
-                }catch (Exception)
-                {
-                    throw new InvalidDataException(Resources.Messages.Errors.UserExists);
-                }
+                if (_repository.UserExists(model.Email)) throw new InvalidDataException(Resources.Messages.Errors.UserExists);
             }
+
+            _mapper.Map(model, user);
+            user.Password = PasswordManager.EncryptPassword(model.Password);
+            user.UpdatedDate = DateTime.Now;
+            user.UpdatedBy = userId;
+
+            _repository.UpdateUser(user);
         }
         public void SoftDelete(int Id)
         {

@@ -12,9 +12,6 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.UserId)
-            </th>
-            <th>
                 Name
             </th>
             <th>
@@ -36,9 +33,6 @@
         @foreach (var user in Model)
         {
             <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => user.UserId)
-                </td>
                 <td>
                     @user.FirstName @user.LastName
                 </td>

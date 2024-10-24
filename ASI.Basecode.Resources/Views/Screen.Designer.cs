@@ -122,5 +122,16 @@ namespace ASI.Basecode.Resources.Views {
                 return ResourceManager.GetString("UserId", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Email.
+        /// </summary>
+        public static string Email
+        {
+            get
+            {
+                return ResourceManager.GetString("Email", resourceCulture);
+            }
+        }
     }
 }

@@ -10,7 +10,7 @@
         <a asp-action="Index" asp-controller="UserManagement">User Management</a>
     </div>
     <div class="logosec">
-        @HttpContextAccessor.HttpContext.Session.GetString("UserName")
+        @HttpContextAccessor.HttpContext.Session.GetString("Name")
         <div class="mr-20 hover-pointer" style="position: relative">
             <div class="dp">
                 <img src="~/img/profile-logo.png"

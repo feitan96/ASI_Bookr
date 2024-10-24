@@ -14,9 +14,9 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                <label asp-for="UserId" class="control-label"></label>
-                <input asp-for="UserId" class="form-control" />
-                <span asp-validation-for="UserId" class="text-danger"></span>
+                <label asp-for="Email" class="control-label"></label>
+                <input type="email" asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="FirstName" class="control-label"></label>
@@ -27,11 +27,6 @@
                 <label asp-for="LastName" class="control-label"></label>
                 <input asp-for="LastName" class="form-control" />
                 <span asp-validation-for="LastName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input type="email" asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Role" class="control-label"></label>
@@ -68,4 +63,11 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+        <script>
+            // Check for error message and display Toastr notification
+            var errorMessage = '@TempData["ErrorMessage"]';
+            if (errorMessage) {
+                toastr.error(errorMessage);
+            }
+        </script>
 }

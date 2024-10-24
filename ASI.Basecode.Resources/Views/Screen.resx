@@ -138,4 +138,7 @@
   <data name="UserId" xml:space="preserve">
     <value>UserId</value>
   </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
 </root>
