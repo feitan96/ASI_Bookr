@@ -2,11 +2,11 @@
 
 .gradient-login {
     /* fallback for old browsers */
-    background: #FEC601; /* Red */
+    background: var(--cit-yellow); /* Red */
     /* Chrome 10-25, Safari 5.1-6 */
-    background: -webkit-linear-gradient(180deg, #FEC601, #FFFFFF); /* Red, Black */
+    background: -webkit-linear-gradient(180deg, var(--cit-yellow), #FFFFFF);
     /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-    background: linear-gradient(180deg, #FEC601, #FFFFFF); /* Red, Black */
+    background: linear-gradient(180deg, var(--cit-yellow), #FFFFFF);
 }
 
 label {
@@ -21,7 +21,7 @@ label {
 }
 
 .form-control {
-    width: 400px;
+    width: 100%;
     border-radius: 10px;
     border: none;
     outline: none !important;
@@ -30,22 +30,26 @@ label {
 .login-btn {
     width: 400px;
     border-radius: 25px;
-    background-color: var(--background-color4);
+    background-color: var(--background-color);
     color: white;
 }
 
 .cit-logo {
     width: 240px;
     position: absolute;
-    top: 329px;
+    bottom: 0;
     right: 0px;
 }
 
 .geometric-right {
     width: 100%;
+    height: 100%; /* Takes full height of container */
     position: absolute;
     bottom: 0;
-    overflow-y: hidden;
+    left: 0;
+    right: 0;
+    object-fit: cover; /* This ensures the image covers the entire container */
+    object-position: bottom; /* Keeps the image anchored to bottom */
 }
 
 .float-animation {
