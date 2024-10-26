@@ -7,22 +7,16 @@
     padding: 0;
     box-sizing: border-box;
     font-family: "Inter", sans-serif;
+    color: var(--background-color);
 }
 
 :root {
-    --background-color1: #fafaff;
-    --background-color2: #ffffff;
-    --background-color3: #ededed;
-    --background-color4: #610000;
-    --primary-color: #4b49ac;
-    --secondary-color: #0c007d;
-    --Border-color: #3f0097;
-    --one-use-color: #3f0097;
-    --two-use-color: #5500cb;
+    --background-color: #610000;
+    --cit-yellow: #FEC601;
 }
 
 body {
-    background-color: var(--background-color4);
+    background-color: var(--background-color);
     max-width: 100%;
     overflow-x: hidden;
 }
