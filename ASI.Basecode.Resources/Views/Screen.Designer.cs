@@ -141,7 +141,7 @@ namespace ASI.Basecode.Resources.Views {
             }
         }
 
-        /// <summary>
+        /*/// <summary>
         ///   Looks up a localized string similar to Email.
         /// </summary>
         public static string Email
@@ -150,6 +150,6 @@ namespace ASI.Basecode.Resources.Views {
             {
                 return ResourceManager.GetString("Email", resourceCulture);
             }
-        }
+        }*/
     }
 }
