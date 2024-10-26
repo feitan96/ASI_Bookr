@@ -61,7 +61,7 @@ namespace ASI.Basecode.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ©2023 Alliance Software Inc. All rights reserved..
+        ///   Looks up a localized string similar to ©2024 · Developed by Bookr.
         /// </summary>
         public static string Copyright {
             get {
@@ -88,6 +88,15 @@ namespace ASI.Basecode.Resources.Views {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Email.
+        /// </summary>
+        public static string Email {
+            get {
+                return ResourceManager.GetString("Email", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Forgot password?.
         /// </summary>
         public static string ForgotPass {
@@ -97,7 +106,16 @@ namespace ASI.Basecode.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Login.
+        ///   Looks up a localized string similar to Welcome, Teknoy!.
+        /// </summary>
+        public static string Greeting {
+            get {
+                return ResourceManager.GetString("Greeting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to LOG IN.
         /// </summary>
         public static string Login {
             get {
@@ -115,7 +133,7 @@ namespace ASI.Basecode.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to UserId.
+        ///   Looks up a localized string similar to Username.
         /// </summary>
         public static string UserId {
             get {

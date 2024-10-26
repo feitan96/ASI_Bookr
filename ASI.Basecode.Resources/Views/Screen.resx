@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="Copyright" xml:space="preserve">
-    <value>©2023 Alliance Software Inc. All rights reserved.</value>
+    <value>©2024 · Developed by Bookr</value>
   </data>
   <data name="CreateNew" xml:space="preserve">
     <value>Create new</value>
@@ -130,12 +130,18 @@
     <value>Forgot password?</value>
   </data>
   <data name="Login" xml:space="preserve">
-    <value>Login</value>
+    <value>LOG IN</value>
   </data>
   <data name="Password" xml:space="preserve">
     <value>Password</value>
   </data>
   <data name="UserId" xml:space="preserve">
-    <value>UserId</value>
+    <value>Username</value>
+  </data>
+  <data name="Greeting" xml:space="preserve">
+    <value>Welcome, Teknoy!</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email</value>
   </data>
 </root>
