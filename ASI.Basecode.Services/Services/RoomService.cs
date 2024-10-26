@@ -15,12 +15,13 @@ using FuzzySharp;
 using static ASI.Basecode.Resources.Constants.Enums;
 using FuzzySharp.SimilarityRatio.Scorer.StrategySensitive;
 using FuzzySharp.SimilarityRatio;
+using System.Data.Entity.Core.Objects.DataClasses;
 
 namespace ASI.Basecode.Services.Services
 {
     public class RoomService : IRoomService
     {
-#nullable enable
+    #nullable enable
 
         private readonly IRoomRepository _repository;
         private readonly IMapper _mapper;
@@ -54,18 +55,40 @@ namespace ASI.Basecode.Services.Services
         #region Read (CRUD)
 
         //Returns all room from database.
-        public List<Room> GetRooms() {
-            return _repository.GetRooms().ToList();
+        public List<RoomViewModel> GetRooms() {
+            return _repository.GetRooms().Select(room => new RoomViewModel(room)).ToList();
         }
 
         // Finds and returns a room by its ID. If no room is found, returns null.
-        public Room? GetRoomById(int roomId)
+        public RoomViewModel? GetRoomById(int roomId)
         {
-            return _repository.GetRooms().FirstOrDefault(x => x.RoomId == roomId);
+            Room? room = _repository.GetRooms().Where(x => x.RoomId == roomId).FirstOrDefault();
+            if (room != null)
+            {
+                return new RoomViewModel(room);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        // Finds and returns an actual room base model by its ID. If no room is found, returns null.
+        public Room? GetRoomModelById(int roomId)
+        {
+            Room? room = _repository.GetRooms().Where(x => x.RoomId == roomId).FirstOrDefault();
+            if (room != null)
+            {
+                return room;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         // Finds and returns a room by its name using fuzzymatching as default. If no room is found, returns null.
-        public Room? GetRoomByName(string roomName, bool fuzzyMatching = true)
+        public RoomViewModel? GetRoomByName(string roomName, bool fuzzyMatching = true)
         {
             if (string.IsNullOrWhiteSpace(roomName))
                 return null;
@@ -84,18 +107,52 @@ namespace ASI.Basecode.Services.Services
                 if (bestMatch.Score >= 70)
                 {
                     var index = bestMatch.Index;
-                    return rooms[index];
+                    var room = rooms[index];
+                    return new RoomViewModel(room);
                 }
                 return null;
             }
             else
             {
-                return rooms.FirstOrDefault(r => r.Name.Equals(roomName, StringComparison.OrdinalIgnoreCase));
+                var room = rooms.FirstOrDefault(r => r.Name.Equals(roomName, StringComparison.OrdinalIgnoreCase));
+                return new RoomViewModel(room);
+            }
+        }
+
+        // Finds and returns an actual room base model by its name using fuzzymatching as default. If no room is found, returns null.
+        public Room? GetRoomModelByName(string roomName, bool fuzzyMatching = true)
+        {
+            if (string.IsNullOrWhiteSpace(roomName))
+                return null;
+
+            List<Room> rooms = _repository.GetRooms().ToList(); //Get the rooms first (for indexing purposes in the 
+            List<string> roomNames = rooms.Select(room => room.Name).ToList();
+
+            if (fuzzyMatching)
+            {
+                // Use FuzzySharp to find the best match
+                var bestMatch = FuzzySharp.Process.ExtractOne(roomName, roomNames,
+                    s => s,
+                    ScorerCache.Get<PartialRatioScorer>());
+
+                // You can adjust this threshold as needed
+                if (bestMatch.Score >= 70)
+                {
+                    var index = bestMatch.Index;
+                    var room = rooms[index];
+                    return room;
+                }
+                return null;
+            }
+            else
+            {
+                var room = rooms.FirstOrDefault(r => r.Name.Equals(roomName, StringComparison.OrdinalIgnoreCase));
+                return room;
             }
         }
 
         // Retrieves a list of rooms filtered by optional criteria: room type, capacity, and location.
-        public List<Room> GetRoomsByFilter(RoomType? roomType = null, int? capacity = null, Location? location = null)
+        public List<RoomViewModel> GetRoomsByFilter(RoomType? roomType = null, int? capacity = null, Location? location = null)
         {
             // Start with all rooms from the repository
             var rooms = _repository.GetRooms().AsQueryable();
@@ -117,11 +174,11 @@ namespace ASI.Basecode.Services.Services
                 rooms = rooms.Where(r => r.Location.Equals(location.ToString(), StringComparison.OrdinalIgnoreCase));
             }
 
-            // Return the filtered list as a List<Room>
-            return rooms.ToList();
+            // Return the filtered list as a List<RoomViewModel>
+            return rooms.Select(room => new RoomViewModel(room)).ToList();
         }
 
-        public List<Room> GetRoomsByAmenities(string amenity, bool fuzzyMatching)
+        public List<RoomViewModel> GetRoomsByAmenities(string amenity, bool fuzzyMatching)
         {
 
             List<Room> rooms = _repository.GetRooms().ToList(); //Get the rooms first (for indexing purposes in the 
@@ -158,11 +215,11 @@ namespace ASI.Basecode.Services.Services
                         .Contains(amenity, StringComparer.OrdinalIgnoreCase)).ToList();
             }
 
-            return filteredRooms; // Materialize the query to a List<Room>
+            return filteredRooms.Select(room => new RoomViewModel(room)).ToList(); // Materialize the query to a List<Room>
         }
 
         //Rooms that are booked on a specific date
-        public List<Room> GetRoomsByDate(DateTime? date)
+        public List<RoomViewModel> GetRoomsByDate(DateTime? date)
         {
             var rooms = _repository.GetRooms().AsQueryable();
 
@@ -178,11 +235,11 @@ namespace ASI.Basecode.Services.Services
                 ));
             }
 
-            return rooms.ToList();
+            return rooms.Select(room => new RoomViewModel(room)).ToList();
         }
 
         // Alternative implementation if you want rooms that are NOT booked on that date
-        public List<Room> GetAvailableRoomsByDate(DateTime? date)
+        public List<RoomViewModel> GetAvailableRoomsByDate(DateTime? date)
         {
             var rooms = _repository.GetRooms().AsQueryable();
 
@@ -198,18 +255,25 @@ namespace ASI.Basecode.Services.Services
                 ));
             }
 
-            return rooms.ToList();
+            return rooms.Select(room => new RoomViewModel(room)).ToList();
         }
 
         #endregion
 
         #region UPDATE (CRUD)
 
-        public void UpdateRoomInfo(int? roomId, string? roomName, string? description, RoomType? roomType, string? image, int? capacity, Location? location, List<string>? amenities)
+        public void UpdateRoomInfo(RoomViewModel model)
         {
-            string? roomTypeString = roomType == null ? null : roomType.ToString();
-            string? locationString = location == null ? null : location.ToString();
-            _repository.UpdateRoomInfo(roomId, roomName, description, roomTypeString, image, capacity, locationString, amenities);
+            var room = new Room();
+            try
+            {
+                _mapper.Map(model, room);
+                _repository.UpdateRoomInfo(room);
+            }
+            catch (Exception)
+            {
+                throw; //rethrow error
+            }
         }
 
         #endregion
@@ -218,12 +282,21 @@ namespace ASI.Basecode.Services.Services
 
         public void HardDeleteRoom(int roomId)
         {
-            _repository.HardDeleteRoom(roomId);
+            var room = _repository.GetRooms().Where(x => x.RoomId.Equals(roomId)).FirstOrDefault();
+            if(room != null)
+            {
+                _repository.DeleteRoom(room);
+            }
         }
 
         //public void SoftDeleteRoom(int roomId)
         //{
-        //    _repository.SoftDeleteRoom(roomId);
+        //    var room = _repository.GetRooms().Where(x => x.RoomId = roomId).FirstOrDefault();
+        //    if (room != null)
+        //    {
+        //        room.IsDeleted = true;
+        //        _repository.UpdateRoomInfo(room);
+        //    }
         //}
 
         #endregion
@@ -231,7 +304,7 @@ namespace ASI.Basecode.Services.Services
         #region Others
         public bool IsRoomAvailableDate(int roomId, DateTime dateTime)
         {
-            Room? room = GetRoomById(roomId);
+            Room? room = GetRoomModelById(roomId);
             if (room == null)
             {
                 throw new ArgumentException($"RoomId {roomId} queried doesn't exist, please try again");
@@ -249,13 +322,13 @@ namespace ASI.Basecode.Services.Services
 
         public List<string>? ListAmenitiesByRoomId(int roomId)
         {
-            Room? room = GetRoomById(roomId);
+            Room? room = GetRoomModelById(roomId);
             return (room != null) ? room.Amenities.Split(',').Select(a => a.Trim()).ToList() : null;
         }
 
         public List<string>? ListAmenitiesByRoomName(string roomName, bool fuzzyMatching)
         {
-            Room? room = GetRoomByName(roomName, fuzzyMatching);
+            Room? room = GetRoomModelByName(roomName, fuzzyMatching);
             if (room != null)
             {
                 return ListAmenitiesByRoomId(room.RoomId);
@@ -267,13 +340,13 @@ namespace ASI.Basecode.Services.Services
         }
 
         public List<DateTime?>? GetRoomBookingDatesByRoomId(int roomId){
-            Room? room = GetRoomById(roomId);
+            Room? room = GetRoomModelById(roomId);
             return (room != null) ? room.Bookings.Select(s => s.BookedDate).ToList(): null;
         }
 
         public List<DateTime?>? GetRoomBookingDatesByRoomName(string roomName, bool fuzzyMatching)
         {
-            Room? room = GetRoomByName(roomName, fuzzyMatching);
+            Room? room = GetRoomModelByName(roomName, fuzzyMatching);
             if (room != null)
             {
                 return GetRoomBookingDatesByRoomId(room.RoomId);
@@ -286,7 +359,7 @@ namespace ASI.Basecode.Services.Services
 
         public List<User>? GetBookedUsersByRoomId(int roomId)
         {
-            Room? room = GetRoomById(roomId);
+            Room? room = GetRoomModelById(roomId);
             return (room != null) ?room.Bookings.Select(b => b.User).Distinct().ToList(): null;
         }
 
@@ -294,7 +367,7 @@ namespace ASI.Basecode.Services.Services
 
         public List<User>? GetBookedUsersByRoomName(string roomName, bool fuzzyMatching)
         {
-            Room? room = GetRoomByName(roomName, fuzzyMatching);
+            Room? room = GetRoomModelByName(roomName, fuzzyMatching);
             if (room != null)
             {
                 return GetBookedUsersByRoomId(room.RoomId);
@@ -307,7 +380,7 @@ namespace ASI.Basecode.Services.Services
 
         public List<string>? GetBookedUsersNameByRoomId(int roomId)
         {
-            Room? room = GetRoomById(roomId);
+            Room? room = GetRoomModelById(roomId);
             if (room == null) return null;
 
             return room.Bookings
@@ -319,7 +392,7 @@ namespace ASI.Basecode.Services.Services
 
         public List<string>? GetBookedUsersNameByRoomName(string roomName, bool fuzzyMatching)
         {
-            Room? room = GetRoomByName(roomName, fuzzyMatching);
+            Room? room = GetRoomModelByName(roomName, fuzzyMatching);
             if (room != null)
             {
                 return GetBookedUsersNameByRoomId(room.RoomId);

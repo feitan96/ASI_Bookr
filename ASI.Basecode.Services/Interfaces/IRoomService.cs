@@ -16,22 +16,22 @@ namespace ASI.Basecode.Services.Interfaces
         void AddRoom(RoomViewModel model);
 
         //READ
-        List<Room> GetRooms();
-        Room? GetRoomById(int roomId);
-        Room? GetRoomByName(string roomName, bool fuzzyMatching);
-        List<Room> GetRoomsByFilter(RoomType? roomType, int? capacity, Location? location);
-        List<Room> GetRoomsByAmenities(string amenity, bool fuzzyMatching);
-        List<Room> GetRoomsByDate(DateTime? date);
+        List<RoomViewModel> GetRooms();
+        Room? GetRoomModelById(int roomId);
+        RoomViewModel? GetRoomById(int roomId);
+        RoomViewModel? GetRoomByName(string roomName, bool fuzzyMatching);
+        List<RoomViewModel> GetRoomsByFilter(RoomType? roomType, int? capacity, Location? location);
+        List<RoomViewModel> GetRoomsByAmenities(string amenity, bool fuzzyMatching);
+        List<RoomViewModel> GetRoomsByDate(DateTime? date);
     
         //UPDATE
-        void UpdateRoomInfo(int? roomId, string? roomName, string? description, RoomType? roomType, string? image, int? capacity, Location? location, List<string>? amenities);
+        void UpdateRoomInfo(RoomViewModel model);
 
         //DELETE
         //void SoftDeleteRoom(int roomId);
         void HardDeleteRoom(int roomId);
 
         //OTHERS
-
         bool IsRoomAvailableDate(int room, DateTime dateTime);
         List<string>? ListAmenitiesByRoomId(int roomId);
         List<string>? ListAmenitiesByRoomName(string roomName, bool fuzzyMatching);

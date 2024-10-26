@@ -4,12 +4,28 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ASI.Basecode.Data.Models;
 
 namespace ASI.Basecode.Services.ServiceModels
 {
     public class RoomViewModel
     {
-        //RoomId not included, since its an auto-incremented primary key
+
+        public RoomViewModel() {}
+
+        public RoomViewModel(Room room)
+        {
+            this.RoomId = room.RoomId;
+            this.Name = room.Name;
+            this.Description = room.Description;
+            this.Type = room.Type;
+            this.Image = room.Image;
+            this.Capacity = room.Capacity;
+            this.Location = room.Location;
+            this.Amenities = room.Amenities;
+        }
+
+        public int RoomId { get; set; }
 
         [Required(ErrorMessage = "Room name is required.")]
         [StringLength(250, ErrorMessage = "Room name cannot exceed 250 characters.")]
