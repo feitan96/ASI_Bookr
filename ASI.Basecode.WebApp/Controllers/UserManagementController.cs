@@ -44,6 +44,13 @@ namespace ASI.Basecode.WebApp.Controllers
 
         #region Get Methods
         [HttpGet]
+        public IActionResult View(int Id)
+        {
+            var data = _userService.GetUser(Id);
+            return View(data);
+        }
+
+        [HttpGet]
         public IActionResult Create()
         {
             ViewBag.Roles = Roles();
