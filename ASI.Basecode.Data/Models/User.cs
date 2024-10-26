@@ -25,6 +25,9 @@ namespace ASI.Basecode.Data.Models
         public DateTime? UpdatedDate { get; set; }
         public int? UpdatedBy { get; set; }
         public bool? IsDeleted { get; set; }
+        public bool? AllowNotifications { get; set; }
+        public bool IsDarkMode { get; set; }
+        public int DefaultBookDuration { get; set; }
 
         public virtual ICollection<Admin> Admins { get; set; }
         public virtual ICollection<Booking> Bookings { get; set; }
