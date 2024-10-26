@@ -1,0 +1,59 @@
+﻿@model IEnumerable<ASI.Basecode.Services.ServiceModels.UserViewModel>
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Name
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Role)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PhoneNumber)
+            </th>
+            @* <th>
+                Cover Image
+            </th> *@
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>
+                    @user.FirstName @user.LastName
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => user.Email)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => user.Role)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => user.PhoneNumber)
+                </td>
+                @* <td>
+            <img src="@item.ImageUrl" alt="Image" width="100" height="100" />
+            </td> *@
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = user.Id }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = user.Id }) |
+                    @Html.ActionLink("View", "View", new { id = user.Id })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -41,7 +41,8 @@ namespace ASI.Basecode.WebApp.Mvc
                                 IHttpContextAccessor httpContextAccessor,
                                 ILoggerFactory loggerFactory,
                                 IConfiguration configuration,
-                                IMapper mapper = null)
+                                IMapper mapper = null,
+                                Services.Interfaces.IUserService userService = null)
         {
             this._httpContextAccessor = httpContextAccessor;
             this._configuration = configuration;
@@ -52,6 +53,14 @@ namespace ASI.Basecode.WebApp.Mvc
 
         /// <summary>Mapper</summary>
         protected IMapper _mapper { get; set; }
+
+        /// <summary>
+        /// Get Id.
+        /// </summary>
+        public string Id
+        {
+            get { return User.FindFirst("Id").Value; }
+        }
 
         /// <summary>
         /// Get UserId.
