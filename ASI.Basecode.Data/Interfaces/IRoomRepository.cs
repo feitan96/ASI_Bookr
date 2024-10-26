@@ -12,8 +12,7 @@ namespace ASI.Basecode.Data.Interfaces
         IQueryable<Room> GetRooms();
         bool RoomExists(string roomName);
         void AddRoom(Room room);
-        void UpdateRoomInfo(int? roomId, string? roomName, string? description, string? roomType, string? image, int? capacity, string? location, List<string>? amenities);
-        void HardDeleteRoom(int roomId);
-        //void SoftDeleteRoom(int? roomId);
+        void UpdateRoomInfo(Room room);
+        void DeleteRoom(Room room);
     }
 }
