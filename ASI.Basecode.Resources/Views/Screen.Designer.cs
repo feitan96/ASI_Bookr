@@ -61,7 +61,7 @@ namespace ASI.Basecode.Resources.Views {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to ©2024 · Developed by Bookr.
+        ///   Looks up a localized string similar to ©2024 · Developed by TapokTapok.
         /// </summary>
         public static string Copyright {
             get {
