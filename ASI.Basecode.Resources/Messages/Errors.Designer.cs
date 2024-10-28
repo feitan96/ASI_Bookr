@@ -61,6 +61,15 @@ namespace ASI.Basecode.Resources.Messages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to RoomAmenity mapping already exists!.
+        /// </summary>
+        public static string RoomAmenityExists {
+            get {
+                return ResourceManager.GetString("RoomAmenityExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to RoomName already exists! Please change the Room Name or update the contents of the existing one..
         /// </summary>
         public static string RoomExists {
@@ -79,7 +88,7 @@ namespace ASI.Basecode.Resources.Messages {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to UserId already exists!.
+        ///   Looks up a localized string similar to Email already exists!.
         /// </summary>
         public static string UserExists {
             get {

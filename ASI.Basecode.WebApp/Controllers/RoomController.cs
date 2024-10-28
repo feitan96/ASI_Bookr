@@ -1,4 +1,6 @@
 ﻿using ASI.Basecode.WebApp.Mvc;
+using ASI.Basecode.Services.Interfaces;
+using ASI.Basecode.Services.ServiceModels;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +11,7 @@ namespace ASI.Basecode.WebApp.Controllers
 {
     public class RoomController : ControllerBase<RoomController>
     {
+        private readonly IRoomService _roomservice;
 
         /// <summary>
         /// Constructor
@@ -18,17 +21,20 @@ namespace ASI.Basecode.WebApp.Controllers
         /// <param name="configuration"></param>
         /// <param name="localizer"></param>
         /// <param name="mapper"></param>
-        public RoomController(IHttpContextAccessor httpContextAccessor,
+        public RoomController(
+                              IRoomService roomService,
+                              IHttpContextAccessor httpContextAccessor,
                               ILoggerFactory loggerFactory,
                               IConfiguration configuration,
                               IMapper mapper = null) : base(httpContextAccessor, loggerFactory, configuration, mapper)
         {
-
+            this._roomservice = roomService;
         }
         // GET: RoomController
         public ActionResult Index()
         {
-            return View();
+            var data = _roomservice.GetRooms();
+            return View(data);
         }
 
         // GET: RoomController/Details/5

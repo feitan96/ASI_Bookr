@@ -18,9 +18,11 @@ namespace ASI.Basecode.Data
         }
 
         public virtual DbSet<Admin> Admins { get; set; }
+        public virtual DbSet<Amenity> Amenities { get; set; }
         public virtual DbSet<Booking> Bookings { get; set; }
         public virtual DbSet<Image> Images { get; set; }
         public virtual DbSet<Room> Rooms { get; set; }
+        public virtual DbSet<RoomAmenity> RoomAmenities { get; set; }
         public virtual DbSet<Superadmin> Superadmins { get; set; }
         public virtual DbSet<User> Users { get; set; }
 
@@ -29,7 +31,7 @@ namespace ASI.Basecode.Data
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Addr=localhost; database=BookrDb; Trusted_Connection=True; MultipleActiveResultSets=true; TrustServerCertificate=True");
+                optionsBuilder.UseSqlServer("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Predator\\BookrDb.mdf;Integrated Security=True;Connect Timeout=30");
             }
         }
 
@@ -43,6 +45,13 @@ namespace ASI.Basecode.Data
                     .WithMany(p => p.Admins)
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("FK_Admin_User");
+            });
+
+            modelBuilder.Entity<Amenity>(entity =>
+            {
+                entity.Property(e => e.Amenity1)
+                    .HasMaxLength(250)
+                    .HasColumnName("Amenity");
             });
 
             modelBuilder.Entity<Booking>(entity =>
@@ -94,8 +103,6 @@ namespace ASI.Basecode.Data
             {
                 entity.ToTable("Room");
 
-                entity.Property(e => e.Amenities).HasMaxLength(250);
-
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.Image).HasMaxLength(250);
@@ -109,6 +116,19 @@ namespace ASI.Basecode.Data
                 entity.Property(e => e.Type).HasMaxLength(250);
 
                 entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<RoomAmenity>(entity =>
+            {
+                entity.HasOne(d => d.Amenity)
+                    .WithMany(p => p.RoomAmenities)
+                    .HasForeignKey(d => d.AmenityId)
+                    .HasConstraintName("FK_RoomAmenities_Amenities");
+
+                entity.HasOne(d => d.Room)
+                    .WithMany(p => p.RoomAmenities)
+                    .HasForeignKey(d => d.RoomId)
+                    .HasConstraintName("FK_RoomAmenities_Room");
             });
 
             modelBuilder.Entity<Superadmin>(entity =>

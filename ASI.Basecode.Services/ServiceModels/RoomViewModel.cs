@@ -22,7 +22,7 @@ namespace ASI.Basecode.Services.ServiceModels
             this.Image = room.Image;
             this.Capacity = room.Capacity;
             this.Location = room.Location;
-            this.Amenities = room.Amenities;
+            this.RoomAmenities = room.RoomAmenities.Select(amenity => new RoomAmenityViewModel(amenity)).ToList(); ;
         }
 
         public int RoomId { get; set; }
@@ -49,5 +49,15 @@ namespace ASI.Basecode.Services.ServiceModels
 
         [StringLength(250, ErrorMessage = "Amenities cannot exceed 250 characters.")]
         public string Amenities { get; set; }
+
+        public List<RoomAmenityViewModel> RoomAmenities { get; set; }
+
+        public List<string> RoomAmenitiesName
+        {
+            get
+            {
+                return RoomAmenities.Select(x => x.AmenityName).ToList();
+            }
+        }
     }
 }
