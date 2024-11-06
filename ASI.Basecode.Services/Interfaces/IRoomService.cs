@@ -21,7 +21,7 @@ namespace ASI.Basecode.Services.Interfaces
         RoomViewModel? GetRoomById(int roomId);
         RoomViewModel? GetRoomByName(string roomName, bool fuzzyMatching);
         List<RoomViewModel> GetRoomsByFilter(RoomType? roomType, int? capacity, Location? location);
-        List<RoomViewModel> GetRoomsByAmenities(string amenity, bool fuzzyMatching);
+        //List<RoomViewModel> GetRoomsByAmenities(string amenity, bool fuzzyMatching);
         List<RoomViewModel> GetRoomsByDate(DateTime? date);
     
         //UPDATE
@@ -33,8 +33,8 @@ namespace ASI.Basecode.Services.Interfaces
 
         //OTHERS
         bool IsRoomAvailableDate(int room, DateTime dateTime);
-        List<string>? ListAmenitiesByRoomId(int roomId);
-        List<string>? ListAmenitiesByRoomName(string roomName, bool fuzzyMatching);
+        //List<string>? ListAmenitiesByRoomId(int roomId);
+        //List<string>? ListAmenitiesByRoomName(string roomName, bool fuzzyMatching);
         List<DateTime?>? GetRoomBookingDatesByRoomId(int roomId); //Implement once booking implementation is done
         List<DateTime?>? GetRoomBookingDatesByRoomName(string roomName, bool fuzzyMatching); //Implement once booking implementation is done
         List<User>? GetBookedUsersByRoomId(int roomId);

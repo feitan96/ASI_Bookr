@@ -178,45 +178,45 @@ namespace ASI.Basecode.Services.Services
             return rooms.Select(room => new RoomViewModel(room)).ToList();
         }
 
-        public List<RoomViewModel> GetRoomsByAmenities(string amenity, bool fuzzyMatching)
-        {
+        //public List<RoomViewModel> GetRoomsByAmenities(string amenity, bool fuzzyMatching)
+        //{
 
-            List<Room> rooms = _repository.GetRooms().ToList(); //Get the rooms first (for indexing purposes in the 
-            var filteredRooms = new List<Room>();
+        //    List<Room> rooms = _repository.GetRooms().ToList(); //Get the rooms first (for indexing purposes in the 
+        //    var filteredRooms = new List<Room>();
 
-            if (fuzzyMatching)
-            {
+        //    if (fuzzyMatching)
+        //    {
 
-                foreach (var room in rooms)
-                {
-                    List<string> roomAmenities = room.Amenities.Split(',').Select(a => a.Trim()).ToList();
+        //        foreach (var room in rooms)
+        //        {
+        //            List<string> roomAmenities = room.Amenities.Split(',').Select(a => a.Trim()).ToList();
 
-                    // Check if the specified amenity matches using FuzzySharp
-                    var bestMatch = FuzzySharp.Process.ExtractOne(
-                        amenity,
-                        roomAmenities,
-                        s => s,
-                        ScorerCache.Get<PartialRatioScorer>() // Make sure this is set correctly
-                    );
+        //            // Check if the specified amenity matches using FuzzySharp
+        //            var bestMatch = FuzzySharp.Process.ExtractOne(
+        //                amenity,
+        //                roomAmenities,
+        //                s => s,
+        //                ScorerCache.Get<PartialRatioScorer>() // Make sure this is set correctly
+        //            );
 
-                    // Add the room to the filtered list if the best match score is greater than or equal to 70
-                    if (bestMatch.Score >= 70)
-                    {
-                        filteredRooms.Add(room);
-                    }
-                }
-            }
-            else
-            {
-                // Filter rooms that contain the specified amenity (case-insensitive)
-                filteredRooms = rooms.Where(room =>
-                    room.Amenities.Split(',')
-                        .Select(a => a.Trim())
-                        .Contains(amenity, StringComparer.OrdinalIgnoreCase)).ToList();
-            }
+        //            // Add the room to the filtered list if the best match score is greater than or equal to 70
+        //            if (bestMatch.Score >= 70)
+        //            {
+        //                filteredRooms.Add(room);
+        //            }
+        //        }
+        //    }
+        //    else
+        //    {
+        //        // Filter rooms that contain the specified amenity (case-insensitive)
+        //        filteredRooms = rooms.Where(room =>
+        //            room.Amenities.Split(',')
+        //                .Select(a => a.Trim())
+        //                .Contains(amenity, StringComparer.OrdinalIgnoreCase)).ToList();
+        //    }
 
-            return filteredRooms.Select(room => new RoomViewModel(room)).ToList(); // Materialize the query to a List<Room>
-        }
+        //    return filteredRooms.Select(room => new RoomViewModel(room)).ToList(); // Materialize the query to a List<Room>
+        //}
 
         //Rooms that are booked on a specific date
         public List<RoomViewModel> GetRoomsByDate(DateTime? date)
@@ -320,24 +320,24 @@ namespace ASI.Basecode.Services.Services
                 b.Status?.ToLower() != "approved");
         }
 
-        public List<string>? ListAmenitiesByRoomId(int roomId)
-        {
-            Room? room = GetRoomModelById(roomId);
-            return (room != null) ? room.Amenities.Split(',').Select(a => a.Trim()).ToList() : null;
-        }
+        //public List<string>? ListAmenitiesByRoomId(int roomId)
+        //{
+        //    Room? room = GetRoomModelById(roomId);
+        //    return (room != null) ? room.Amenities.Split(',').Select(a => a.Trim()).ToList() : null;
+        //}
 
-        public List<string>? ListAmenitiesByRoomName(string roomName, bool fuzzyMatching)
-        {
-            Room? room = GetRoomModelByName(roomName, fuzzyMatching);
-            if (room != null)
-            {
-                return ListAmenitiesByRoomId(room.RoomId);
-            }
-            else
-            {
-                return null;
-            }
-        }
+        //public List<string>? ListAmenitiesByRoomName(string roomName, bool fuzzyMatching)
+        //{
+        //    Room? room = GetRoomModelByName(roomName, fuzzyMatching);
+        //    if (room != null)
+        //    {
+        //        return ListAmenitiesByRoomId(room.RoomId);
+        //    }
+        //    else
+        //    {
+        //        return null;
+        //    }
+        //}
 
         public List<DateTime?>? GetRoomBookingDatesByRoomId(int roomId){
             Room? room = GetRoomModelById(roomId);
