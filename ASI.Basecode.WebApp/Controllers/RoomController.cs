@@ -13,6 +13,9 @@ using System.Collections.Generic;
 using System.Linq;
 using NetTopologySuite.Noding;
 using ASI.Basecode.Data.Models;
+using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Hosting;
+using System.Threading.Tasks;
 
 namespace ASI.Basecode.WebApp.Controllers
 {
@@ -21,6 +24,7 @@ namespace ASI.Basecode.WebApp.Controllers
         private readonly IRoomService _roomservice;
         private readonly IAmenityService _amenityservice; //uncomment If need external amenityservice
         private readonly IRoomAmenityService _roomamenityservice;// uncomment If need external roomamenityservice
+        private readonly IWebHostEnvironment _environment;
 
         /// <summary>
         /// Constructor
@@ -36,11 +40,13 @@ namespace ASI.Basecode.WebApp.Controllers
                               IHttpContextAccessor httpContextAccessor,
                               ILoggerFactory loggerFactory,
                               IConfiguration configuration,
+                              IWebHostEnvironment environment,
                               IMapper mapper = null) : base(httpContextAccessor, loggerFactory, configuration, mapper)
         {
             this._roomservice = roomService;
             this._roomamenityservice = roomAmenityService;
             this._amenityservice = amenityService;
+            this._environment = environment;  // Set the environment field
         }
 
         // GET: RoomController
@@ -163,7 +169,7 @@ namespace ASI.Basecode.WebApp.Controllers
         // POST: RoomController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(RoomViewModel model)
+        public async Task<IActionResult> Edit(RoomViewModel model)
         {
             try
             {
@@ -193,6 +199,36 @@ namespace ASI.Basecode.WebApp.Controllers
                 {
                     // Call the service to add the new mapping to RoomAmenities table
                     _roomamenityservice.AddRoomAmenity(model.RoomId, amenityId);
+                }
+
+                if (ModelState.IsValid)
+                {
+                    var uploadedFile = Request.Form.Files["ImageFile"];
+
+                    // Check if an image file was uploaded
+                    if (uploadedFile != null && uploadedFile.Length > 0)
+                    {
+                        // Ensure the uploads directory exists
+                        var uploadsDir = Path.Combine(_environment.WebRootPath, "uploads/rooms");
+                        if (!Directory.Exists(uploadsDir))
+                        {
+                            Directory.CreateDirectory(uploadsDir);
+                        }
+
+                        // Generate a unique filename with GUID and get the extension
+                        var fileExtension = Path.GetExtension(model.ImageFile.FileName);
+                        var fileName = $"{Guid.NewGuid()}{fileExtension}";
+                        var filePath = Path.Combine(uploadsDir, fileName);
+
+                        // Save the file to the specified path
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await model.ImageFile.CopyToAsync(stream);
+                        }
+
+                        // Save the file path or filename to the database
+                        model.ImagePath = $"{fileName}";
+                    }
                 }
 
                 // Step 3: Update the Room table if necessary (if any room-related changes were made)

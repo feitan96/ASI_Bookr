@@ -61,7 +61,6 @@ namespace ASI.Basecode.Services.Services
 
         #endregion
 
-
         #region Read (CRUD)
 
         //Returns all room from database.

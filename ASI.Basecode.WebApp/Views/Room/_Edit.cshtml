@@ -14,7 +14,7 @@
 
 <div class="row">
     <div class="col-md-6">
-        <form asp-action="Edit">
+        <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="RoomId" />
 
@@ -59,6 +59,12 @@
                     <option value="ResourceCenter">Resource Center (Equipped with tools and materials for research and study)</option>
                 </select>
                 <span asp-validation-for="Location" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="ImageFile" class="control-label">Upload Room Image</label>
+                <input type="file" asp-for="ImageFile" class="form-control" accept=".jpeg,.jpg,.png" />
+                <span asp-validation-for="ImageFile" class="text-danger"></span>
             </div>
 
             <div class="form-group">

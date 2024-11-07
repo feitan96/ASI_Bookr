@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ASI.Basecode.Data.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace ASI.Basecode.Services.ServiceModels
 {
+    //[RequestFormLimits(MultipartBodyLengthLimit = 104857600)]
     public class RoomViewModel
     {
 
@@ -22,7 +25,7 @@ namespace ASI.Basecode.Services.ServiceModels
             this.Name = room.Name;
             this.Description = room.Description;
             this.Type = room.Type;
-            this.Image = room.Image;
+            this.ImagePath = room.Image;
             this.Capacity = room.Capacity;
             this.Location = room.Location;
         }
@@ -43,7 +46,7 @@ namespace ASI.Basecode.Services.ServiceModels
 
         [StringLength(250, ErrorMessage = "Image path cannot exceed 250 characters.")]
         [Url(ErrorMessage = "Please enter a valid URL for the image.")]
-        public string Image { get; set; }
+        public string ImagePath { get; set; }
 
         [Range(1, int.MaxValue, ErrorMessage = "Capacity must be a positive number.")]
         public int? Capacity { get; set; }
@@ -55,6 +58,8 @@ namespace ASI.Basecode.Services.ServiceModels
         public string Amenities { get; set; }
 
         public int UpdatedBy { get; set; }
+
+        public IFormFile ImageFile { get; set; }
 
         public List<RoomAmenityViewModel> RoomAmenities { get; set; }
 
