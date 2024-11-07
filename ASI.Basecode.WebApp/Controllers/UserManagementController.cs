@@ -44,31 +44,32 @@ namespace ASI.Basecode.WebApp.Controllers
 
         #region Get Methods
         [HttpGet]
-        public IActionResult View(int Id)
-        {
-            var data = _userService.GetUser(Id);
-            return View(data);
-        }
-
-        [HttpGet]
         public IActionResult Create()
         {
             ViewBag.Roles = Roles();
-            return View();
+            return PartialView("_Create");
         }
+
         [HttpGet]
         public IActionResult Edit(int Id)
         {
             ViewBag.Roles = Roles();
             var data = _userService.GetUser(Id);
-            return View(data);
+            return PartialView("_Edit", data);
+        }
+
+        [HttpGet]
+        public IActionResult View(int Id)
+        {
+            var data = _userService.GetUser(Id);
+            return PartialView("_View", data);
         }
 
         [HttpGet]
         public IActionResult Delete(int Id)
         {
             var data = _userService.GetUser(Id);
-            return View(data);
+            return PartialView("_Delete", data);
         }
         #endregion
 
