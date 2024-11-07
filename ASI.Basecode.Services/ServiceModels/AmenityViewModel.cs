@@ -19,8 +19,6 @@ namespace ASI.Basecode.Services.ServiceModels
             this.AmenityName = amenity.Amenity1;
         }
 
-        public int Id { get; set; }
-
         [Required(ErrorMessage = "Amenity ID is required.")]
         public int AmenityId { get; set; }
 

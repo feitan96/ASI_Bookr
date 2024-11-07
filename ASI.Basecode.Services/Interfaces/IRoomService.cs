@@ -25,7 +25,7 @@ namespace ASI.Basecode.Services.Interfaces
         List<RoomViewModel> GetRoomsByDate(DateTime? date);
     
         //UPDATE
-        void UpdateRoomInfo(RoomViewModel model);
+        void UpdateRoomInfo(RoomViewModel model, int userId);
 
         //DELETE
         //void SoftDeleteRoom(int roomId);

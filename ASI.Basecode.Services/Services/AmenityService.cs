@@ -43,6 +43,11 @@ namespace ASI.Basecode.Services.Services
         }
 
         // READ
+        public List<AmenityViewModel> GetAmenities()
+        {
+            return _repository.GetAmenities().Select(amenity => new AmenityViewModel(amenity)).ToList();
+        }
+
         public AmenityViewModel GetAmenity(int id)
         {
             var amenity = _repository.GetAmenities().FirstOrDefault(x => x.AmenityId == id);

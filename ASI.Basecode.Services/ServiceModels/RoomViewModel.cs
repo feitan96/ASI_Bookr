@@ -11,7 +11,10 @@ namespace ASI.Basecode.Services.ServiceModels
     public class RoomViewModel
     {
 
-        public RoomViewModel() {}
+        public RoomViewModel() {
+            //Added code for post request edit submission
+            this.RoomAmenities = new List<RoomAmenityViewModel>();
+        }
 
         public RoomViewModel(Room room)
         {
@@ -22,8 +25,9 @@ namespace ASI.Basecode.Services.ServiceModels
             this.Image = room.Image;
             this.Capacity = room.Capacity;
             this.Location = room.Location;
-            this.RoomAmenities = room.RoomAmenities.Select(amenity => new RoomAmenityViewModel(amenity)).ToList(); ;
         }
+
+        private List<int> _roomAmenitiesId;
 
         public int RoomId { get; set; }
 
@@ -50,14 +54,30 @@ namespace ASI.Basecode.Services.ServiceModels
         [StringLength(250, ErrorMessage = "Amenities cannot exceed 250 characters.")]
         public string Amenities { get; set; }
 
+        public int UpdatedBy { get; set; }
+
         public List<RoomAmenityViewModel> RoomAmenities { get; set; }
 
         public List<string> RoomAmenitiesName
         {
             get
             {
-                return RoomAmenities.Select(x => x.AmenityName).ToList();
+                return RoomAmenities.Select(x => x.AmenityName).ToList() ?? new List<string>();
             }
+
+        }
+
+        public List<int> RoomAmenitiesId
+        {
+            get
+            {
+                return this.RoomAmenities.Select(x => x.Amenity.AmenityId).ToList();
+            }
+            set
+            {
+                this._roomAmenitiesId = value;
+            }
+
         }
     }
 }

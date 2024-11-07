@@ -14,13 +14,15 @@ namespace ASI.Basecode.Services.Services
 {
     public class RoomAmenityService : IRoomAmenityService
     {
+        private readonly IAmenityService _amenityService;
         private readonly IRoomAmenityRepository _repository;
         private readonly IMapper _mapper;
 
-        public RoomAmenityService(IRoomAmenityRepository repository, IMapper mapper)
+        public RoomAmenityService(IAmenityService amenityService, IRoomAmenityRepository repository, IMapper mapper)
         {
             _mapper = mapper;
             _repository = repository;
+            _amenityService = amenityService;
         }
 
         // CREATE
@@ -38,23 +40,43 @@ namespace ASI.Basecode.Services.Services
             }
         }
 
+        public void AddRoomAmenity(int roomId, int amenityId)
+        {
+            var roomAmenity = new RoomAmenity();
+            if (!_repository.RoomAmenityExists(roomId, amenityId))
+            {
+                roomAmenity.RoomId = roomId;
+                roomAmenity.AmenityId = amenityId;
+                _repository.AddRoomAmenity(roomAmenity);
+            }
+            else
+            {
+                throw new InvalidDataException(Resources.Messages.Errors.RoomAmenityExists);
+            }
+        }
+
         // READ
         public RoomAmenityViewModel GetRoomAmenity(int id)
         {
             var roomAmenity = _repository.GetRoomAmenities().Where(x => x.Id == id).FirstOrDefault();
+            var roomAmenityModel = new RoomAmenityViewModel(roomAmenity);
+            roomAmenityModel.Amenity = _amenityService.GetAmenity(roomAmenity.AmenityId);
+
             if (roomAmenity == null) return null;
 
-            return new RoomAmenityViewModel(roomAmenity);
+            return roomAmenityModel;
         }
 
         public RoomAmenityViewModel GetRoomAmenity(int roomId, int amenityId)
         {
             var roomAmenity = _repository
                 .GetRoomAmenities().Where(x => x.RoomId == roomId && x.AmenityId == amenityId).FirstOrDefault();
+            var roomAmenityModel = new RoomAmenityViewModel(roomAmenity);
+            roomAmenityModel.Amenity = _amenityService.GetAmenity(roomAmenity.AmenityId);
 
             if (roomAmenity == null) return null;
 
-            return new RoomAmenityViewModel(roomAmenity);
+            return roomAmenityModel;
         }
 
         public List<RoomAmenityViewModel> GetRoomAmenities(int roomId)
@@ -64,6 +86,13 @@ namespace ASI.Basecode.Services.Services
                 .Where(x => x.RoomId == roomId)
                 .Select(x => new RoomAmenityViewModel(x))
                 .ToList();
+
+            roomAmenities.ForEach(
+                x =>
+                    {
+                        x.Amenity = _amenityService.GetAmenity(x.AmenityId);
+                    }
+                );
 
             return roomAmenities;
         }

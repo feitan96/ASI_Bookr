@@ -1,6 +1,7 @@
 ﻿using ASI.Basecode.Data.Interfaces;
 using ASI.Basecode.Data.Models;
 using Basecode.Data.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace ASI.Basecode.Data.Repositories
 
         public IQueryable<Amenity> GetAmenities()
         {
-            return this.GetDbSet<Amenity>();
+            return this.GetDbSet<Amenity>().Include(amenity => amenity.RoomAmenities);
         }
 
         public bool AmenityExists(int amenityId)

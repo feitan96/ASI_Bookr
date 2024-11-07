@@ -16,7 +16,7 @@
             <th>@Html.DisplayNameFor(model => model.Description)</th>
             <th>@Html.DisplayNameFor(model => model.Type)</th>
             <th>@Html.DisplayNameFor(model => model.Location)</th>
-            <th>Show Amenities</th> <!-- New column for button to show amenities -->
+            <th>@Html.DisplayNameFor(model => model.RoomAmenities)</th> <!-- New column for button to show amenities -->
             <th></th>
         </tr>
     </thead>
@@ -29,36 +29,16 @@
                 <td>@Html.DisplayFor(modelItem => room.Type)</td>
                 <td>@Html.DisplayFor(modelItem => room.Location)</td>
                 <td>
-                    <!-- Button to toggle dropdown visibility -->
-                    <button type="button" class="btn btn-info" onclick="toggleDropdown('dropdown-@room.RoomId')">
-                        Show Amenities
-                    </button>
-
-                    <!-- Dropdown menu, hidden by default -->
-                    <select id="dropdown-@room.RoomId" class="form-select" style="display: none;" disabled>
-                        @foreach (var amenity in room.RoomAmenitiesName)
-                        {
-                            <option>@amenity</option>
-                        }
-                    </select>
+                        @string.Join(", ", room.RoomAmenitiesName)
                 </td>
+
                 <td>
-                    @Html.ActionLink("Edit", "Edit", new { RoomId = room.RoomId }) |
-                    @Html.ActionLink("Delete", "Delete", new { RoomId = room.RoomId }) |
-                    @Html.ActionLink("View", "View", new { RoomId = room.RoomId })
+                    @Html.ActionLink("Edit", "Edit", new { roomId = room.RoomId }) |
+                    @Html.ActionLink("Delete", "Delete", new { roomId = room.RoomId }) |
+                    @Html.ActionLink("View", "View", new { roomId = room.RoomId })
                 </td>
             </tr>
         }
     </tbody>
 </table>
 
-<script>
-    function toggleDropdown(dropdownId) {
-        var dropdown = document.getElementById(dropdownId);
-        if (dropdown.style.display === "none") {
-            dropdown.style.display = "block";
-        } else {
-            dropdown.style.display = "none";
-        }
-    }
-</script>

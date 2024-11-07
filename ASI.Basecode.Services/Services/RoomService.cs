@@ -16,6 +16,7 @@ using static ASI.Basecode.Resources.Constants.Enums;
 using FuzzySharp.SimilarityRatio.Scorer.StrategySensitive;
 using FuzzySharp.SimilarityRatio;
 using System.Data.Entity.Core.Objects.DataClasses;
+using LinqKit;
 
 namespace ASI.Basecode.Services.Services
 {
@@ -24,12 +25,17 @@ namespace ASI.Basecode.Services.Services
     #nullable enable
 
         private readonly IRoomRepository _repository;
+        private readonly IRoomAmenityService _roomamenityservice;
+        private readonly IAmenityService _amenityservice;
         private readonly IMapper _mapper;
 
-        public RoomService(IRoomRepository repository, IMapper mapper)
+        public RoomService(IRoomRepository repository, IMapper mapper, IRoomAmenityService roomAmenityService,
+                       IAmenityService amenityService)
         {
             _mapper = mapper;
             _repository = repository;
+            _roomamenityservice = roomAmenityService;
+            _amenityservice = amenityService;
         }
 
         #region Create (CRUD)
@@ -56,16 +62,38 @@ namespace ASI.Basecode.Services.Services
 
         //Returns all room from database.
         public List<RoomViewModel> GetRooms() {
-            return _repository.GetRooms().Select(room => new RoomViewModel(room)).ToList();
+           var rooms = _repository.GetRooms().Select(room => new RoomViewModel(room)).ToList();
+            rooms.ForEach(room =>
+            {
+                room.RoomAmenities = _roomamenityservice.GetRoomAmenities(room.RoomId);
+                room.RoomAmenities.ForEach(
+                    roomAmenity =>
+                    {
+                        roomAmenity.Amenity = _amenityservice.GetAmenity(roomAmenity.AmenityId);
+                    }
+                    );
+            });
+            return rooms;
         }
 
         // Finds and returns a room by its ID. If no room is found, returns null.
-        public RoomViewModel? GetRoomById(int roomId)
+        public RoomViewModel? GetRoomById(int roomId)   
         {
             Room? room = _repository.GetRooms().Where(x => x.RoomId == roomId).FirstOrDefault();
             if (room != null)
             {
-                return new RoomViewModel(room);
+                var roomModel = new RoomViewModel(room);
+
+                //Get Amenities
+                roomModel.RoomAmenities = _roomamenityservice.GetRoomAmenities(roomId);
+                roomModel.RoomAmenities.ForEach(
+                    roomAmenity =>
+                    {
+                        roomAmenity.Amenity = _amenityservice.GetAmenity(roomAmenity.AmenityId);
+                    }
+                );
+
+                return roomModel;
             }
             else
             {
@@ -262,12 +290,14 @@ namespace ASI.Basecode.Services.Services
 
         #region UPDATE (CRUD)
 
-        public void UpdateRoomInfo(RoomViewModel model)
+        public void UpdateRoomInfo(RoomViewModel model, int userId)
         {
             var room = new Room();
             try
             {
                 _mapper.Map(model, room);
+                room.UpdatedDate = DateTime.Now;
+                room.UpdatedBy = userId;
                 _repository.UpdateRoomInfo(room);
             }
             catch (Exception)

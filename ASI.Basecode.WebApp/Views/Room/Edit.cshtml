@@ -1,7 +1,11 @@
-﻿@model ASI.Basecode.Services.ServiceModels.RoomViewModel
+﻿@using ASI.Basecode.Services.ServiceModels;
+@model ASI.Basecode.Services.ServiceModels.RoomViewModel
 
 @{
     ViewData["Title"] = "Edit Room";
+    var amenities = ViewData["AmenitiesList"] as List<AmenityViewModel> ?? new List<AmenityViewModel>();
+    
+
 }
 
 <h1>Edit Room</h1>
@@ -26,7 +30,14 @@
 
             <div class="form-group">
                 <label asp-for="Type" class="control-label"></label>
-                <input asp-for="Type" class="form-control" placeholder="Enter room type (e.g., conference, meeting)" />
+                <select asp-for="Type" class="form-control">
+                    <option value="">Select Room Type</option>
+                    <option value="MeetingRoom">MeetingRoom (Has TV)</option>
+                    <option value="PrivateRoom">PrivateRoom (Personal space for any work)</option>
+                    <option value="StudyRoom">StudyRoom (Designed for studying)</option>
+                    <option value="ConferenceRoom">ConferenceRoom (Has TV and whiteboard)</option>
+                    <option value="WorkshopRoom">WorkshopRoom (Has whiteboard only)</option>
+                </select>
                 <span asp-validation-for="Type" class="text-danger"></span>
             </div>
 
@@ -38,14 +49,29 @@
 
             <div class="form-group">
                 <label asp-for="Location" class="control-label"></label>
-                <input asp-for="Location" class="form-control" placeholder="Enter room location" />
+                <select asp-for="Location" class="form-control">
+                    <option value="">Select Room Location</option>
+                    <option value="FocusRoom">FocusRoom (Dedicated space for quiet work and concentration)</option>
+                    <option value="Lounge">Lounge (Casual area for relaxation and informal meetings)</option>
+                    <option value="InnovationLab">InnovationLab (Room designed for brainstorming and project development)</option>
+                    <option value="ResourceCenter">ResourceCenter (Equipped with tools and materials for research and study)</option>
+                </select>
                 <span asp-validation-for="Location" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label asp-for="Amenities" class="control-label"></label>
-                <input asp-for="Amenities" class="form-control" placeholder="List amenities (e.g., projector, whiteboard)" />
-                <span asp-validation-for="Amenities" class="text-danger"></span>
+                <label asp-for="RoomAmenitiesId" class="control-label">Select Amenities</label>
+                <div>
+                    @foreach (var amenity in amenities)
+                    {
+                        <input type="checkbox" name="RoomAmenitiesId" value="@amenity.AmenityId"
+                        @(Model.RoomAmenitiesId.Contains(amenity.AmenityId) ? "checked" : "") />
+                        <label>@amenity.AmenityName</label>
+
+                        <br />
+                    }
+                </div>
+                <span asp-validation-for="RoomAmenitiesId" class="text-danger"></span>
             </div>
 
             <div class="form-group">
