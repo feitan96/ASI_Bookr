@@ -30,7 +30,6 @@ namespace ASI.Basecode.Data.Repositories
 
         public void AddRoomAmenity(RoomAmenity roomAmenity)
         {
-
             this.GetDbSet<RoomAmenity>().Add(roomAmenity);
             UnitOfWork.SaveChanges();
         }

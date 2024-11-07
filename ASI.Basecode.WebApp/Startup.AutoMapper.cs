@@ -39,6 +39,7 @@ namespace ASI.Basecode.WebApp
                     .ForMember(dest => dest.IsDeleted, opt => opt.Ignore());
                 // Optionally, map RoomAmenities collection if needed
                 CreateMap<RoomAmenityViewModel, RoomAmenity>();
+                CreateMap<AmenityViewModel, Amenity>();
             }
         }
     }

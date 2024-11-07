@@ -1,0 +1,26 @@
+﻿@model ASI.Basecode.Services.ServiceModels.AmenityViewModel
+
+@{
+}
+
+<div class="modal-header">
+    <h5 class="modal-title">Add Amenity</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <form id="createForm" asp-action="Create" method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="AmenityName" class="control-label">Amenity</label>
+            <input asp-for="AmenityName" class="form-control" placeholder="Enter Amenity Name" />
+            <span asp-validation-for="AmenityName" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <input type="submit" value="Create New Amenity" class="btn btn-primary" />
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>

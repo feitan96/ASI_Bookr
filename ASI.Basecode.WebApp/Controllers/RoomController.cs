@@ -52,6 +52,7 @@ namespace ASI.Basecode.WebApp.Controllers
         }
 
         #region Get Methods
+        //Create, Edit, View, Delete
         // GET: RoomController/Create
         [HttpGet]
         public IActionResult Create()
@@ -92,7 +93,7 @@ namespace ASI.Basecode.WebApp.Controllers
         }
 
         [HttpGet]
-        // GET: RoomController/Details/5
+        // GET: RoomController/View/5
         public IActionResult View(int roomId)
         {
             var room = _roomservice.GetRoomById(roomId);
@@ -120,6 +121,44 @@ namespace ASI.Basecode.WebApp.Controllers
         }
         #endregion
 
+
+        #region Post Methods
+        //Create, Edit, SoftDelete, HardDelete
+        // POST: RoomController/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(RoomViewModel model)
+        {
+            try
+            {
+                //Create or Add new Room
+                int roomId = _roomservice.AddRoom(model, int.Parse(Id));
+
+                //list out the room amenities selected
+                var userSelectedAmenities = Request.Form["RoomAmenitiesId"].Select(x => Convert.ToInt32(x)).ToList();  // Convert values to integers
+
+                foreach (var amenityId in userSelectedAmenities)
+                {
+                    // Call the service to add the new mapping to RoomAmenities table for the newly created room
+                    _roomamenityservice.AddRoomAmenity(roomId, amenityId);
+                }
+
+                return RedirectToAction("Index");
+            }
+            catch (ArgumentNullException ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
+            catch (InvalidDataException ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = Resources.Messages.Errors.ServerError;
+            }
+            return View();
+        }
 
         // POST: RoomController/Edit/5
         [HttpPost]
@@ -173,42 +212,6 @@ namespace ASI.Basecode.WebApp.Controllers
             return View();
         }
 
-        // POST: RoomController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create(RoomViewModel model)
-        {
-            try
-            {
-                //Create or Add new Room
-                int roomId = _roomservice.AddRoom(model, int.Parse(Id));
-
-                //list out the room amenities selected
-                var userSelectedAmenities = Request.Form["RoomAmenitiesId"].Select(x => Convert.ToInt32(x)).ToList();  // Convert values to integers
-
-                foreach (var amenityId in userSelectedAmenities)
-                {
-                    // Call the service to add the new mapping to RoomAmenities table for the newly created room
-                    _roomamenityservice.AddRoomAmenity(roomId, amenityId);
-                }
-
-                return RedirectToAction("Index");
-            }
-            catch (ArgumentNullException ex)
-            {
-                TempData["ErrorMessage"] = ex.Message;
-            }
-            catch (InvalidDataException ex)
-            {
-                TempData["ErrorMessage"] = ex.Message;
-            }
-            catch (Exception ex)
-            {
-                TempData["ErrorMessage"] = Resources.Messages.Errors.ServerError;
-            }
-            return View();
-        }
-
         // POST: RoomController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -225,5 +228,8 @@ namespace ASI.Basecode.WebApp.Controllers
             _roomservice.HardDeleteRoom(roomId);
             return RedirectToAction("Index");
         }
+        #endregion
+
+
     }
 }

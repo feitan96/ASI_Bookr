@@ -16,7 +16,7 @@ namespace ASI.Basecode.Services.ServiceModels
         public AmenityViewModel(Amenity amenity)
         {
             this.AmenityId = amenity.AmenityId;
-            this.AmenityName = amenity.Amenity1;
+            this.AmenityName = amenity.AmenityName;
         }
 
         [Required(ErrorMessage = "Amenity ID is required.")]
