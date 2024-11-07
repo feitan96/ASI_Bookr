@@ -41,19 +41,23 @@ namespace ASI.Basecode.Services.Services
         #region Create (CRUD)
 
         // Adds a new room if it doesn't already exist, otherwise throws an exception.
-        public void AddRoom(RoomViewModel model)
+        public int AddRoom(RoomViewModel model, int userId)
         {
             var room = new Room();
             if (!_repository.RoomExists(model.Name))
             {
                 _mapper.Map(model, room);
-                _repository.AddRoom(room);
+                room.CreatedBy = userId;
+                room.UpdatedBy = userId;
+                room.IsDeleted = false; //default room is not deleted
+                _repository.AddRoom(room); //after pushing change, attempt to get the generate roomId
+                return room.RoomId;
             }
             else
             {
                 throw new InvalidDataException(Resources.Messages.Errors.RoomExists);
             }
-        }
+        }   
 
         #endregion
 
@@ -62,7 +66,7 @@ namespace ASI.Basecode.Services.Services
 
         //Returns all room from database.
         public List<RoomViewModel> GetRooms() {
-           var rooms = _repository.GetRooms().Select(room => new RoomViewModel(room)).ToList();
+           var rooms = _repository.GetRooms().Where(x => x.IsDeleted == false).Select(room => new RoomViewModel(room)).ToList();
             rooms.ForEach(room =>
             {
                 room.RoomAmenities = _roomamenityservice.GetRoomAmenities(room.RoomId);
@@ -298,6 +302,7 @@ namespace ASI.Basecode.Services.Services
                 _mapper.Map(model, room);
                 room.UpdatedDate = DateTime.Now;
                 room.UpdatedBy = userId;
+                room.IsDeleted = false; //Since RoomViewModel doesn't have IsDeleted Property it won't be mapped ot the RoomModel (Base)
                 _repository.UpdateRoomInfo(room);
             }
             catch (Exception)
@@ -319,15 +324,15 @@ namespace ASI.Basecode.Services.Services
             }
         }
 
-        //public void SoftDeleteRoom(int roomId)
-        //{
-        //    var room = _repository.GetRooms().Where(x => x.RoomId = roomId).FirstOrDefault();
-        //    if (room != null)
-        //    {
-        //        room.IsDeleted = true;
-        //        _repository.UpdateRoomInfo(room);
-        //    }
-        //}
+        public void SoftDeleteRoom(int roomId)
+        {
+            var room = _repository.GetRooms().Where(x => x.RoomId.Equals(roomId)).FirstOrDefault();
+            if (room != null)
+            {
+                room.IsDeleted = true;
+                _repository.UpdateRoomInfo(room);
+            }
+        }
 
         #endregion
 

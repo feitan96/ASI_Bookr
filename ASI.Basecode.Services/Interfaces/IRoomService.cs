@@ -13,7 +13,7 @@ namespace ASI.Basecode.Services.Interfaces
     {
         #nullable enable
         //CREATE
-        void AddRoom(RoomViewModel model);
+        int AddRoom(RoomViewModel model, int id); //return the generate roomId
 
         //READ
         List<RoomViewModel> GetRooms();
@@ -28,7 +28,7 @@ namespace ASI.Basecode.Services.Interfaces
         void UpdateRoomInfo(RoomViewModel model, int userId);
 
         //DELETE
-        //void SoftDeleteRoom(int roomId);
+        void SoftDeleteRoom(int roomId);
         void HardDeleteRoom(int roomId);
 
         //OTHERS

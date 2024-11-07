@@ -11,6 +11,8 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
+using NetTopologySuite.Noding;
+using ASI.Basecode.Data.Models;
 
 namespace ASI.Basecode.WebApp.Controllers
 {
@@ -50,18 +52,20 @@ namespace ASI.Basecode.WebApp.Controllers
         }
 
         #region Get Methods
-        [HttpGet]
-        // GET: RoomController/Details/5
-        public IActionResult Details(int id)
-        {
-            return View();
-        }
-
         // GET: RoomController/Create
         [HttpGet]
         public IActionResult Create()
         {
-            return View();
+
+            var amenities = _amenityservice.GetAmenities();
+
+            ViewData["AmenitiesList"] = amenities;
+
+            if (amenities == null)
+            {
+                throw new ArgumentNullException(nameof(amenities), "Amenities list is null");
+            }
+            return PartialView("_Create");
         }
 
         // GET: RoomController/Edit/5
@@ -84,14 +88,35 @@ namespace ASI.Basecode.WebApp.Controllers
                 throw new ArgumentNullException(nameof(amenities), "Amenities list is null");
             }
 
-            return View(room);
+            return PartialView("_Edit", room);
         }
+
+        [HttpGet]
+        // GET: RoomController/Details/5
+        public IActionResult View(int roomId)
+        {
+            var room = _roomservice.GetRoomById(roomId);
+
+            if (room == null)
+            {
+                return NotFound();
+            }
+            return PartialView("_View", room);
+        }
+
 
         // GET: RoomController/Delete/5
         [HttpGet]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(int roomId)
         {
-            return View();
+            var room = _roomservice.GetRoomById(roomId);
+
+            if (room == null)
+            {
+                return NotFound();
+            }
+
+            return PartialView("_Delete", room);
         }
         #endregion
 
@@ -106,18 +131,18 @@ namespace ASI.Basecode.WebApp.Controllers
                 var roomAmenities = _roomamenityservice.GetRoomAmenities(model.RoomId);
                 model.RoomAmenities = roomAmenities;
                 // Get the list of selected amenities from the view (ViewData["RoomAmenitiesId"])
-                var userSelectedAmenities = ViewData["RoomAmenitiesId"] as List<int> ?? new List<int>();
-
+                var userSelectedAmenities = Request.Form["RoomAmenitiesId"].Select(x => Convert.ToInt32(x))  // Convert values to integers
+            .ToList();
                 // Get the list of amenity IDs currently associated with the room
                 var currentAmenitiesIds = roomAmenities.Select(x => x.AmenityId).ToList();
 
-                // 1. Identify amenities to remove (those in current list but not in the selected list)
+                // Identify amenities to remove (those in current list but not in the selected list)
                 var amenitiesToRemove = currentAmenitiesIds.Except(userSelectedAmenities).ToList();
 
-                // 2. Identify amenities to add (those in the selected list but not in the current list)
+                //Identify amenities to add (those in the selected list but not in the current list)
                 var amenitiesToAdd = userSelectedAmenities.Except(currentAmenitiesIds).ToList();
 
-                // Step 1: Remove old amenities
+                //Step 1: Remove old amenities
                 foreach (var amenityId in amenitiesToRemove)
                 {
                     // Call the service to remove the mapping from RoomAmenities table
@@ -143,7 +168,7 @@ namespace ASI.Basecode.WebApp.Controllers
             }
             catch (InvalidDataException ex)
             {
-                TempData["ErrorMessage"] = ex.Message; ;
+                TempData["ErrorMessage"] = ex.Message;
             }
             return View();
         }
@@ -151,31 +176,54 @@ namespace ASI.Basecode.WebApp.Controllers
         // POST: RoomController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(IFormCollection collection)
+        public IActionResult Create(RoomViewModel model)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                //Create or Add new Room
+                int roomId = _roomservice.AddRoom(model, int.Parse(Id));
+
+                //list out the room amenities selected
+                var userSelectedAmenities = Request.Form["RoomAmenitiesId"].Select(x => Convert.ToInt32(x)).ToList();  // Convert values to integers
+
+                foreach (var amenityId in userSelectedAmenities)
+                {
+                    // Call the service to add the new mapping to RoomAmenities table for the newly created room
+                    _roomamenityservice.AddRoomAmenity(roomId, amenityId);
+                }
+
+                return RedirectToAction("Index");
             }
-            catch
+            catch (ArgumentNullException ex)
             {
-                return View();
+                TempData["ErrorMessage"] = ex.Message;
             }
+            catch (InvalidDataException ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = Resources.Messages.Errors.ServerError;
+            }
+            return View();
         }
 
         // POST: RoomController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(int id, IFormCollection collection)
+        public IActionResult SoftDelete(int roomId)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            _roomservice.SoftDeleteRoom(roomId);
+            return RedirectToAction("Index");
+        }
+        //unused
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult HardDelete(int roomId)
+        {
+            _roomservice.HardDeleteRoom(roomId);
+            return RedirectToAction("Index");
         }
     }
 }

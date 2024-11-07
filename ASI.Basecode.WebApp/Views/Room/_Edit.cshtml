@@ -2,14 +2,16 @@
 @model ASI.Basecode.Services.ServiceModels.RoomViewModel
 
 @{
-    ViewData["Title"] = "Edit Room";
-    var amenities = ViewData["AmenitiesList"] as List<AmenityViewModel> ?? new List<AmenityViewModel>();
-    
-
+    var amenities = ViewData["AmenitiesList"] as List<AmenityViewModel> ?? new List<AmenityViewModel>();   
 }
 
-<h1>Edit Room</h1>
-<hr />
+<div class="modal-header">
+    <h5 class="modal-title">Edit Room</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
 <div class="row">
     <div class="col-md-6">
         <form asp-action="Edit">
@@ -32,11 +34,11 @@
                 <label asp-for="Type" class="control-label"></label>
                 <select asp-for="Type" class="form-control">
                     <option value="">Select Room Type</option>
-                    <option value="MeetingRoom">MeetingRoom (Has TV)</option>
-                    <option value="PrivateRoom">PrivateRoom (Personal space for any work)</option>
-                    <option value="StudyRoom">StudyRoom (Designed for studying)</option>
-                    <option value="ConferenceRoom">ConferenceRoom (Has TV and whiteboard)</option>
-                    <option value="WorkshopRoom">WorkshopRoom (Has whiteboard only)</option>
+                    <option value="MeetingRoom">Meeting Room (Has TV)</option>
+                    <option value="PrivateRoom">Private Room (Personal space for any work)</option>
+                    <option value="StudyRoom">Study Room (Designed for studying)</option>
+                    <option value="ConferenceRoom">Conference Room (Has TV and whiteboard)</option>
+                    <option value="WorkshopRoom">Workshop Room (Has whiteboard only)</option>
                 </select>
                 <span asp-validation-for="Type" class="text-danger"></span>
             </div>
@@ -51,10 +53,10 @@
                 <label asp-for="Location" class="control-label"></label>
                 <select asp-for="Location" class="form-control">
                     <option value="">Select Room Location</option>
-                    <option value="FocusRoom">FocusRoom (Dedicated space for quiet work and concentration)</option>
+                    <option value="FocusRoom">Focus Room (Dedicated space for quiet work and concentration)</option>
                     <option value="Lounge">Lounge (Casual area for relaxation and informal meetings)</option>
-                    <option value="InnovationLab">InnovationLab (Room designed for brainstorming and project development)</option>
-                    <option value="ResourceCenter">ResourceCenter (Equipped with tools and materials for research and study)</option>
+                    <option value="InnovationLab">Innovation Lab (Room designed for brainstorming and project development)</option>
+                    <option value="ResourceCenter">Resource Center (Equipped with tools and materials for research and study)</option>
                 </select>
                 <span asp-validation-for="Location" class="text-danger"></span>
             </div>

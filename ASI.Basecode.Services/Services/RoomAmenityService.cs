@@ -129,7 +129,7 @@ namespace ASI.Basecode.Services.Services
                 .GetRoomAmenities().Where(x => x.RoomId == roomId && x.AmenityId == amenityId)
                 .FirstOrDefault();
 
-            if (roomAmenity == null)
+            if (roomAmenity != null)
             {
                 _repository.DeleteRoomAmenity(roomAmenity);
             }

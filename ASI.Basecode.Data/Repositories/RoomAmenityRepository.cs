@@ -20,8 +20,7 @@ namespace ASI.Basecode.Data.Repositories
 
         public IQueryable<RoomAmenity> GetRoomAmenities()
         {
-            return this.GetDbSet<RoomAmenity>().Include(roomAmenity => roomAmenity.Room)
-                            .Include(roomAmenity => roomAmenity.Amenity);
+            return this.GetDbSet<RoomAmenity>().Include(roomAmenity => roomAmenity.Amenity);
         }
 
         public bool RoomAmenityExists(int roomId, int amenityId)
