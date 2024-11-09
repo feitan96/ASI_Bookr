@@ -61,13 +61,13 @@
         </div>
 
         <div class="form-group">
-            <label asp-for="ImageFiles" class="control-label">Upload Room Image</label>
+            <label asp-for="ImageFiles" class="control-label">Upload Room Image/s</label>
             <input type="file" asp-for="ImageFiles" class="form-control" accept=".jpeg,.jpg,.png" multiple />
             <span asp-validation-for="ImageFiles" class="text-danger"></span>
         </div>
 
         <div class="form-group w-100">
-            <label>Existing Images</label>
+            <label>Existing Image/s</label>
             <div class="text-center">
                 <div id="roomImagesCarousel" class="carousel slide mx-auto" data-ride="carousel" style="max-width: 600px;">
                     <div class="carousel-inner">
@@ -76,7 +76,7 @@
                             var image = Model.Images[i];
                             <div class="carousel-item @(i == 0 ? "active" : "") text-center">
                                 <img src="@Url.Content($"~/uploads/rooms/{image.Guid}")" class="d-block w-100 img-thumbnail mx-auto"
-                                     alt="Room Image" style="max-height: 400px;" />
+                                     alt="Room Image" style="height: 200px, width: 200px;" />
                                 <div class="mt-3">
                                     <button type="button" class="btn btn-danger btn-sm delete-image-btn"
                                             data-image-id="@image.ImageId" data-image-guid="@image.Guid">

@@ -49,6 +49,8 @@ namespace ASI.Basecode.Services.Services
             if (!_repository.RoomExists(model.Name))
             {
                 _mapper.Map(model, room);
+                room.CreatedDate = DateTime.Now;
+                room.UpdatedDate = DateTime.Now;
                 room.CreatedBy = userId;
                 room.UpdatedBy = userId;
                 room.IsDeleted = false; //default room is not deleted

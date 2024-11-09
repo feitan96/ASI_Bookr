@@ -179,12 +179,6 @@ namespace ASI.Basecode.WebApp.Controllers
                                 await uploadedFile.CopyToAsync(stream);
                             }
 
-                            // Save the file path or filename to the database
-                            if (model.ImagePaths == null)
-                            {
-                                model.ImagePaths = new List<string>();
-                            }
-                            model.ImagePaths.Add($"{fileName}");
 
                             //Add image to database
                             ImageViewModel imageModel = new ImageViewModel(model.RoomId, fileName);
@@ -271,13 +265,6 @@ namespace ASI.Basecode.WebApp.Controllers
                             {
                                 await uploadedFile.CopyToAsync(stream);
                             }
-
-                            // Save the file path or filename to the database
-                            if (model.ImagePaths == null)
-                            {
-                                model.ImagePaths = new List<string>();
-                            }
-                            model.ImagePaths.Add($"{fileName}");
 
                             //Add image to database
                             ImageViewModel imageModel = new ImageViewModel(model.RoomId, fileName);
