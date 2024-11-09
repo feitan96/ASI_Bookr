@@ -16,7 +16,8 @@ namespace ASI.Basecode.Services.Interfaces
         int AddRoom(RoomViewModel model, int id); //return the generate roomId
 
         //READ
-        List<RoomViewModel> GetRooms();
+        PagedResultRoom<RoomViewModel> GetRooms(int pageNumber, int pageSize);
+        /*List<RoomViewModel> GetRooms();*/
         Room? GetRoomModelById(int roomId);
         RoomViewModel? GetRoomById(int roomId);
         RoomViewModel? GetRoomByName(string roomName, bool fuzzyMatching);

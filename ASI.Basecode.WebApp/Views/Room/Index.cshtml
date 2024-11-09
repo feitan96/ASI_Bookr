@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ASI.Basecode.Services.ServiceModels.RoomViewModel>
+﻿@model ASI.Basecode.Services.ServiceModels.PagedResultRoom<ASI.Basecode.Services.ServiceModels.RoomViewModel>
 @{
     ViewData["Title"] = "Index";
 }
@@ -12,26 +12,23 @@
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>@Html.DisplayNameFor(model => model.Name)</th>
-            <th>@Html.DisplayNameFor(model => model.Description)</th>
-            <th>@Html.DisplayNameFor(model => model.Type)</th>
-            <th>@Html.DisplayNameFor(model => model.Location)</th>
-            <th>@Html.DisplayNameFor(model => model.RoomAmenities)</th> <!-- New column for button to show amenities -->
+            <th>@Html.DisplayNameFor(model => model.Items.FirstOrDefault().Name)</th>
+            <th>@Html.DisplayNameFor(model => model.Items.FirstOrDefault().Description)</th>
+            <th>@Html.DisplayNameFor(model => model.Items.FirstOrDefault().Type)</th>
+            <th>@Html.DisplayNameFor(model => model.Items.FirstOrDefault().Location)</th>
+            <th>@Html.DisplayNameFor(model => model.Items.FirstOrDefault().RoomAmenities)</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var room in Model)
+        @foreach (var room in Model.Items)
         {
             <tr>
-                <td>@Html.DisplayFor(modelItem => room.Name)</td>
-                <td>@Html.DisplayFor(modelItem => room.Description)</td>
-                <td>@Html.DisplayFor(modelItem => room.Type)</td>
-                <td>@Html.DisplayFor(modelItem => room.Location)</td>
-                <td>
-                        @string.Join(", ", room.RoomAmenitiesName)
-                </td>
-
+                <td>@room.Name</td>
+                <td>@room.Description</td>
+                <td>@room.Type</td>
+                <td>@room.Location</td>
+                <td>@string.Join(", ", room.RoomAmenitiesName)</td>
                 <td>
                     <button onclick="openModal('@Url.Action("View", "Room", new { roomId = room.RoomId })')" class="btn btn-info btn-sm">View</button>
                     <button onclick="openModal('@Url.Action("Edit", "Room", new { roomId = room.RoomId })')" class="btn btn-warning btn-sm">Edit</button>
@@ -41,6 +38,28 @@
         }
     </tbody>
 </table>
+
+<!-- Pagination Controls -->
+<div class="pagination">
+    @* "Previous" button *@
+    @if (Model.PageNumber > 1)
+    {
+        <a class="btn btn-secondary" asp-action="Index" asp-route-pageNumber="@(Model.PageNumber - 1)" asp-route-pageSize="@Model.PageSize">Previous</a>
+    }
+
+    @* Page Number Links *@
+    @for (int i = 1; i <= Model.TotalPages; i++)
+    {
+        <a class="btn @(Model.PageNumber == i ? "btn-primary" : "btn-secondary")" asp-action="Index" asp-route-pageNumber="@i" asp-route-pageSize="@Model.PageSize">@i</a>
+    }
+
+    @* "Next" button *@
+    @if (Model.PageNumber < Model.TotalPages)
+    {
+        <a class="btn btn-secondary" asp-action="Index" asp-route-pageNumber="@(Model.PageNumber + 1)" asp-route-pageSize="@Model.PageSize">Next</a>
+    }
+</div>
+
 
 <!-- Modal -->
 <div id="crudModal" class="modal fade" tabindex="-1" role="dialog">
@@ -55,14 +74,15 @@
 </div>
 
 @section Scripts {
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.bundle.min.js"></script>
     <script>
         // Open modal and load content
         function openModal(url) {
             $.get(url, function (data) {
                 $('#crudModal .modal-body').html(data);
                 $('#crudModal').modal('show');
+
+                // Initialize client-side validation
+                $.validator.unobtrusive.parse('#crudModal .modal-body');
             });
         }
 
@@ -83,7 +103,12 @@
                     location.reload(); // Reload page or update data to reflect changes
                 },
                 error: function (xhr) {
-                    alert('An error occurred. Please try again.');
+                    if (xhr.status === 400) { // Bad request due to validation
+                        $('#crudModal .modal-body').html(xhr.responseText);
+                        $.validator.unobtrusive.parse('#crudModal .modal-body'); // Re-parse validation for new content
+                    } else {
+                        alert('An error occurred. Please try again.');
+                    }
                 }
             });
         });

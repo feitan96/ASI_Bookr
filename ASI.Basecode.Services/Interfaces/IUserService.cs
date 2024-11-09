@@ -14,5 +14,6 @@ namespace ASI.Basecode.Services.Interfaces
         void UpdateUser(UserViewModel model, int userId);
         void SoftDelete(int Id);
         void HardDelete(int Id);
+        PagedResult<UserViewModel> GetAllUsers(int pageNumber, int pageSize);
     }
 }

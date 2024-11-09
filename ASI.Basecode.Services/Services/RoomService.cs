@@ -59,14 +59,36 @@ namespace ASI.Basecode.Services.Services
             {
                 throw new InvalidDataException(Resources.Messages.Errors.RoomExists);
             }
-        }   
+        }
 
         #endregion
 
         #region Read (CRUD)
 
+        public PagedResultRoom<RoomViewModel> GetRooms(int pageNumber, int pageSize)
+        {
+            var rooms = _repository.GetRooms()
+                                   .Where(x => (bool)!x.IsDeleted)
+                                   .Select(r => new RoomViewModel(r))
+                                   .ToList();
+
+            var totalRecords = rooms.Count();
+            var paginatedRooms = rooms.Skip((pageNumber - 1) * pageSize)
+                                      .Take(pageSize)
+                                      .ToList();
+
+            return new PagedResultRoom<RoomViewModel>
+            {
+                Items = paginatedRooms,
+                TotalRecords = totalRecords,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+        }
+
+
         //Returns all room from database.
-        public List<RoomViewModel> GetRooms() {
+        /*public List<RoomViewModel> GetRooms() {
            var rooms = _repository.GetRooms().Where(x => x.IsDeleted == false).Select(room => new RoomViewModel(room)).ToList();
             //rooms.ForEach(room =>
             //{
@@ -80,7 +102,7 @@ namespace ASI.Basecode.Services.Services
             //    room.Images = _imageservice.GetImagesByRoomId(room.RoomId); //get the associated images of the rooms if it exists on the database
             //});
             return rooms;
-        }
+        }*/
 
         // Finds and returns a room by its ID. If no room is found, returns null.
         public RoomViewModel? GetRoomById(int roomId)   
