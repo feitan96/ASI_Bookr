@@ -26,6 +26,7 @@ namespace ASI.Basecode.Services.ServiceModels
             this.Id = roomAmenity.Id;
             this.RoomId = roomAmenity.RoomId;
             this.AmenityId = roomAmenity.AmenityId;
+            this.Amenity = new AmenityViewModel(roomAmenity.Amenity);
         }
 
 

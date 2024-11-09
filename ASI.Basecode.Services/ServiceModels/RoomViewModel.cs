@@ -17,6 +17,7 @@ namespace ASI.Basecode.Services.ServiceModels
         public RoomViewModel() {
             //Added code for post request edit submission
             this.RoomAmenities = new List<RoomAmenityViewModel>();
+            
         }
 
         public RoomViewModel(Room room)
@@ -25,9 +26,10 @@ namespace ASI.Basecode.Services.ServiceModels
             this.Name = room.Name;
             this.Description = room.Description;
             this.Type = room.Type;
-            this.ImagePath = room.Image;
             this.Capacity = room.Capacity;
             this.Location = room.Location;
+            this.RoomAmenities = room.RoomAmenities.Select(roomAmenities => new RoomAmenityViewModel(roomAmenities)).ToList();
+            this.Images = room.Images.Select(image => new ImageViewModel(image)).ToList();
         }
 
         private List<int> _roomAmenitiesId;
@@ -46,7 +48,7 @@ namespace ASI.Basecode.Services.ServiceModels
 
         [StringLength(250, ErrorMessage = "Image path cannot exceed 250 characters.")]
         [Url(ErrorMessage = "Please enter a valid URL for the image.")]
-        public string ImagePath { get; set; }
+        public List<string> ImagePaths { get; set; }
 
         [Range(1, int.MaxValue, ErrorMessage = "Capacity must be a positive number.")]
         public int? Capacity { get; set; }
@@ -54,12 +56,14 @@ namespace ASI.Basecode.Services.ServiceModels
         [StringLength(250, ErrorMessage = "Location cannot exceed 250 characters.")]
         public string Location { get; set; }
 
-        [StringLength(250, ErrorMessage = "Amenities cannot exceed 250 characters.")]
-        public string Amenities { get; set; }
-
         public int UpdatedBy { get; set; }
 
-        public IFormFile ImageFile { get; set; }
+        [Required(ErrorMessage = "The {0} field is required")]
+        [Display(Name = "Image")]
+        [DataType(DataType.Upload)]
+        public IFormFileCollection? ImageFiles { get; set; }
+
+        public List<ImageViewModel> Images { get; set; }
 
         public List<RoomAmenityViewModel> RoomAmenities { get; set; }
 

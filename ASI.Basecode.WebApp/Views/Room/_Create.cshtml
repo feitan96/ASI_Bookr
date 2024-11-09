@@ -58,6 +58,12 @@
         </div>
 
         <div class="form-group">
+            <label asp-for="ImageFiles" class="control-label">Upload Room Image</label>
+            <input type="file" asp-for="ImageFiles" class="form-control" accept=".jpeg,.jpg,.png" multiple />
+            <span asp-validation-for="ImageFiles" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
             <label asp-for="RoomAmenitiesId" class="control-label">Select Amenities</label>
             <div>
                 @foreach (var amenity in amenities)

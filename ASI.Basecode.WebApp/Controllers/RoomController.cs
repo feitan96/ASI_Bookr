@@ -24,6 +24,7 @@ namespace ASI.Basecode.WebApp.Controllers
         private readonly IRoomService _roomservice;
         private readonly IAmenityService _amenityservice; //uncomment If need external amenityservice
         private readonly IRoomAmenityService _roomamenityservice;// uncomment If need external roomamenityservice
+        private readonly IImageService _imageservice;
         private readonly IWebHostEnvironment _environment;
 
         /// <summary>
@@ -37,6 +38,7 @@ namespace ASI.Basecode.WebApp.Controllers
         public RoomController(IAmenityService amenityService,
                               IRoomAmenityService roomAmenityService,
                               IRoomService roomService,
+                              IImageService imageService,
                               IHttpContextAccessor httpContextAccessor,
                               ILoggerFactory loggerFactory,
                               IConfiguration configuration,
@@ -47,6 +49,7 @@ namespace ASI.Basecode.WebApp.Controllers
             this._roomamenityservice = roomAmenityService;
             this._amenityservice = amenityService;
             this._environment = environment;  // Set the environment field
+            this._imageservice = imageService;
         }
 
         // GET: RoomController
@@ -133,7 +136,7 @@ namespace ASI.Basecode.WebApp.Controllers
         // POST: RoomController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(RoomViewModel model)
+        public async Task<IActionResult> Create(RoomViewModel model)
         {
             try
             {
@@ -149,6 +152,47 @@ namespace ASI.Basecode.WebApp.Controllers
                     _roomamenityservice.AddRoomAmenity(roomId, amenityId);
                 }
 
+                if (ModelState.IsValid)
+                {
+                    var uploadedFiles = model.ImageFiles;
+
+                    // Check if an image file was uploaded
+                    if (uploadedFiles != null && uploadedFiles.Count > 0)
+                    {
+                        // Ensure the uploads directory exists
+                        var uploadsDir = Path.Combine(_environment.WebRootPath, "uploads/rooms");
+                        if (!Directory.Exists(uploadsDir))
+                        {
+                            Directory.CreateDirectory(uploadsDir);
+                        }
+
+                        foreach (var uploadedFile in uploadedFiles)
+                        {
+                            // Generate a unique filename with GUID and get the extension
+                            var fileExtension = Path.GetExtension(uploadedFile.FileName);
+                            var fileName = $"{Guid.NewGuid()}{fileExtension}";
+                            var filePath = Path.Combine(uploadsDir, fileName);
+
+                            // Save the file to the specified path
+                            using (var stream = new FileStream(filePath, FileMode.Create))
+                            {
+                                await uploadedFile.CopyToAsync(stream);
+                            }
+
+                            // Save the file path or filename to the database
+                            if (model.ImagePaths == null)
+                            {
+                                model.ImagePaths = new List<string>();
+                            }
+                            model.ImagePaths.Add($"{fileName}");
+
+                            //Add image to database
+                            ImageViewModel imageModel = new ImageViewModel(model.RoomId, fileName);
+                            _imageservice.AddImage(imageModel);
+                        }
+                    }
+
+                }
                 return RedirectToAction("Index");
             }
             catch (ArgumentNullException ex)
@@ -203,10 +247,10 @@ namespace ASI.Basecode.WebApp.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    var uploadedFile = Request.Form.Files["ImageFile"];
+                    var uploadedFiles = model.ImageFiles;
 
                     // Check if an image file was uploaded
-                    if (uploadedFile != null && uploadedFile.Length > 0)
+                    if (uploadedFiles != null && uploadedFiles.Count > 0)
                     {
                         // Ensure the uploads directory exists
                         var uploadsDir = Path.Combine(_environment.WebRootPath, "uploads/rooms");
@@ -215,20 +259,32 @@ namespace ASI.Basecode.WebApp.Controllers
                             Directory.CreateDirectory(uploadsDir);
                         }
 
-                        // Generate a unique filename with GUID and get the extension
-                        var fileExtension = Path.GetExtension(model.ImageFile.FileName);
-                        var fileName = $"{Guid.NewGuid()}{fileExtension}";
-                        var filePath = Path.Combine(uploadsDir, fileName);
-
-                        // Save the file to the specified path
-                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        foreach (var uploadedFile in uploadedFiles)
                         {
-                            await model.ImageFile.CopyToAsync(stream);
-                        }
+                            // Generate a unique filename with GUID and get the extension
+                            var fileExtension = Path.GetExtension(uploadedFile.FileName);
+                            var fileName = $"{Guid.NewGuid()}{fileExtension}";
+                            var filePath = Path.Combine(uploadsDir, fileName);
 
-                        // Save the file path or filename to the database
-                        model.ImagePath = $"{fileName}";
+                            // Save the file to the specified path
+                            using (var stream = new FileStream(filePath, FileMode.Create))
+                            {
+                                await uploadedFile.CopyToAsync(stream);
+                            }
+
+                            // Save the file path or filename to the database
+                            if (model.ImagePaths == null)
+                            {
+                                model.ImagePaths = new List<string>();
+                            }
+                            model.ImagePaths.Add($"{fileName}");
+
+                            //Add image to database
+                            ImageViewModel imageModel = new ImageViewModel(model.RoomId, fileName);
+                            _imageservice.AddImage(imageModel);
+                        }
                     }
+
                 }
 
                 // Step 3: Update the Room table if necessary (if any room-related changes were made)

@@ -20,7 +20,7 @@ namespace ASI.Basecode.Data.Repositories
 
         public IQueryable<Room> GetRooms()
         {
-            var rooms = this.GetDbSet<Room>().Include(room => room.RoomAmenities)
+            var rooms = this.GetDbSet<Room>().Include(room => room.RoomAmenities).ThenInclude(roomAmenity => roomAmenity.Amenity)
                     .Include(room => room.Images)
                     .Include(room => room.Bookings);
             return rooms;

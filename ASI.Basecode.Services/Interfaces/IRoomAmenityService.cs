@@ -22,13 +22,11 @@ namespace ASI.Basecode.Services.Interfaces
         //UPDATE
         void UpdateRoomAmenityInfo(RoomAmenityViewModel model);
 
-
         //DELETE
         void DeleteRoomAmenity(int id);
         void DeleteRoomAmenity(int roomId, int amenityId);
 
         //OTHERS
-
 
     }
 }

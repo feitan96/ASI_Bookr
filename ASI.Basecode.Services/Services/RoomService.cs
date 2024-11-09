@@ -27,15 +27,17 @@ namespace ASI.Basecode.Services.Services
         private readonly IRoomRepository _repository;
         private readonly IRoomAmenityService _roomamenityservice;
         private readonly IAmenityService _amenityservice;
+        private readonly IImageService _imageservice;
         private readonly IMapper _mapper;
 
-        public RoomService(IRoomRepository repository, IMapper mapper, IRoomAmenityService roomAmenityService,
+        public RoomService(IRoomRepository repository, IImageService imageService, IMapper mapper, IRoomAmenityService roomAmenityService,
                        IAmenityService amenityService)
         {
             _mapper = mapper;
             _repository = repository;
             _roomamenityservice = roomAmenityService;
             _amenityservice = amenityService;
+            _imageservice = imageService;
         }
 
         #region Create (CRUD)
@@ -66,16 +68,17 @@ namespace ASI.Basecode.Services.Services
         //Returns all room from database.
         public List<RoomViewModel> GetRooms() {
            var rooms = _repository.GetRooms().Where(x => x.IsDeleted == false).Select(room => new RoomViewModel(room)).ToList();
-            rooms.ForEach(room =>
-            {
-                room.RoomAmenities = _roomamenityservice.GetRoomAmenities(room.RoomId);
-                room.RoomAmenities.ForEach(
-                    roomAmenity =>
-                    {
-                        roomAmenity.Amenity = _amenityservice.GetAmenity(roomAmenity.AmenityId);
-                    }
-                    );
-            });
+            //rooms.ForEach(room =>
+            //{
+            //    room.RoomAmenities = _roomamenityservice.GetRoomAmenities(room.RoomId);
+            //    room.RoomAmenities.ForEach(
+            //        roomAmenity =>
+            //        {
+            //            roomAmenity.Amenity = _amenityservice.GetAmenity(roomAmenity.AmenityId);
+            //        }
+            //        );
+            //    room.Images = _imageservice.GetImagesByRoomId(room.RoomId); //get the associated images of the rooms if it exists on the database
+            //});
             return rooms;
         }
 
@@ -88,14 +91,14 @@ namespace ASI.Basecode.Services.Services
                 var roomModel = new RoomViewModel(room);
 
                 //Get Amenities
-                roomModel.RoomAmenities = _roomamenityservice.GetRoomAmenities(roomId);
-                roomModel.RoomAmenities.ForEach(
-                    roomAmenity =>
-                    {
-                        roomAmenity.Amenity = _amenityservice.GetAmenity(roomAmenity.AmenityId);
-                    }
-                );
-
+                //roomModel.RoomAmenities = _roomamenityservice.GetRoomAmenities(roomId);
+                //roomModel.RoomAmenities.ForEach(
+                //    roomAmenity =>
+                //    {
+                //        roomAmenity.Amenity = _amenityservice.GetAmenity(roomAmenity.AmenityId);
+                //    }
+                //);
+                //roomModel.Images = _imageservice.GetImagesByRoomId(roomModel.RoomId); //get the associated images of the rooms if it exists on the database
                 return roomModel;
             }
             else
@@ -139,14 +142,20 @@ namespace ASI.Basecode.Services.Services
                 {
                     var index = bestMatch.Index;
                     var room = rooms[index];
-                    return new RoomViewModel(room);
+                    var roomModel = new RoomViewModel(room);
+                    roomModel.Images = _imageservice.GetImagesByRoomId(room.RoomId); //get the associated images of the rooms if it exists on the database
+
+                    return roomModel;
                 }
                 return null;
             }
             else
             {
                 var room = rooms.FirstOrDefault(r => r.Name.Equals(roomName, StringComparison.OrdinalIgnoreCase));
-                return new RoomViewModel(room);
+                var roomModel = new RoomViewModel(room);
+                roomModel.Images = _imageservice.GetImagesByRoomId(roomModel.RoomId); //get the associated images of the rooms if it exists on the database
+
+                return roomModel;
             }
         }
 
@@ -206,7 +215,11 @@ namespace ASI.Basecode.Services.Services
             }
 
             // Return the filtered list as a List<RoomViewModel>
-            return rooms.Select(room => new RoomViewModel(room)).ToList();
+            var roomModels = rooms.Select(room => new RoomViewModel(room)).ToList();
+            roomModels.ForEach(roomModel => {
+                roomModel.Images = _imageservice.GetImagesByRoomId(roomModel.RoomId); //get the associated images of the rooms if it exists on the database
+            });
+            return roomModels;
         }
 
         //public List<RoomViewModel> GetRoomsByAmenities(string amenity, bool fuzzyMatching)
@@ -286,7 +299,11 @@ namespace ASI.Basecode.Services.Services
                 ));
             }
 
-            return rooms.Select(room => new RoomViewModel(room)).ToList();
+            var roomModels = rooms.Select(room => new RoomViewModel(room)).ToList();
+            roomModels.ForEach(roomModel => {
+                roomModel.Images = _imageservice.GetImagesByRoomId(roomModel.RoomId); //get the associated images of the rooms if it exists on the database
+            });
+            return roomModels;
         }
 
         #endregion
@@ -362,7 +379,7 @@ namespace ASI.Basecode.Services.Services
 
         //public List<string>? ListAmenitiesByRoomName(string roomName, bool fuzzyMatching)
         //{
-        //    Room? room = GetRoomModelByName(roomName, fuzzyMatching);
+        //    Room? room = GetRoomByName(roomName, fuzzyMatching);
         //    if (room != null)
         //    {
         //        return ListAmenitiesByRoomId(room.RoomId);
@@ -380,7 +397,7 @@ namespace ASI.Basecode.Services.Services
 
         public List<DateTime?>? GetRoomBookingDatesByRoomName(string roomName, bool fuzzyMatching)
         {
-            Room? room = GetRoomModelByName(roomName, fuzzyMatching);
+            var room = GetRoomByName(roomName, fuzzyMatching);
             if (room != null)
             {
                 return GetRoomBookingDatesByRoomId(room.RoomId);
@@ -393,7 +410,7 @@ namespace ASI.Basecode.Services.Services
 
         public List<User>? GetBookedUsersByRoomId(int roomId)
         {
-            Room? room = GetRoomModelById(roomId);
+            var room = GetRoomModelById(roomId);
             return (room != null) ?room.Bookings.Select(b => b.User).Distinct().ToList(): null;
         }
 
@@ -401,7 +418,7 @@ namespace ASI.Basecode.Services.Services
 
         public List<User>? GetBookedUsersByRoomName(string roomName, bool fuzzyMatching)
         {
-            Room? room = GetRoomModelByName(roomName, fuzzyMatching);
+            var room = GetRoomByName(roomName, fuzzyMatching);
             if (room != null)
             {
                 return GetBookedUsersByRoomId(room.RoomId);
@@ -414,7 +431,7 @@ namespace ASI.Basecode.Services.Services
 
         public List<string>? GetBookedUsersNameByRoomId(int roomId)
         {
-            Room? room = GetRoomModelById(roomId);
+            var room = GetRoomModelById(roomId);
             if (room == null) return null;
 
             return room.Bookings
@@ -426,7 +443,7 @@ namespace ASI.Basecode.Services.Services
 
         public List<string>? GetBookedUsersNameByRoomName(string roomName, bool fuzzyMatching)
         {
-            Room? room = GetRoomModelByName(roomName, fuzzyMatching);
+            var room = GetRoomByName(roomName, fuzzyMatching);
             if (room != null)
             {
                 return GetBookedUsersNameByRoomId(room.RoomId);

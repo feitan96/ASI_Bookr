@@ -40,6 +40,7 @@ namespace ASI.Basecode.WebApp
                 // Optionally, map RoomAmenities collection if needed
                 CreateMap<RoomAmenityViewModel, RoomAmenity>();
                 CreateMap<AmenityViewModel, Amenity>();
+                CreateMap<ImageViewModel, Image>();
             }
         }
     }
