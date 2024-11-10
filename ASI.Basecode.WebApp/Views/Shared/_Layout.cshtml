@@ -14,8 +14,9 @@
     @RenderSection("Styles", required: false)
 </head>
 <body>
-    @Html.Partial("_Header")
-    <div>
+    @Html.Partial("_Sidebar") <!-- Include the Sidebar Here -->
+    <!-- Main Content Container with conditional padding and margin to avoid sidebar overlap -->
+    <div style="@((ViewBag.LoginView == true) ? "" : "margin-left: 250px; padding: 20px;")">
         <main role="main">
             @RenderBody()
         </main>
