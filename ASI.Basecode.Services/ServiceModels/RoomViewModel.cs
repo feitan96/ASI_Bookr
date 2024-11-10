@@ -17,7 +17,6 @@ namespace ASI.Basecode.Services.ServiceModels
         public RoomViewModel() {
             //Added code for post request edit submission
             this.RoomAmenities = new List<RoomAmenityViewModel>();
-            
         }
 
         public RoomViewModel(Room room)
@@ -48,15 +47,11 @@ namespace ASI.Basecode.Services.ServiceModels
         [StringLength(250, ErrorMessage = "Type cannot exceed 250 characters.")]
         public string Type { get; set; }
 
-        [StringLength(250, ErrorMessage = "Image path cannot exceed 250 characters.")]
-        [Url(ErrorMessage = "Please enter a valid URL for the image.")]
-        public List<string> ImagePaths { get; set; }
-
         [Required(ErrorMessage = "Room capacity is required.")]
         [Range(1, int.MaxValue, ErrorMessage = "Capacity must be a positive number.")]
         public int? Capacity { get; set; }
 
-        [Required(ErrorMessage = "Room name is required.")]
+        [Required(ErrorMessage = "Room location is required.")]
         [StringLength(250, ErrorMessage = "Location cannot exceed 250 characters.")]
         public string Location { get; set; }
 

@@ -1,0 +1,43 @@
+﻿@model IEnumerable<ASI.Basecode.Services.ServiceModels.RoomViewModel>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Name)</th>
+            <th>@Html.DisplayNameFor(model => model.Description)</th>
+            <th>@Html.DisplayNameFor(model => model.Type)</th>
+            <th>@Html.DisplayNameFor(model => model.Location)</th>
+            <th>@Html.DisplayNameFor(model => model.RoomAmenities)</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var room in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => room.Name)</td>
+                <td>@Html.DisplayFor(modelItem => room.Description)</td>
+                <td>@Html.DisplayFor(modelItem => room.Type)</td>
+                <td>@Html.DisplayFor(modelItem => room.Location)</td>
+                <td>@string.Join(", ", room.RoomAmenitiesName)</td>
+                <td>
+                    <button onclick="openModal('@Url.Action("View", "Room", new { roomId = room.RoomId })')" class="btn btn-info btn-sm">View</button>
+                    <button onclick="openModal('@Url.Action("Edit", "Room", new { roomId = room.RoomId })')" class="btn btn-warning btn-sm">Edit</button>
+                    <button onclick="openModal('@Url.Action("Delete", "Room", new { roomId = room.RoomId })')" class="btn btn-danger btn-sm">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Modal -->
+<div id="crudModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <div class="modal-body">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>

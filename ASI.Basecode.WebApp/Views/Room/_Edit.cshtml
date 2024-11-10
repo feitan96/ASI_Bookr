@@ -44,7 +44,7 @@
 
         <div class="form-group">
             <label asp-for="Capacity" class="control-label"></label>
-            <input asp-for="Capacity" class="form-control" placeholder="Enter room capacity" type="number" min="1" />
+            <input asp-for="Capacity" class="form-control" placeholder="Enter room capacity" type="number" min="1" max="20"/>
             <span asp-validation-for="Capacity" class="text-danger"></span>
         </div>
 
@@ -61,43 +61,50 @@
         </div>
 
         <div class="form-group">
-            <label asp-for="ImageFiles" class="control-label">Upload Room Image</label>
+            <label asp-for="ImageFiles" class="control-label">Upload Room Image/s</label>
             <input type="file" asp-for="ImageFiles" class="form-control" accept=".jpeg,.jpg,.png" multiple />
             <span asp-validation-for="ImageFiles" class="text-danger"></span>
         </div>
 
-        <div class="form-group w-100">
-            <label>Existing Images</label>
-            <div class="text-center">
-                <div id="roomImagesCarousel" class="carousel slide mx-auto" data-ride="carousel" style="max-width: 600px;">
-                    <div class="carousel-inner">
-                        @for (int i = 0; i < Model.Images.Count; i++)
-                        {
-                            var image = Model.Images[i];
-                            <div class="carousel-item @(i == 0 ? "active" : "") text-center">
-                                <img src="@Url.Content($"~/uploads/rooms/{image.Guid}")" class="d-block w-100 img-thumbnail mx-auto"
-                                     alt="Room Image" style="max-height: 400px;" />
-                                <div class="mt-3">
-                                    <button type="button" class="btn btn-danger btn-sm delete-image-btn"
-                                            data-image-id="@image.ImageId" data-image-guid="@image.Guid">
-                                        Delete
-                                    </button>
+        @if (Model.Images != null && Model.Images.Count > 0)
+        {
+            <div class="form-group w-100">
+                <label>Existing Image/s</label>
+                <div class="text-center">
+                    <div id="roomImagesCarousel" class="carousel slide mx-auto" data-ride="carousel" style="max-width: 600px;">
+                        <div class="carousel-inner">
+                            @for (int i = 0; i < Model.Images.Count; i++)
+                            {
+                                var image = Model.Images[i];
+                                <div class="carousel-item @(i == 0 ? "active" : "") text-center">
+                                    <div class="d-flex justify-content-center">
+                                        <img src="@Url.Content($"~/uploads/rooms/{image.Guid}")"
+                                             class="object-fit-cover rounded"
+                                             alt="Room Image"
+                                             style="width: 200px; height: 200px;" />
+                                    </div>
+                                    <div class="mt-3">
+                                        <button type="button" class="btn btn-danger btn-sm delete-image-btn"
+                                                data-image-id="@image.ImageId" data-image-guid="@image.Guid">
+                                            Delete
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        }
+                            }
+                        </div>
+                        <!-- Carousel controls -->
+                        <a class="carousel-control-prev" href="#roomImagesCarousel" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#roomImagesCarousel" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
                     </div>
-                    <!-- Carousel controls -->
-                    <a class="carousel-control-prev" href="#roomImagesCarousel" role="button" data-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="sr-only">Previous</span>
-                    </a>
-                    <a class="carousel-control-next" href="#roomImagesCarousel" role="button" data-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="sr-only">Next</span>
-                    </a>
                 </div>
             </div>
-        </div>
+        }
 
         <div class="form-group">
             <label asp-for="RoomAmenitiesId" class="control-label">Select Amenities</label>
@@ -131,6 +138,7 @@
         if (errorMessage) {
             toastr.error(errorMessage);
         }
+
 
     </script>
 }

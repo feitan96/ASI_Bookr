@@ -17,7 +17,7 @@ namespace ASI.Basecode.Services.Interfaces
 
         //READ
         PagedResultRoom<RoomViewModel> GetRooms(int pageNumber, int pageSize);
-        /*List<RoomViewModel> GetRooms();*/
+        List<RoomViewModel> GetRooms();
         Room? GetRoomModelById(int roomId);
         RoomViewModel? GetRoomById(int roomId);
         RoomViewModel? GetRoomByName(string roomName, bool fuzzyMatching);
