@@ -356,3 +356,37 @@ header {
     color: white;
     border-radius: 4px;
 }
+
+/* Style for the Chosen Select */
+.chosen-select {
+    border-radius: 0.375rem; /* Rounded corners */
+    height: 38px; /* Adjust this height to match the search box */
+    padding: 0.375rem 0.75rem; /* Adjust padding to make it match */
+    font-size: 1rem; /* Same font size as other inputs */
+}
+
+/* Additional styling for the dropdown and search box appearance */
+.chosen-container {
+    width: 100% !important; /* Ensure the dropdown takes full width */
+}
+
+    .chosen-container .chosen-single {
+        height: 38px; /* Match height with the input box */
+        line-height: 36px; /* Center the text vertically */
+        border-radius: 0.375rem; /* Rounded corners */
+        padding-left: 10px; /* Adjust padding for text inside the dropdown */
+    }
+
+        .chosen-container .chosen-single div {
+            padding-top: 0px; /* Adjust the text position */
+        }
+
+    .chosen-container .chosen-drop {
+        border-radius: 0.375rem; /* Rounded corners for dropdown */
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* Optional: adds a shadow to dropdown */
+        padding: 5px 0; /* Adjust dropdown padding */
+    }
+
+    .chosen-container .chosen-results {
+        padding: 10px 0; /* Adjust dropdown list padding */
+    }

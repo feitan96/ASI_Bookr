@@ -16,6 +16,7 @@ using ASI.Basecode.Data.Models;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Hosting;
 using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace ASI.Basecode.WebApp.Controllers
 {
@@ -56,6 +57,11 @@ namespace ASI.Basecode.WebApp.Controllers
         [HttpGet]
         public IActionResult Index()
         {
+
+            var amenities = _amenityservice.GetAmenities();
+
+            ViewData["AmenitiesList"] = amenities;
+
             var rooms = _roomservice.GetRooms();
             return View(rooms);
         }
@@ -128,6 +134,47 @@ namespace ASI.Basecode.WebApp.Controllers
 
             return PartialView("_Delete", room);
         }
+
+        [HttpGet]
+        public IActionResult Search(string roomName, string type, string location, int? capacity, [FromQuery(Name = "amenities[]")] List<int> amenities)
+        {
+
+            var rooms = _roomservice.GetRooms();
+
+            // Step 1: Filter by Room Name
+            if (!string.IsNullOrEmpty(roomName))
+            {
+                rooms = rooms.Where(r => r.Name.Contains(roomName, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            // Step 2: Filter by Type
+            if (!string.IsNullOrEmpty(type))
+            {
+                rooms = rooms.Where(r => r.Type == type).ToList();
+            }
+
+            // Step 3: Filter by Location
+            if (!string.IsNullOrEmpty(location))
+            {
+                rooms = rooms.Where(r => r.Location == location).ToList();
+            }
+
+            // Step 4: Filter by Capacity
+            if (capacity.HasValue)
+            {
+                rooms = rooms.Where(r => r.Capacity >= capacity.Value).ToList();
+            }
+
+            // Step 5: Filter by Amenities
+            if (amenities != null && amenities.Any())
+            {
+                rooms = rooms.Where(r => amenities.All(a => r.RoomAmenitiesId.Contains(a))).ToList();
+            }
+
+            return PartialView("_RoomList", rooms);
+        }
+
+
         #endregion
 
 
@@ -289,6 +336,52 @@ namespace ASI.Basecode.WebApp.Controllers
                 TempData["ErrorMessage"] = ex.Message;
             }
             return View();
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> DeleteImage()
+        {
+
+            var jsonRequest = await JsonSerializer.DeserializeAsync<JsonElement>(Request.Body);
+
+            // Log the raw JSON (optional)
+            Console.WriteLine("Raw JSON Request: " + jsonRequest.ToString());
+
+
+            // Manually extract the ImageId
+            int? imageId = jsonRequest.GetProperty("imageId").GetInt32();
+
+            if (imageId == 0 || imageId == null)
+            {
+                return Json(new { success = false, message = "Invalid ImageId." });
+            }
+
+            try
+            {
+                // Fetch the room image by roomId and imageId
+                var image = _imageservice.GetImageById(imageId.Value);
+                if (image == null)
+                {
+                    return Json(new { success = false, message = "Image not found." });
+                }
+
+                // Delete the image file from the server
+                var imagePath = Path.Combine(_environment.WebRootPath, "uploads", "rooms", image.Guid);
+                if (System.IO.File.Exists(imagePath))
+                {
+                    System.IO.File.Delete(imagePath);
+                }
+
+                // Remove the image record from the database
+                _imageservice.DeleteImageById(imageId.Value);
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                // Log the error if needed
+                return Json(new { success = false, message = ex.Message });
+            }
         }
 
         // POST: RoomController/Delete/5

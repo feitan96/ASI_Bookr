@@ -1,63 +1,84 @@
-﻿@model IEnumerable<ASI.Basecode.Services.ServiceModels.RoomViewModel>
+﻿@using ASI.Basecode.Services.ServiceModels;
+@model IEnumerable<ASI.Basecode.Services.ServiceModels.RoomViewModel>
 @{
     ViewData["Title"] = "Index";
+    var amenities = ViewData["AmenitiesList"] as List<AmenityViewModel> ?? new List<AmenityViewModel>();
 }
 
 <h1>Room Management</h1>
+
+<div class="form-row mb-3 align-items-end">
+    <!-- Search Room Name Textbox (Col-2) -->
+    <div class="col-md-2">
+        <input type="text" id="searchRoomName" class="form-control" placeholder="Search Room Name" />
+    </div>
+
+    <!-- Type Dropdown (Col-2) -->
+    <div class="col-md-2">
+        <select id="typeFilter" class="form-control">
+            <option value="">Select Type</option>
+            <option value="MeetingRoom">Meeting Room (Has TV)</option>
+            <option value="PrivateRoom">Private Room (Personal space for any work)</option>
+            <option value="StudyRoom">Study Room (Designed for studying)</option>
+            <option value="ConferenceRoom">Conference Room (Has TV and whiteboard)</option>
+            <option value="WorkshopRoom">Workshop Room (Has whiteboard only)</option>
+        </select>
+    </div>
+
+    <!-- Location Dropdown (Col-2) -->
+    <div class="col-md-2">
+        <select id="locationFilter" class="form-control">
+            <option value="">Select Location</option>
+            <option value="FocusRoom">Focus Room (Dedicated space for quiet work and concentration)</option>
+            <option value="Lounge">Lounge (Casual area for relaxation and informal meetings)</option>
+            <option value="InnovationLab">Innovation Lab (Room designed for brainstorming and project development)</option>
+            <option value="ResourceCenter">Resource Center (Equipped with tools and materials for research and study)</option>
+        </select>
+    </div>
+
+    <!-- Capacity Input (Col-1) -->
+    <div class="col-md-1">
+        <input type="number" id="capacityFilter" class="form-control" placeholder="Min Capacity" />
+    </div>
+
+    <!-- Amenities Multi-Select Dropdown (Col-3) -->
+    <div class="col-md-3">
+        <select data-placeholder="Input amenities to filter..." size="2" id="amenitiesFilter" class="form-control chosen-select" multiple name="test">
+            @foreach (var amenity in amenities)
+            {
+                <option value="@amenity.AmenityId">@amenity.AmenityName</option>
+            }
+        </select>
+    </div>
+
+
+    <!-- Search Button (Col-1) -->
+    <div class="col-md-1">
+        <button id="searchButton" class="btn btn-primary btn-block">Search</button>
+    </div>
+
+    <!-- Show All Button (Col-1) -->
+    <div class="col-md-1">
+        <button id="showAllButton" class="btn btn-primary btn-block">Show All</button>
+    </div>
+</div>
 
 <p>
     <button class="btn btn-primary mb-3" onclick="openModal('@Url.Action("Create", "Room")')">Add New Rooms</button>
 </p>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>@Html.DisplayNameFor(model => model.Name)</th>
-            <th>@Html.DisplayNameFor(model => model.Description)</th>
-            <th>@Html.DisplayNameFor(model => model.Type)</th>
-            <th>@Html.DisplayNameFor(model => model.Location)</th>
-            <th>@Html.DisplayNameFor(model => model.RoomAmenities)</th> <!-- New column for button to show amenities -->
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var room in Model)
-        {
-            <tr>
-                <td>@Html.DisplayFor(modelItem => room.Name)</td>
-                <td>@Html.DisplayFor(modelItem => room.Description)</td>
-                <td>@Html.DisplayFor(modelItem => room.Type)</td>
-                <td>@Html.DisplayFor(modelItem => room.Location)</td>
-                <td>
-                        @string.Join(", ", room.RoomAmenitiesName)
-                </td>
-
-                <td>
-                    <button onclick="openModal('@Url.Action("View", "Room", new { roomId = room.RoomId })')" class="btn btn-info btn-sm">View</button>
-                    <button onclick="openModal('@Url.Action("Edit", "Room", new { roomId = room.RoomId })')" class="btn btn-warning btn-sm">Edit</button>
-                    <button onclick="openModal('@Url.Action("Delete", "Room", new { roomId = room.RoomId })')" class="btn btn-danger btn-sm">Delete</button>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-<!-- Modal -->
-<div id="crudModal" class="modal fade" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-
-            <div class="modal-body">
-                <!-- Content will be loaded here -->
-            </div>
-        </div>
-    </div>
+<!-- Room Table -->
+<div id="roomTable">
+    @Html.Partial("_RoomList", Model) <!-- Default show all the rooms -->
 </div>
 
+
 @section Scripts {
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.bundle.min.js"></script>
     <script>
+        $(".chosen-select").chosen({
+            no_results_text: "Oops, amenity not found!"
+        });
+
         // Open modal and load content
         function openModal(url) {
             $.get(url, function (data) {
@@ -86,6 +107,120 @@
                     alert('An error occurred. Please try again.');
                 }
             });
+        });
+
+
+        // Handle image deletion inside the modal
+        $(document).on('click', '.delete-image-btn', function (event) {
+            event.preventDefault();
+            console.log("Delete button clicked.");
+
+            const imageId = $(this).data('image-id');
+            const imageGuid = $(this).data('image-guid');
+            console.log("Image GUID" + imageGuid);
+
+
+            if (confirm("Are you sure you want to delete this image?")) {
+                $.ajax({
+                    url: '@Url.Action("DeleteImage", "Room")',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ imageId: imageId }),
+                    success: function (response) {
+                        console.log("AJAX response:", response);
+
+                        if (response.success) {
+                            toastr.success("Image deleted successfully.");
+                            $(`button[data-image-id="${imageId}"]`).closest('.carousel-item').remove();
+
+                            // Update the active item in the carousel
+                            if ($('#roomImagesCarousel .carousel-item.active').length === 0) {
+                                $('#roomImagesCarousel .carousel-item').first().addClass('active');
+                            }
+
+                            // Hide carousel if no images are left
+                            if ($('#roomImagesCarousel .carousel-item').length === 0) {
+                                $('#roomImagesCarousel').hide();
+                            }
+                        } else {
+                            toastr.error(response.message || "Failed to delete the image.");
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("AJAX error:", status, error);
+                        toastr.error("An error occurred while trying to delete the image.");
+                    }
+                });
+            }
+        });
+
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#showAllButton').on('click', function () {
+                showAllRooms();
+            });
+
+            // Function to reset filters and show all rooms
+            function showAllRooms() {
+                // Clear all filter inputs
+                $('#searchRoomName').val('');
+                $('#typeFilter').val('');
+                $('#locationFilter').val('');
+                $('#capacityFilter').val('');
+                $('#amenitiesFilter').val([]).trigger("chosen:updated");
+
+                // Make an AJAX request to show all rooms
+                $.ajax({
+                    url: '@Url.Action("Search", "Room")',
+                    type: 'GET',
+                    success: function (result) {
+                        $('#roomTable').html(result);
+                    },
+                    error: function (xhr) {
+                        alert('An error occurred while fetching all rooms.');
+                    }
+                });
+            }
+
+            // Trigger search when the search button is clicked
+            $('#searchButton').on('click', function () {
+                performSearch();
+            });
+
+            // Function to perform AJAX search and filtering
+            function performSearch() {
+                const roomName = $('#searchRoomName').val();
+                const roomType = $('#typeFilter').val();
+                const roomLocation = $('#locationFilter').val();
+                const roomCapacity = $('#capacityFilter').val();
+
+                // Collect selected amenities as an array
+                const selectedAmenities = $('#amenitiesFilter').val() || []; // Default to empty array if none selected
+
+                // Create an object with all the parameters
+                const params = {
+                    roomName: roomName,
+                    type: roomType,
+                    location: roomLocation,
+                    capacity: roomCapacity,
+                    amenities: selectedAmenities // Array of selected amenities
+                };
+
+                // Convert the params object to a URL-encoded string
+                const url = '@Url.Action("Search", "Room")?' + $.param(params);
+
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function (result) {
+                        $('#roomTable').html(result);
+                    },
+                    error: function (xhr) {
+                        alert('An error occurred while filtering the rooms.');
+                    }
+                });
+            }
         });
     </script>
 }
