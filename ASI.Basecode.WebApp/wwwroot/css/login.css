@@ -30,7 +30,7 @@ label {
 .login-btn {
     width: 400px;
     border-radius: 25px;
-    background-color: var(--background-color);
+    background-color: var(--background-color-login);
     color: white;
 }
 

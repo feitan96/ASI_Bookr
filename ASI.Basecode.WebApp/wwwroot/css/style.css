@@ -7,12 +7,13 @@
     padding: 0;
     box-sizing: border-box;
     font-family: "Inter", sans-serif;
-    color: var(--background-color);
+    color: #333;
 }
 
 :root {
-    --background-color: #610000;
+    --background-color: #f8f9fa;
     --cit-yellow: #FEC601;
+    --background-color-login: #610000;
 }
 
 body {
