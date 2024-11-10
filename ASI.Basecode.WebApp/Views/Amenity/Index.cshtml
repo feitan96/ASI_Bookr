@@ -1,68 +1,44 @@
-﻿@model ASI.Basecode.Services.ServiceModels.PagedResult<ASI.Basecode.Services.ServiceModels.UserViewModel>
-
+﻿@model IEnumerable<ASI.Basecode.Services.ServiceModels.AmenityViewModel>
 @{
-    ViewData["Title"] = "User Management";
+    ViewData["Title"] = "Index";
 }
 
-<h1>User Management</h1>
+<h1>Room Amenities Management</h1>
 
-<button class="btn btn-primary mb-3" onclick="openModal('@Url.Action("Create", "UserManagement")')">Add New User</button>
+<p>
+    <button class="btn btn-primary mb-3" onclick="openModal('@Url.Action("Create", "Amenity")')">Add New Amenity</button>
+</p>
 
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Phone Number</th>
-            <th>Actions</th>
+            <th>@Html.DisplayNameFor(model => model.AmenityId)</th>
+            <th>@Html.DisplayNameFor(model => model.AmenityName)</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var user in Model.Items)
+        @foreach (var amenity in Model)
         {
             <tr>
-                <td>@user.FirstName</td>
-                <td>@user.LastName</td>
-                <td>@user.Email</td>
-                <td>@user.Role</td>
-                <td>@user.PhoneNumber</td>
+                <td>@Html.DisplayFor(modelItem => amenity.AmenityId)</td>
+                <td>@Html.DisplayFor(modelItem => amenity.AmenityName)</td>
+
                 <td>
-                    <button onclick="openModal('@Url.Action("View", "UserManagement", new { Id = user.Id })')" class="btn btn-info btn-sm">View</button>
-                    <button onclick="openModal('@Url.Action("Edit", "UserManagement", new { Id = user.Id })')" class="btn btn-warning btn-sm">Edit</button>
-                    <button onclick="openModal('@Url.Action("Delete", "UserManagement", new { Id = user.Id })')" class="btn btn-danger btn-sm">Delete</button>
+                    <button onclick="openModal('@Url.Action("View", "Amenity", new { amenityId = amenity.AmenityId })')" class="btn btn-info btn-sm">View</button>
+                    <button onclick="openModal('@Url.Action("Edit", "Amenity", new { amenityId  = amenity.AmenityId })')" class="btn btn-warning btn-sm">Edit</button>
+                    <button onclick="openModal('@Url.Action("Delete", "Amenity", new { amenityId = amenity.AmenityId })')" class="btn btn-danger btn-sm">Delete</button>
                 </td>
             </tr>
         }
     </tbody>
 </table>
 
-<!-- Pagination Controls -->
-<div class="pagination">
-    @* "Previous" button *@
-    @if (Model.PageNumber > 1)
-    {
-        <a class="btn btn-secondary" asp-action="Index" asp-route-pageNumber="@(Model.PageNumber - 1)" asp-route-pageSize="@Model.PageSize">Previous</a>
-    }
-
-    @* Page Number Links *@
-    @for (int i = 1; i <= Model.TotalPages; i++)
-    {
-        <a class="btn @(Model.PageNumber == i ? "btn-primary" : "btn-secondary")" asp-action="Index" asp-route-pageNumber="@i" asp-route-pageSize="@Model.PageSize">@i</a>
-    }
-
-    @* "Next" button *@
-    @if (Model.PageNumber < Model.TotalPages)
-    {
-        <a class="btn btn-secondary" asp-action="Index" asp-route-pageNumber="@(Model.PageNumber + 1)" asp-route-pageSize="@Model.PageSize">Next</a>
-    }
-</div>
-
 <!-- Modal -->
 <div id="crudModal" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
+
             <div class="modal-body">
                 <!-- Content will be loaded here -->
             </div>

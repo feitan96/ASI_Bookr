@@ -36,4 +36,8 @@
     <ProjectReference Include="..\ASI.Basecode.Resources\ASI.Basecode.Resources.csproj" />
     <ProjectReference Include="..\ASI.Basecode.Services\ASI.Basecode.Services.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\uploads\rooms\" />
+  </ItemGroup>
 </Project>

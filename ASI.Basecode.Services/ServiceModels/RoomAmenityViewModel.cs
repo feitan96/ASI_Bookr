@@ -15,7 +15,11 @@ namespace ASI.Basecode.Services.ServiceModels
 {
     public class RoomAmenityViewModel
     {
-        public RoomAmenityViewModel() { }
+
+        public RoomAmenityViewModel()
+        {
+            this.Amenity = new AmenityViewModel();
+        }
 
         public RoomAmenityViewModel(RoomAmenity roomAmenity)
         {

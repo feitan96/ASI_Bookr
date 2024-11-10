@@ -61,6 +61,15 @@ namespace ASI.Basecode.Resources.Messages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Image already exists! Please check again.
+        /// </summary>
+        public static string ImageExists {
+            get {
+                return ResourceManager.GetString("ImageExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to RoomAmenity mapping already exists!.
         /// </summary>
         public static string RoomAmenityExists {

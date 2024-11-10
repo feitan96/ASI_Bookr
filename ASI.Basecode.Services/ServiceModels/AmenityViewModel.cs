@@ -16,15 +16,23 @@ namespace ASI.Basecode.Services.ServiceModels
         public AmenityViewModel(Amenity amenity)
         {
             this.AmenityId = amenity.AmenityId;
-            this.AmenityName = amenity.Amenity1;
+            this.AmenityName = amenity.AmenityName;
         }
 
-        public int Id { get; set; }
-
-        [Required(ErrorMessage = "Amenity ID is required.")]
         public int AmenityId { get; set; }
 
+        [Required(ErrorMessage = "Amenity Name is required.")]
         [StringLength(250, ErrorMessage = "Amenity value cannot exceed 250 characters.")]
         public string AmenityName { get; set; }
+    }
+
+    public class PagedResultAmenity<T>
+    {
+        public List<T> Items { get; set; }
+        public int TotalRecords { get; set; }
+        public int PageNumber { get; set; }
+        public int PageSize { get; set; }
+        public int CurrentPage { get; set; }
+        public int TotalPages => (int)Math.Ceiling((double)TotalRecords / PageSize);
     }
 }

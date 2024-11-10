@@ -11,7 +11,7 @@ namespace ASI.Basecode.Data.Models
         }
 
         public int AmenityId { get; set; }
-        public string Amenity1 { get; set; }
+        public string AmenityName { get; set; }
 
         public virtual ICollection<RoomAmenity> RoomAmenities { get; set; }
     }

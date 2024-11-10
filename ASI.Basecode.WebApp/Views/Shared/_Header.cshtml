@@ -12,6 +12,9 @@
     <div>
         <a asp-action="Index" asp-controller="Room">Room Management</a>
     </div>
+    <div>
+        <a asp-action="Index" asp-controller="Amenity">Amenity Management</a>
+    </div>
     <div class="logosec">
         @HttpContextAccessor.HttpContext.Session.GetString("Name")
         <div class="mr-20 hover-pointer" style="position: relative">

@@ -36,11 +36,12 @@ namespace ASI.Basecode.WebApp.Controllers
                 new SelectListItem { Value = "SuperAdmin", Text = "SuperAdmin" }
             };
         }
-        public IActionResult Index()
+        public IActionResult Index(int pageNumber = 1, int pageSize = 1)
         {
-            var data = _userService.GetAllUser();
-            return View(data);
+            var pagedUsers = _userService.GetAllUsers(pageNumber, pageSize);
+            return View(pagedUsers);
         }
+
 
         #region Get Methods
         [HttpGet]

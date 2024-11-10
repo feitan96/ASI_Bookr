@@ -12,6 +12,7 @@ namespace ASI.Basecode.Services.Interfaces
 #nullable enable
         //CREATE
         void AddRoomAmenity(RoomAmenityViewModel model);
+        void AddRoomAmenity(int roomId, int amenityId);
 
         //READ
         RoomAmenityViewModel GetRoomAmenity(int Id);
@@ -21,13 +22,11 @@ namespace ASI.Basecode.Services.Interfaces
         //UPDATE
         void UpdateRoomAmenityInfo(RoomAmenityViewModel model);
 
-
         //DELETE
         void DeleteRoomAmenity(int id);
         void DeleteRoomAmenity(int roomId, int amenityId);
 
         //OTHERS
-
 
     }
 }

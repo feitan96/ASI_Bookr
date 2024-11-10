@@ -1,0 +1,84 @@
+﻿@using ASI.Basecode.Services.ServiceModels;
+@model ASI.Basecode.Services.ServiceModels.RoomViewModel
+
+@{
+    var amenities = ViewData["AmenitiesList"] as List<AmenityViewModel> ?? new List<AmenityViewModel>();
+}
+
+<div class="modal-header">
+    <h5 class="modal-title">Add User</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <form id="createForm" asp-action="Create" method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="Name" class="control-label"></label>
+            <input asp-for="Name" class="form-control" placeholder="Enter room name" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Description" class="control-label"></label>
+            <textarea asp-for="Description" class="form-control" placeholder="Enter room description"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Type" class="control-label"></label>
+            <select asp-for="Type" class="form-control">
+                <option value="">Select Room Type</option>
+                <option value="MeetingRoom">Meeting Room (Has TV)</option>
+                <option value="PrivateRoom">Private Room (Personal space for any work)</option>
+                <option value="StudyRoom">Study Room (Designed for studying)</option>
+                <option value="ConferenceRoom">Conference Room (Has TV and whiteboard)</option>
+                <option value="WorkshopRoom">Workshop Room (Has whiteboard only)</option>
+            </select>
+            <span asp-validation-for="Type" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Capacity" class="control-label"></label>
+            <input asp-for="Capacity" class="form-control" placeholder="Enter room capacity" type="number" min="1" />
+            <span asp-validation-for="Capacity" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Location" class="control-label"></label>
+            <select asp-for="Location" class="form-control">
+                <option value="">Select Room Location</option>
+                <option value="FocusRoom">Focus Room (Dedicated space for quiet work and concentration)</option>
+                <option value="Lounge">Lounge (Casual area for relaxation and informal meetings)</option>
+                <option value="InnovationLab">Innovation Lab (Room designed for brainstorming and project development)</option>
+                <option value="ResourceCenter">Resource Center (Equipped with tools and materials for research and study)</option>
+            </select>
+            <span asp-validation-for="Location" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="ImageFiles" class="control-label">Upload Room Image</label>
+            <input type="file" asp-for="ImageFiles" class="form-control" accept=".jpeg,.jpg,.png" multiple />
+            <span asp-validation-for="ImageFiles" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="RoomAmenitiesId" class="control-label">Select Amenities</label>
+            <div>
+                @foreach (var amenity in amenities)
+                {
+                    <input type="checkbox" name="RoomAmenitiesId" value="@amenity.AmenityId"/>
+                    <label>@amenity.AmenityName</label>
+                    <br/>
+                }
+            </div>
+            <span asp-validation-for="RoomAmenitiesId" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <input type="submit" value="Create New Room" class="btn btn-primary" />
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>

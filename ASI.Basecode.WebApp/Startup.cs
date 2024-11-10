@@ -7,6 +7,7 @@ using ASI.Basecode.WebApp.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -113,7 +114,14 @@ namespace ASI.Basecode.WebApp
 
             services.Configure<FormOptions>(options =>
             {
-                options.ValueLengthLimit = 1024 * 1024 * 100;
+                options.ValueLengthLimit = int.MaxValue;
+                options.MultipartBodyLengthLimit = int.MaxValue; // 100 MB, adjust as needed
+                options.MultipartHeadersLengthLimit = int.MaxValue;
+            });
+
+            services.Configure<KestrelServerOptions>(options =>
+            {
+                options.Limits.MaxRequestBodySize = int.MaxValue;
             });
 
             services.AddSingleton<IFileProvider>(

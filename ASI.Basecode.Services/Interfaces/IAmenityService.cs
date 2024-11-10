@@ -15,6 +15,7 @@ namespace ASI.Basecode.Services.Interfaces
         void AddAmenity(AmenityViewModel model);
 
         //READ
+        List<AmenityViewModel> GetAmenities();
         AmenityViewModel GetAmenity(int Id);
 
         //UPDATE

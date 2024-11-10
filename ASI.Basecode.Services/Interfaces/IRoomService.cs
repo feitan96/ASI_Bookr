@@ -13,10 +13,11 @@ namespace ASI.Basecode.Services.Interfaces
     {
         #nullable enable
         //CREATE
-        void AddRoom(RoomViewModel model);
+        int AddRoom(RoomViewModel model, int id); //return the generate roomId
 
         //READ
-        List<RoomViewModel> GetRooms();
+        PagedResultRoom<RoomViewModel> GetRooms(int pageNumber, int pageSize);
+        /*List<RoomViewModel> GetRooms();*/
         Room? GetRoomModelById(int roomId);
         RoomViewModel? GetRoomById(int roomId);
         RoomViewModel? GetRoomByName(string roomName, bool fuzzyMatching);
@@ -25,10 +26,10 @@ namespace ASI.Basecode.Services.Interfaces
         List<RoomViewModel> GetRoomsByDate(DateTime? date);
     
         //UPDATE
-        void UpdateRoomInfo(RoomViewModel model);
+        void UpdateRoomInfo(RoomViewModel model, int userId);
 
         //DELETE
-        //void SoftDeleteRoom(int roomId);
+        void SoftDeleteRoom(int roomId);
         void HardDeleteRoom(int roomId);
 
         //OTHERS
