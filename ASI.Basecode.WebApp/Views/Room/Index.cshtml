@@ -52,12 +52,9 @@
         </select>
     </div>
 
-    <!-- Search and Show All Buttons -->
-    <div class="col-md-1">
-        <button id="searchButton" class="btn btn-primary btn-block">Search</button>
-    </div>
-    <div class="col-md-1">
-        <button id="showAllButton" class="btn btn-primary btn-block">Show All</button>
+    <!-- Clear Filter Button (Col-2) -->
+    <div class="col-md-2">
+        <button id="clearFiltersButton" class="btn btn-primary btn-block">Clear Search/Filter</button>
     </div>
 </div>
 
@@ -73,8 +70,9 @@
                 <th>@Html.DisplayNameFor(model => model.Items.FirstOrDefault().Name)</th>
                 <th>@Html.DisplayNameFor(model => model.Items.FirstOrDefault().Description)</th>
                 <th>@Html.DisplayNameFor(model => model.Items.FirstOrDefault().Type)</th>
+                <th>@Html.DisplayNameFor(model => model.Items.FirstOrDefault().Capacity)</th>
                 <th>@Html.DisplayNameFor(model => model.Items.FirstOrDefault().Location)</th>
-                <th>@Html.DisplayNameFor(model => model.Items.FirstOrDefault().RoomAmenities)</th>
+                <th>Amenities</th>
                 <th></th>
             </tr>
         </thead>
@@ -85,6 +83,7 @@
                     <td>@room.Name</td>
                     <td>@room.Description</td>
                     <td>@room.Type</td>
+                    <td>@room.Capacity</td>
                     <td>@room.Location</td>
                     <td>@string.Join(", ", room.RoomAmenitiesName)</td>
                     <td>
@@ -165,12 +164,14 @@
             });
         });
 
-        $('#searchButton').on('click', function () {
+        // Trigger performSearch when any filter changes
+        $('#searchRoomName, #typeFilter, #locationFilter, #capacityFilter, #amenitiesFilter').on('change keyup', function () {
             performSearch();
         });
 
-        $('#showAllButton').on('click', function () {
-            showAllRooms();
+        // Bind clearFilters function to the Clear Search/Filter button
+        $('#clearFiltersButton').on('click', function () {
+            clearFilters();
         });
 
         function performSearch() {
@@ -202,13 +203,15 @@
             });
         }
 
-        function showAllRooms() {
+        function clearFilters() {
+            // Clear all filter inputs
             $('#searchRoomName').val('');
             $('#typeFilter').val('');
             $('#locationFilter').val('');
             $('#capacityFilter').val('');
             $('#amenitiesFilter').val([]).trigger("chosen:updated");
 
+            // Reload the table with default data
             $.ajax({
                 url: '@Url.Action("Search", "Room")',
                 type: 'GET',

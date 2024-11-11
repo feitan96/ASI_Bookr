@@ -11,6 +11,7 @@ using System.IO;
 using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Linq;
 
 namespace ASI.Basecode.WebApp.Controllers
 {
@@ -27,15 +28,17 @@ namespace ASI.Basecode.WebApp.Controllers
         {
             this._userService = userService;
         }
-        private List<SelectListItem> Roles()
+        private List<SelectListItem> GetRoles()
         {
-            return new List<SelectListItem>
-            {
-                new SelectListItem { Value = "User", Text = "User" },
-                new SelectListItem { Value = "Admin", Text = "Admin" },
-                new SelectListItem { Value = "SuperAdmin", Text = "SuperAdmin" }
-            };
+            return Enum.GetValues(typeof(ASI.Basecode.Resources.Constants.Enums.Roles))
+                       .Cast<ASI.Basecode.Resources.Constants.Enums.Roles>()
+                       .Select(role => new SelectListItem
+                       {
+                           Value = role.ToString(),
+                           Text = role.ToString()
+                       }).ToList();
         }
+
         public IActionResult Index(int pageNumber = 1, int pageSize = 1)
         {
             var pagedUsers = _userService.GetAllUsers(pageNumber, pageSize);
@@ -47,14 +50,14 @@ namespace ASI.Basecode.WebApp.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            ViewBag.Roles = Roles();
+            ViewBag.Roles = GetRoles();
             return PartialView("_Create");
         }
 
         [HttpGet]
         public IActionResult Edit(int Id)
         {
-            ViewBag.Roles = Roles();
+            ViewBag.Roles = GetRoles();
             var data = _userService.GetUser(Id);
             return PartialView("_Edit", data);
         }
@@ -95,7 +98,7 @@ namespace ASI.Basecode.WebApp.Controllers
             {
                 TempData["ErrorMessage"] = Resources.Messages.Errors.ServerError;
             }
-            ViewBag.Roles = Roles();
+            ViewBag.Roles = GetRoles();
             return View();
         }
 
@@ -115,7 +118,7 @@ namespace ASI.Basecode.WebApp.Controllers
             {
                 TempData["ErrorMessage"] = ex.Message;;
             }
-            ViewBag.Roles = Roles();
+            ViewBag.Roles = GetRoles();
             return View();
         }
 
