@@ -6,7 +6,7 @@
 }
 
 <div class="modal-header">
-    <h5 class="modal-title">Add User</h5>
+    <h5 class="modal-title">Add Room</h5>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">&times;</span>
     </button>
@@ -41,7 +41,7 @@
 
         <div class="form-group">
             <label asp-for="Capacity" class="control-label"></label>
-            <input asp-for="Capacity" class="form-control" placeholder="Enter room capacity" type="number" min="1" />
+            <input asp-for="Capacity" class="form-control" placeholder="Enter room capacity" type="number" min="1" max="20" value="1" />
             <span asp-validation-for="Capacity" class="text-danger"></span>
         </div>
 

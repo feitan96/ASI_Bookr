@@ -49,6 +49,8 @@ namespace ASI.Basecode.Services.Services
             if (!_repository.RoomExists(model.Name))
             {
                 _mapper.Map(model, room);
+                room.CreatedDate = DateTime.Now;
+                room.UpdatedDate = DateTime.Now;
                 room.CreatedBy = userId;
                 room.UpdatedBy = userId;
                 room.IsDeleted = false; //default room is not deleted
@@ -88,8 +90,9 @@ namespace ASI.Basecode.Services.Services
 
 
         //Returns all room from database.
-        /*public List<RoomViewModel> GetRooms() {
-           var rooms = _repository.GetRooms().Where(x => x.IsDeleted == false).Select(room => new RoomViewModel(room)).ToList();
+        public List<RoomViewModel> GetRooms()
+        {
+            var rooms = _repository.GetRooms().Where(x => x.IsDeleted == false).Select(room => new RoomViewModel(room)).ToList();
             //rooms.ForEach(room =>
             //{
             //    room.RoomAmenities = _roomamenityservice.GetRoomAmenities(room.RoomId);
@@ -102,7 +105,7 @@ namespace ASI.Basecode.Services.Services
             //    room.Images = _imageservice.GetImagesByRoomId(room.RoomId); //get the associated images of the rooms if it exists on the database
             //});
             return rooms;
-        }*/
+        }
 
         // Finds and returns a room by its ID. If no room is found, returns null.
         public RoomViewModel? GetRoomById(int roomId)   

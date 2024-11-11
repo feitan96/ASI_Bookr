@@ -1,5 +1,6 @@
 ﻿using ASI.Basecode.WebApp.Mvc;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -32,6 +33,7 @@ namespace ASI.Basecode.WebApp.Controllers
         /// Returns Home View.
         /// </summary>
         /// <returns> Home View </returns>
+        [Authorize(Roles = "Admin,Superadmin,User")]
         public IActionResult Index()
         {
             return View();
