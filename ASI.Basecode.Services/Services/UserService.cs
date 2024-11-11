@@ -15,12 +15,14 @@ namespace ASI.Basecode.Services.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _repository;
+        private readonly IAdminRepository _adminRepository;
         private readonly IMapper _mapper;
 
-        public UserService(IUserRepository repository, IMapper mapper)
+        public UserService(IUserRepository repository, IAdminRepository adminRepository, IMapper mapper)
         {
             _mapper = mapper;
             _repository = repository;
+            _adminRepository = adminRepository;
         }
 
         public LoginResult AuthenticateUser(string email, string password, ref User user)
@@ -72,14 +74,16 @@ namespace ASI.Basecode.Services.Services
             var user = new User();
             _mapper.Map(model, user);
             user.Password = PasswordManager.EncryptPassword(model.Password);
-            user.CreatedDate = DateTime.Now;
-            user.UpdatedDate = DateTime.Now;
-            user.IsDeleted = false;
-            user.CreatedBy = userId;
-            user.UpdatedBy = userId;
+            user.CreatedDate = user.UpdatedDate = DateTime.Now;
+            user.CreatedBy = user.UpdatedBy = userId;
+            user.IsDeleted = user.IsDarkMode = false;
+            user.AllowNotifications = true;
+            user.DefaultBookDuration = 3;
             user.UserId = "None"; //remove once UserId in DB is remove
 
             _repository.AddUser(user);
+
+            if(user.Role == "Admin") _adminRepository.AddAdmin(new Admin { UserId = user.Id });
         }
         public void UpdateUser(UserViewModel model, int userId)
         {
@@ -87,6 +91,16 @@ namespace ASI.Basecode.Services.Services
             if (model.Email != user.Email)
             {
                 if (_repository.UserExists(model.Email)) throw new InvalidDataException(Resources.Messages.Errors.UserExists);
+            }
+
+            if (model.Role == "Admin" && user.Role != "Admin")
+            {
+                _adminRepository.AddAdmin(new Admin { UserId = user.Id });
+            }
+            else if (model.Role != "Admin" && user.Role == "Admin")
+            {
+                var admin = _adminRepository.GetAdmins().Where(x => x.UserId.Equals(user.Id)).FirstOrDefault();
+                if (admin != null) _adminRepository.RemoveAdmin(admin);
             }
 
             _mapper.Map(model, user);
