@@ -15,13 +15,33 @@
     @RenderSection("Styles", required: false)
 </head>
 <body>
-    @Html.Partial("_Sidebar") <!-- Include the Sidebar Here -->
-    <!-- Main Content Container with conditional padding and margin to avoid sidebar overlap -->
-    <div style="@((ViewBag.LoginView == true) ? "" : "margin-left: 250px; padding: 20px;")">
+    @if (User.IsInRole("Admin") || User.IsInRole("Superadmin"))
+    {
+        <!-- Sidebar and content for Admin and SuperAdmin -->
+        @Html.Partial("_Sidebar")
+        <div style="margin-left: 250px; padding: 20px;">
+            <main role="main">
+                @RenderBody()
+            </main>
+        </div>
+    }
+    else if (User.IsInRole("User"))
+    {
+        <!-- Header and content for User -->
+        @Html.Partial("_Header")
+        <div style="padding: 20px;">
+            <main role="main">
+                @RenderBody()
+            </main>
+        </div>
+    }
+    else
+    {
+        <!-- Default content for unauthenticated -->
         <main role="main">
             @RenderBody()
         </main>
-    </div>
+    }
 
     @* <script src="~/lib/jquery/dist/jquery.min.js"></script> *@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.js"></script>

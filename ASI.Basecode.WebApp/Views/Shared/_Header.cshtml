@@ -1,19 +1,14 @@
 ﻿@using Microsoft.AspNetCore.Http
 @inject IHttpContextAccessor HttpContextAccessor
 <header class="@((ViewBag.LoginView == true) ? "hide-navbar" : "")">
-    <div class="logosec hover-pointer">
-        <img src="~/img/asi-logo-invert.svg"
-             style="width: 185px;" alt="logo"
-             onclick="window.location.href = '@Url.Action("Index", "Home")';">
-    </div>
-    <div>
-        <a asp-action="Index" asp-controller="UserManagement">User Management</a>
+    <div class="sidebar-header" style="padding: 20px; display: flex; align-items: center; border-top-right-radius: 10px; border-bottom-right-radius: 10px;">
+        <a asp-action="Index" asp-controller="Home" style="display: flex; align-items: center; text-decoration: none;">
+            <img src="~/img/bookr_logo_maroon.png" alt="Logo" style="margin-right: 10px;">
+            <span style="color: #820000; font-size: 24px; font-family: Inter; font-weight: 800;">Bookr</span>
+        </a>
     </div>
     <div>
         <a asp-action="Index" asp-controller="Room">Room Management</a>
-    </div>
-    <div>
-        <a asp-action="Index" asp-controller="Amenity">Amenity Management</a>
     </div>
     <div class="logosec">
         @HttpContextAccessor.HttpContext.Session.GetString("Name")
