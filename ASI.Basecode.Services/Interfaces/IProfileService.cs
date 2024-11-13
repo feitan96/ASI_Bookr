@@ -7,7 +7,7 @@ namespace ASI.Basecode.Services.Interfaces
 {
     public interface IProfileService
     {
-        ProfileViewModel GetUser(int Id);
+        ProfileViewModel GetUser();
         void UpdateUser(ProfileViewModel model, int userId);
     }
 }

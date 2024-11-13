@@ -1,0 +1,51 @@
+﻿@model ASI.Basecode.Services.ServiceModels.ProfileViewModel
+
+<div class="modal-body">
+    <form id="editProfileForm" asp-action="Edit" asp-controller="Profile" method="post">
+        <input type="hidden" asp-for="Id" />
+
+        <div class="form-group">
+            <label for="FirstName">First Name</label>
+            <input type="text" class="form-control" id="FirstName" name="FirstName" asp-for="FirstName" />
+            <span asp-validation-for="FirstName" class="text-danger"></span> <!-- Validation message -->
+        </div>
+
+        <div class="form-group">
+            <label for="LastName">Last Name</label>
+            <input type="text" class="form-control" id="LastName" name="LastName" asp-for="LastName" />
+            <span asp-validation-for="LastName" class="text-danger"></span> <!-- Validation message -->
+        </div>
+
+        <div class="form-group">
+            <label for="Email">Email</label>
+            <input type="email" class="form-control" id="Email" name="Email" asp-for="Email" />
+            <span asp-validation-for="Email" class="text-danger"></span> <!-- Validation message -->
+        </div>
+
+        <div class="form-group">
+            <label for="PhoneNumber">Phone Number</label>
+            <input type="tel" class="form-control" id="PhoneNumber" name="PhoneNumber" asp-for="PhoneNumber" />
+            <span asp-validation-for="PhoneNumber" class="text-danger"></span> <!-- Validation message -->
+        </div>
+
+        <div class="form-group">
+            <label for="AllowNotifications">Allow Notifications</label>
+            <input type="checkbox" asp-for="AllowNotifications" />
+            <span asp-validation-for="AllowNotifications" class="text-danger"></span> <!-- Validation message -->
+        </div>
+
+        <div class="form-group">
+            <label for="IsDarkMode">Enable Dark Mode</label>
+            <input type="checkbox" asp-for="IsDarkMode" />
+            <span asp-validation-for="IsDarkMode" class="text-danger"></span> <!-- Validation message -->
+        </div>
+
+        <div class="form-group">
+            <label for="DefaultBookDuration">Default Booking Duration</label>
+            <input type="number" class="form-control" id="DefaultBookDuration" name="DefaultBookDuration" asp-for="DefaultBookDuration" min="1" max="6" />
+            <span asp-validation-for="DefaultBookDuration" class="text-danger"></span> <!-- Validation message -->
+        </div>
+
+        <button type="submit" class="btn btn-success">Save Changes</button>
+    </form>
+</div>
