@@ -36,21 +36,34 @@ namespace ASI.Basecode.Services.Services
             return user != null ? LoginResult.Success : LoginResult.Failed;
         }
 
-        //mawagtang ni sya nga function nig mag pagination
-        public List<UserViewModel> GetAllUser()
+        public PagedResult<UserViewModel> GetAllUsers(int pageNumber, int pageSize)
         {
-            var users = _repository.GetUsers().Where(x => x.IsDeleted == false).Select(s => new UserViewModel
-            {
-                Id = s.Id,
-                FirstName = s.FirstName,
-                LastName = s.LastName,
-                Email = s.Email,
-                Role = s.Role,
-                PhoneNumber = s.PhoneNumber,
-            }).ToList();
+            var users = _repository.GetUsers()
+                           .Where(x => (bool)!x.IsDeleted);
 
-            return users;
+            var totalRecords = users.Count();
+            var paginatedUsers = users.Skip((pageNumber - 1) * pageSize)
+                                      .Take(pageSize)
+                                      .Select(s => new UserViewModel
+                                      {
+                                          Id = s.Id,
+                                          FirstName = s.FirstName,
+                                          LastName = s.LastName,
+                                          Email = s.Email,
+                                          Role = s.Role,
+                                          PhoneNumber = s.PhoneNumber,
+                                      })
+                                      .ToList();
+
+            return new PagedResult<UserViewModel>
+            {
+                Items = paginatedUsers,
+                TotalRecords = totalRecords,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
         }
+
         public UserViewModel GetUser(int Id)
         {
             var user = _repository.GetUsers().Where(x => x.Id.Equals(Id)).Select(s => new UserViewModel
@@ -128,32 +141,21 @@ namespace ASI.Basecode.Services.Services
             }
         }
 
-        public PagedResult<UserViewModel> GetAllUsers(int pageNumber, int pageSize)
+
+        //mawagtang ni sya nga function nig mag pagination
+        /*public List<UserViewModel> GetAllUser()
         {
-            var users = _repository.GetUsers()
-                           .Where(x => (bool)!x.IsDeleted);
-
-            var totalRecords = users.Count();
-            var paginatedUsers = users.Skip((pageNumber - 1) * pageSize)
-                                      .Take(pageSize)
-                                      .Select(s => new UserViewModel
-                                      {
-                                          Id = s.Id,
-                                          FirstName = s.FirstName,
-                                          LastName = s.LastName,
-                                          Email = s.Email,
-                                          Role = s.Role,
-                                          PhoneNumber = s.PhoneNumber,
-                                      })
-                                      .ToList();
-
-            return new PagedResult<UserViewModel>
+            var users = _repository.GetUsers().Where(x => x.IsDeleted == false).Select(s => new UserViewModel
             {
-                Items = paginatedUsers,
-                TotalRecords = totalRecords,
-                PageNumber = pageNumber,
-                PageSize = pageSize
-            };
-        }
+                Id = s.Id,
+                FirstName = s.FirstName,
+                LastName = s.LastName,
+                Email = s.Email,
+                Role = s.Role,
+                PhoneNumber = s.PhoneNumber,
+            }).ToList();
+
+            return users;
+        }*/
     }
 }
