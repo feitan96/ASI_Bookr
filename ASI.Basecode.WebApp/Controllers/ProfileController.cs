@@ -34,16 +34,21 @@ namespace ASI.Basecode.WebApp.Controllers
         }
         public IActionResult Index()
         {
-            var user = _profileService.GetUser();
+            if (Id == null) throw new ArgumentNullException("Logged in user ID not found.");
+            var userIdClaim = int.Parse(Id);
+
+            var user = _profileService.GetUser(userIdClaim);
             return View(user);
         }
-
 
         #region Get Methods
         [HttpGet]
         public IActionResult Edit()
         {
-            var data = _profileService.GetUser();
+            if (Id == null) throw new ArgumentNullException("Logged in user ID not found.");
+            var userIdClaim = int.Parse(Id);
+
+            var data = _profileService.GetUser(userIdClaim);
             return PartialView("_Edit", data);
         }
         #endregion
@@ -54,13 +59,10 @@ namespace ASI.Basecode.WebApp.Controllers
         {
             try
             {
-                var userIdClaim = User.FindFirst("Id")?.Value;
-                if (!int.TryParse(userIdClaim, out var userId))
-                {
-                    throw new ArgumentNullException("Logged in user ID not found.");
-                }
+                if (Id == null) throw new ArgumentNullException("Logged in user ID not found.");
+                var userIdClaim = int.Parse(Id);
 
-                _profileService.UpdateUser(model, userId);
+                _profileService.UpdateUser(model, userIdClaim);
                 return RedirectToAction("Index");
             }
             catch (ArgumentNullException ex)

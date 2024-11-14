@@ -74,7 +74,7 @@ namespace ASI.Basecode.Services.Services
                 Email = s.Email,
                 Role = s.Role,
                 PhoneNumber = s.PhoneNumber,
-                Password = PasswordManager.DecryptPassword(s.Password)
+                Password = s.Password
             }).FirstOrDefault();
 
             return user;
@@ -115,9 +115,8 @@ namespace ASI.Basecode.Services.Services
                 var admin = _adminRepository.GetAdmins().Where(x => x.UserId.Equals(user.Id)).FirstOrDefault();
                 if (admin != null) _adminRepository.RemoveAdmin(admin);
             }
-
+            if(model.Password != user.Password) model.Password = PasswordManager.EncryptPassword(model.Password);
             _mapper.Map(model, user);
-            user.Password = PasswordManager.EncryptPassword(model.Password);
             user.UpdatedDate = DateTime.Now;
             user.UpdatedBy = userId;
 

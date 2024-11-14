@@ -17,58 +17,40 @@ namespace ASI.Basecode.Services.Services
     {
         private readonly IUserRepository _repository;
         private readonly IMapper _mapper;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public ProfileService(IUserRepository repository, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _repository = repository;
             _mapper = mapper;
-            _httpContextAccessor = httpContextAccessor;
         }
-        public ProfileViewModel GetUser()
+        public ProfileViewModel GetUser(int Id)
         {
-            var userIdClaim = _httpContextAccessor.HttpContext.User.FindFirst("Id")?.Value;
-            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+            var user = _repository.GetUsers().Where(x => x.Id == Id && !(bool)x.IsDeleted).Select(s => new ProfileViewModel
             {
-                // Log an error or handle this case as needed
-                return null;
-            }
-
-            // Log userId for debugging
-            Console.WriteLine($"Retrieved UserId from claim: {userId}");
-
-            var user = _repository.GetUsers()
-                                  .Where(x => x.Id == userId && !(bool)x.IsDeleted)
-                                  .Select(s => new ProfileViewModel
-                                  {
-                                      Id = s.Id,
-                                      FirstName = s.FirstName,
-                                      LastName = s.LastName,
-                                      Email = s.Email,
-                                      PhoneNumber = s.PhoneNumber,
-                                      AllowNotifications = (bool)s.AllowNotifications,
-                                      IsDarkMode = (bool)s.IsDarkMode,
-                                      DefaultBookDuration = s.DefaultBookDuration,
-                                  })
-                                  .FirstOrDefault();
+                Id = s.Id,
+                FirstName = s.FirstName,
+                LastName = s.LastName,
+                Email = s.Email,
+                PhoneNumber = s.PhoneNumber,
+                AllowNotifications = (bool)s.AllowNotifications,
+                IsDarkMode = (bool)s.IsDarkMode,
+                DefaultBookDuration = s.DefaultBookDuration,
+            }).FirstOrDefault();
 
             return user;
         }
         public void UpdateUser(ProfileViewModel model, int userId)
         {
             var user = _repository.GetUsers().Where(x => x.Id == model.Id && !(bool)x.IsDeleted).FirstOrDefault();
-
             if (user == null)
             {
                 throw new ArgumentNullException("User not found or has been deleted.");
             }
-
             // Optional check to ensure unique email if updating email
             // if (model.Email != user.Email && _repository.UserExists(model.Email))
             // {
             //     throw new InvalidDataException(Resources.Messages.Errors.UserExists);
             // }
-               
             _mapper.Map(model, user);
             user.UpdatedDate = DateTime.Now;
             user.UpdatedBy = userId;
