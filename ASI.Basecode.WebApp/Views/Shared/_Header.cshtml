@@ -7,9 +7,9 @@
             <span style="color: #820000; font-size: 24px; font-family: Inter; font-weight: 800;">Bookr</span>
         </a>
     </div>
-    <div>
+    @* <div>
         <a asp-action="Index" asp-controller="Room">Room Management</a>
-    </div>
+    </div> *@
     <div class="logosec">
         @HttpContextAccessor.HttpContext.Session.GetString("Name")
         <div class="mr-20 hover-pointer" style="position: relative">
@@ -22,7 +22,7 @@
                 <ul>
                     <li>
                         <i class="fa-solid fa-gear"></i>
-                        <a href="#">Settings</a>
+                        <a asp-action="Index" asp-controller="Profile" class="sidebar-link">Settings</a>
                     </li>
                     <li>
                         <i class="fa-solid fa-right-from-bracket"></i>

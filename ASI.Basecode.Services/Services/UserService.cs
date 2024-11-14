@@ -15,12 +15,14 @@ namespace ASI.Basecode.Services.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _repository;
+        private readonly IAdminRepository _adminRepository;
         private readonly IMapper _mapper;
 
-        public UserService(IUserRepository repository, IMapper mapper)
+        public UserService(IUserRepository repository, IAdminRepository adminRepository, IMapper mapper)
         {
             _mapper = mapper;
             _repository = repository;
+            _adminRepository = adminRepository;
         }
 
         public LoginResult AuthenticateUser(string email, string password, ref User user)
@@ -32,86 +34,6 @@ namespace ASI.Basecode.Services.Services
                                                      x.IsDeleted == false).FirstOrDefault();
 
             return user != null ? LoginResult.Success : LoginResult.Failed;
-        }
-
-        //mawagtang ni sya nga function nig mag pagination
-        public List<UserViewModel> GetAllUser()
-        {
-            var users = _repository.GetUsers().Where(x => x.IsDeleted == false).Select(s => new UserViewModel
-            {
-                Id = s.Id,
-                FirstName = s.FirstName,
-                LastName = s.LastName,
-                Email = s.Email,
-                Role = s.Role,
-                PhoneNumber = s.PhoneNumber,
-            }).ToList();
-
-            return users;
-        }
-        public UserViewModel GetUser(int Id)
-        {
-            var user = _repository.GetUsers().Where(x => x.Id.Equals(Id)).Select(s => new UserViewModel
-            {
-                Id = s.Id,
-                FirstName = s.FirstName,
-                LastName = s.LastName,
-                Email = s.Email,
-                Role = s.Role,
-                PhoneNumber = s.PhoneNumber,
-                Password = PasswordManager.DecryptPassword(s.Password)
-            }).FirstOrDefault();
-
-            return user;
-        }
-
-        public void AddUser(UserViewModel model, int userId)
-        {
-            if (_repository.UserExists(model.Email)) throw new InvalidDataException(Resources.Messages.Errors.UserExists);
-
-            var user = new User();
-            _mapper.Map(model, user);
-            user.Password = PasswordManager.EncryptPassword(model.Password);
-            user.CreatedDate = DateTime.Now;
-            user.UpdatedDate = DateTime.Now;
-            user.IsDeleted = false;
-            user.CreatedBy = userId;
-            user.UpdatedBy = userId;
-            user.UserId = "None"; //remove once UserId in DB is remove
-
-            _repository.AddUser(user);
-        }
-        public void UpdateUser(UserViewModel model, int userId)
-        {
-            var user = _repository.GetUsers().Where(x => x.Id.Equals(model.Id)).FirstOrDefault();
-            if (model.Email != user.Email)
-            {
-                if (_repository.UserExists(model.Email)) throw new InvalidDataException(Resources.Messages.Errors.UserExists);
-            }
-
-            _mapper.Map(model, user);
-            user.Password = PasswordManager.EncryptPassword(model.Password);
-            user.UpdatedDate = DateTime.Now;
-            user.UpdatedBy = userId;
-
-            _repository.UpdateUser(user);
-        }
-        public void SoftDelete(int Id)
-        {
-            var user = _repository.GetUsers().Where(x => x.Id.Equals(Id)).FirstOrDefault();
-            if (user != null)
-            {
-                user.IsDeleted = true;
-                _repository.UpdateUser(user);
-            }
-        }
-        public void HardDelete(int Id)
-        {
-            var user = _repository.GetUsers().Where(x => x.Id.Equals(Id)).FirstOrDefault();
-            if(user != null)
-            {
-                _repository.DeleteUser(user);
-            }
         }
 
         public PagedResult<UserViewModel> GetAllUsers(int pageNumber, int pageSize)
@@ -141,5 +63,98 @@ namespace ASI.Basecode.Services.Services
                 PageSize = pageSize
             };
         }
+
+        public UserViewModel GetUser(int Id)
+        {
+            var user = _repository.GetUsers().Where(x => x.Id.Equals(Id)).Select(s => new UserViewModel
+            {
+                Id = s.Id,
+                FirstName = s.FirstName,
+                LastName = s.LastName,
+                Email = s.Email,
+                Role = s.Role,
+                PhoneNumber = s.PhoneNumber,
+                Password = s.Password
+            }).FirstOrDefault();
+
+            return user;
+        }
+
+        public void AddUser(UserViewModel model, int userId)
+        {
+            if (_repository.UserExists(model.Email)) throw new InvalidDataException(Resources.Messages.Errors.UserExists);
+
+            var user = new User();
+            _mapper.Map(model, user);
+            user.Password = PasswordManager.EncryptPassword(model.Password);
+            user.CreatedDate = user.UpdatedDate = DateTime.Now;
+            user.CreatedBy = user.UpdatedBy = userId;
+            user.IsDeleted = user.IsDarkMode = false;
+            user.AllowNotifications = true;
+            user.DefaultBookDuration = 3;
+            user.UserId = "None"; //remove once UserId in DB is remove
+
+            _repository.AddUser(user);
+
+            if(user.Role == "Admin") _adminRepository.AddAdmin(new Admin { UserId = user.Id });
+        }
+        public void UpdateUser(UserViewModel model, int userId)
+        {
+            var user = _repository.GetUsers().Where(x => x.Id.Equals(model.Id)).FirstOrDefault();
+            if (model.Email != user.Email)
+            {
+                if (_repository.UserExists(model.Email)) throw new InvalidDataException(Resources.Messages.Errors.UserExists);
+            }
+
+            if (model.Role == "Admin" && user.Role != "Admin")
+            {
+                _adminRepository.AddAdmin(new Admin { UserId = user.Id });
+            }
+            else if (model.Role != "Admin" && user.Role == "Admin")
+            {
+                var admin = _adminRepository.GetAdmins().Where(x => x.UserId.Equals(user.Id)).FirstOrDefault();
+                if (admin != null) _adminRepository.RemoveAdmin(admin);
+            }
+            if(model.Password != user.Password) model.Password = PasswordManager.EncryptPassword(model.Password);
+            _mapper.Map(model, user);
+            user.UpdatedDate = DateTime.Now;
+            user.UpdatedBy = userId;
+
+            _repository.UpdateUser(user);
+        }
+        public void SoftDelete(int Id)
+        {
+            var user = _repository.GetUsers().Where(x => x.Id.Equals(Id)).FirstOrDefault();
+            if (user != null)
+            {
+                user.IsDeleted = true;
+                _repository.UpdateUser(user);
+            }
+        }
+        public void HardDelete(int Id)
+        {
+            var user = _repository.GetUsers().Where(x => x.Id.Equals(Id)).FirstOrDefault();
+            if(user != null)
+            {
+                _repository.DeleteUser(user);
+            }
+        }
+
+
+        //mawagtang ni sya nga function nig mag pagination
+        /*public List<UserViewModel> GetAllUser()
+        {
+            var users = _repository.GetUsers().Where(x => x.IsDeleted == false).Select(s => new UserViewModel
+            {
+                Id = s.Id,
+                FirstName = s.FirstName,
+                LastName = s.LastName,
+                Email = s.Email,
+                Role = s.Role,
+                PhoneNumber = s.PhoneNumber,
+            }).ToList();
+
+            return users;
+        }*/
     }
 }

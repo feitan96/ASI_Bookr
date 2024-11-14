@@ -33,7 +33,7 @@ namespace ASI.Basecode.WebApp.Controllers
         /// Returns Home View.
         /// </summary>
         /// <returns> Home View </returns>
-        [Authorize(Roles = "Admin,Superadmin,User")]
+        /*[Authorize(Roles = "Admin,Superadmin,User")]*/
         public IActionResult Index()
         {
             return View();
