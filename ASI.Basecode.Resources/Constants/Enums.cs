@@ -50,6 +50,7 @@
 
         public enum BookingStatus
         {
+            Pending,
             Approved,
             Disapproved,
             Cancelled

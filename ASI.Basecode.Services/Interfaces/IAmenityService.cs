@@ -22,7 +22,7 @@ namespace ASI.Basecode.Services.Interfaces
         void UpdateAmenityInfo(AmenityViewModel model);
 
         //DELETE
-        void DeleteAmenity(int id);
+        void DeleteAmenity(int Id);
 
         //OTHERS
 

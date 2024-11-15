@@ -1,0 +1,640 @@
+﻿@using ASI.Basecode.Services.ServiceModels;
+@model IEnumerable<ASI.Basecode.Services.ServiceModels.BookingViewModel>
+
+@{
+    var emailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"; // Escape backslashes for JavaScript
+}
+@*
+// .cshtml files (modals dependent on this script) and level of modal they are raised
+// _Create.cshtml (crudModal1)
+//      _UserSelection.cshtml (crudModal2)
+//          _UserListSelection.cshtml (crudModal3)
+//      _RoomSelection.cshtml (crudModal2)
+//          _RoomListSelection.cshtml (crudModal3)
+// _Edit.cshtml (crudModal1) *@
+
+<h1>Booking Management</h1>
+
+<div class="form-row mb-3 align-items-end">
+    <!-- Search Textbox (Col-3) -->
+    <div class="col-md-3">
+        <input type="text" id="searchTextBox" class="form-control" placeholder="Search by ID/User First/Last Name" />
+    </div>
+
+    <!-- Search By Dropdown (Col-2) -->
+    <div class="col-md-3">
+        <select id="searchByFilter" class="form-control">
+            <option value="user">Search by User</option>
+            <option value="room">Search by Room</option>
+        </select>
+    </div>
+
+    <!-- Start DateTime Picker (Col-2) -->
+    <div class="col-md-2">
+        <input type="text" id="startDateTime" class="form-control booking-time-input" placeholder="Start Date and Time" />
+    </div>
+
+    <!-- End DateTime Picker (Col-2) -->
+    <div class="col-md-2">
+        <input type="text" id="endDateTime" class="form-control booking-time-input" placeholder="End Date and Time" disabled />
+    </div>
+
+    <!-- Search Button (Col-1) -->
+    <div class="col-md-1">
+        <button id="searchButton" class="btn btn-primary btn-block">Search</button>
+    </div>
+
+    <!-- Show All Button (Col-1) -->
+    <div class="col-md-1">
+        <button id="showAllButton" class="btn btn-primary btn-block">Show All</button>
+    </div>
+</div>
+
+<p>
+    <button class="btn btn-primary mb-3" onclick="openModal('@Url.Action("Create", "Booking")', 'crudModal1')">Add New Bookings</button>
+</p>
+
+<!-- Booking Table -->
+<div id="bookingTable">
+    @Html.Partial("_BookingList", Model) <!-- Default to show all bookings -->
+</div>
+
+<!-- Modal Layer 1-->
+<div id="crudModal1" class="modal fade" tabindex="-1" role="dialog" style="z-index: 1050;">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Layer 2-->
+<div id="crudModal2" class="modal fade" tabindex="-1" role="dialog" style="z-index: 1060;">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Layer 3-->
+<div id="crudModal3" class="modal fade" tabindex="-1" role="dialog" style="z-index: 1070;">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script defer>
+        flatpickr('.booking-time-input', {
+            enableTime: true,
+            noCalendar: false,
+            dateFormat: 'Y-m-d h:i K',
+            minDate: 'today',
+            minTime: '07:00',
+            maxTime: '20:00',
+            minuteIncrement: 30,
+            time_24hr: false
+        });
+
+        var noRoomSelectedHtmlDefault = '<span id="selectedRoomName" class="d-block mt-2">~ No Room Selected ~</span>';
+        var noUserSelectedHtmlDefault = '<span id="selectedRoomName" class="d-block mt-2">~ No User Selected ~</span>';
+        var rooms = @Html.Raw(Json.Serialize(ViewData["RoomsList"]));
+        var users = @Html.Raw(Json.Serialize(ViewData["UsersList"]));
+
+        function buildRoomImagesCarousel(room) {
+            if (!room.images || room.images.length === 0) {
+                return '';
+            }
+
+            var carouselHtml = `
+            <div id="selectedRoomImagesCarousel" class="carousel slide mt-3" data-ride="carousel">
+                <div class="carousel-inner">
+            `;
+
+            room.images.forEach((image, index) => {
+                var imageUrl = '@Url.Content("~/uploads/rooms/")' + image.guid;  // Combine the base URL with the image Guid inline
+
+                    carouselHtml += `
+                <div class="carousel-item ${index === 0 ? 'active' : ''} text-center">
+                    <div class="d-flex justify-content-center">
+                                <img src="${imageUrl}" class="object-fit-cover rounded" alt="Room Image"
+                             style="width: 200px; height: 200px;" />
+                    </div>
+                </div>
+                `;
+            });
+
+            carouselHtml += `
+                </div>
+                <a class="carousel-control-prev" href="#selectedRoomImagesCarousel" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="carousel-control-next" href="#selectedRoomImagesCarousel" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
+            </div>
+            `;
+
+            return carouselHtml;
+        }
+
+        $('#crudModal1').on('shown.bs.modal', function () {
+            $('.booking-time-input').each(function () {
+                if (this._flatpickr) {
+                    this._flatpickr.destroy();
+                }
+            });
+
+            flatpickr('.booking-time-input', {
+                enableTime: true,
+                noCalendar: false,
+                dateFormat: 'Y-m-d h:i K',
+                minDate: 'today',
+                minTime: '07:00',
+                maxTime: '20:00',
+                minuteIncrement: 30,
+                time_24hr: false
+            });
+        });
+
+        //To make the chosen multi-selection dropdown works once crudModal2 is triggered/opened
+        $('#crudModal2').on('shown.bs.modal', function () {
+            $(".chosen-select").chosen({
+                no_results_text: "Oops, amenity not found!"
+            }).trigger("chosen:updated"); // Update Chosen to refresh the optionsA
+        });
+
+        //------------------- Room Selection on _Create.cshtml: START ----------------------------
+
+        function updateRoomSelection(modalId) {
+            var roomId = $(`#${modalId} #RoomId`).val();
+            var selectedRoom = rooms.find(r => r.roomId == roomId);
+            // console.log(roomId);
+            // console.log(rooms);
+            // console.log(selectedRoom);
+
+            if (!roomId || !selectedRoom) {
+                $(`#${modalId} .roomSelectionContainer`).html(noRoomSelectedHtmlDefault);
+            } else {
+                var selectedRoomHtml = `
+                    <span id="selectedRoomName" class="d-block mt-2">
+                        Room Id: ${roomId} | Room Name: ${selectedRoom.name}
+                    </span>
+                    ${buildRoomImagesCarousel(selectedRoom)}
+                `;
+                $(`#${modalId} .roomSelectionContainer`).html(selectedRoomHtml);
+            }
+        }
+
+        function initializeRoomSelection(modalId) {
+            // Initialize room selection when the modal content is loaded
+            updateRoomSelection(modalId);
+
+            // Listen for changes on the RoomId input within the specific modal
+            $(`#${modalId} #RoomId`).on('change', function () {
+                updateRoomSelection(modalId);
+            });
+        }
+
+        // Function to handle room selection and update RoomId input
+        function selectRoom(roomId) {
+            // Update the hidden input field with the selected RoomId
+            $('#RoomId').val(roomId);
+            console.log("Room Selected...");
+            
+
+            // Close the room selection modal (crudModal2)
+            closeModal("crudModal2");
+            showModal("crudModal1");
+            updateRoomSelection("crudModal1");
+        }
+
+        //------------------- Room Selection on _Create.cshtml: END ----------------------------
+
+        //------------------- User Selection on _Create.cshtml: END ----------------------------
+        function updateUserSelection(modalId) {
+            var userId = $(`#${modalId} #UserId`).val();
+            var userFullName = $(`#${modalId} #UserFullName`).val();
+
+            if (!userId || !userFullName) {
+                $(`#${modalId} .userSelectionContainer`).html(noUserSelectedHtmlDefault);
+            } else {
+                var selectedUserHtml = `
+                    <span id="selectedUserName" class="d-block mt-2">
+                        User Id: ${userId} | User Name: ${userFullName}
+                    </span>
+                `;
+                $(`#${modalId} .userSelectionContainer`).html(selectedUserHtml);
+            }
+        }
+
+        function initializeUserSelection(modalId) {
+            // Initialize user selection when the modal content is loaded
+            updateUserSelection(modalId);
+
+            // Listen for changes on the UserId input within the specific modal
+            $(`#${modalId} #UserId`).on('change', function () {
+                updateUserSelection(modalId);
+            });
+        }
+
+        // Function to handle user selection and update UserId and UserFullName inputs
+        function selectUser(userId, userFullName) {
+            // Update the hidden input fields with the selected UserId and UserFullName
+            $('#UserId').val(userId);
+            $('#UserFullName').val(userFullName);
+            //console.log(`User Selected: ${userFullName}`);
+
+            // Close the user selection modal (crudModal2)
+            closeModal("crudModal2");
+            showModal("crudModal1");
+            updateUserSelection("crudModal1");
+        }
+
+        //------------------- User Selection on _Create.cshtml: END ----------------------------
+
+
+        //------------------- Modal Handling: START ----------------------------
+        // Update the openModal function to call initializeRoomSelection with modalId
+        function openModal(url, modalId) {
+            // Show a "Please wait" notification using Toastr
+            toastr.info('Please wait...', 'Loading', { timeOut: 0, extendedTimeOut: 0, closeButton: true });
+
+            // Start the AJAX request
+            $.get(url)
+                .done(function (data) {
+                    // Load the content into the modal body
+                    $(`#${modalId} .modal-body`).html(data);
+
+                    // Initialize components based on modalId
+                    if (modalId === "crudModal1") {
+                        initializeRoomSelection(modalId);
+                        initializeUserSelection(modalId);
+
+                        // Check if the form ID is 'editBookingForm' after content is loaded
+                        var formId = $(`#${modalId} form`).attr('id');
+                        if (formId === "editBookingForm") {
+                            // Form is the editBookingForm, so make the calls
+                            console.log("Opening Booking Form Modal");
+                            var roomId = $('#RoomId').val(); // RoomId from model
+                            var userId = $('#UserId').val(); // UserId from model
+                            var selectedUser = users.find(user => user.id == userId);
+                            var userFullName = selectedUser ? selectedUser.firstName + ' ' + selectedUser.lastName : '';
+
+                            selectRoom(roomId);
+                            selectUser(userId, userFullName);
+                        }
+
+                    } else if (modalId === "crudModal2") {
+                        closeModal("crudModal1");
+                    } else if (modalId === "crudModal3") {
+                        closeModal("crudModal2");
+                    }
+
+                    // Hide the Toastr notification after loading completes
+                    toastr.clear();
+
+                    // Show the modal after content is fully loaded
+                    $(`#${modalId}`).modal('show');
+                })
+                .fail(function () {
+                    // Show error notification if the AJAX request fails
+                    toastr.error('Failed to load content. Please try again.', 'Error');
+                });
+        }
+
+        // Single function to close any modal dynamically by passing the modal ID
+        function closeModal(modalId) {
+            $(`#${modalId}`).modal('hide'); // Using string interpolation
+        }
+
+        function showModal(modalId) {
+            $(`#${modalId}`).modal('show'); // Using string interpolation
+        }
+
+
+        //Once the close button of the modal is clicked handling of the following modal is done:
+        $(document).on('click', '.modal-close-btn', function () {
+            const currentModal = $(this).closest('.modal');
+            console.log("Modal Close Button clicked");
+
+            // Check which modal is currently active
+            if (currentModal.attr('id') === 'crudModal2') {
+                // Hide modal 2 and go back to modal 1
+                $('#crudModal2').modal('hide');
+                $('#crudModal1').modal('show');
+            } else if (currentModal.attr('id') === 'crudModal3') {
+                // Hide modal 3 and go back to modal 2
+                $('#crudModal3').modal('hide');
+                $('#crudModal2').modal('show');
+            } else {
+                // Default behavior: hide the current modal
+                currentModal.modal('hide');
+            }
+        });
+
+        //------------------- Modal Handling: END ----------------------------
+
+        // Handle form submission inside any modal dynamically
+        // Mainly for create, view, edit, and delete function, explore for the 2nd modal handling
+        $(document).on('submit', 'form', function (e) {
+            e.preventDefault();  // Prevent the default form submission
+            var form = $(this);
+            var formData = new FormData(this);
+
+            if (!form.length) return; // Ensure form exists
+
+            // Find the closest modal id using a parent element (form inside the modal)
+            var modalId = form.closest('.modal').attr('id');
+
+            $.ajax({
+                type: form.attr('method'),
+                url: form.attr('action'),
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $(`#${modalId}`).modal('hide'); // Hide the modal dynamically using modalId
+                    location.reload(); // Reload the page or update data to reflect changes
+                },
+                error: function (xhr) {
+                    toastr.error('An error occurred. Please try again.');
+                }
+            });
+        });
+
+        $(document).ready(function () {
+
+            // Handle dynamic placeholder text change
+            $('#searchByFilter').on('change', function () {
+                const searchBy = $(this).val();
+                const placeholderText = searchBy === 'user' ? 'Search by User First/Last Name/ID' : 'Search by Room Name/ID';
+                $('#searchTextBox').attr('placeholder', placeholderText);
+            });
+
+            // Enable end date picker only if start date is selected
+            $('#startDateTime').on('change', function () {
+                const startDateTime = $(this).val();
+                if (startDateTime) {
+                    $('#endDateTime').prop('disabled', false);
+                } else {
+                    $('#endDateTime').val('').prop('disabled', true);
+                }
+            });
+
+            // Validate end date selection
+            $('#endDateTime').on('change', function () {
+                const startDateTime = $('#startDateTime').val();
+                const endDateTime = $(this).val();
+
+                if (!startDateTime) {
+                    toastr.error('Please select the start datetime first.');
+                    $(this).val('');
+                    return;
+                }
+
+                if (new Date(endDateTime) < new Date(startDateTime)) {
+                    toastr.error('End datetime cannot be earlier than start datetime.');
+                    $(this).val('');
+                }
+            });
+
+            // Search Button Click Event
+            $(document).on('click', '#searchButton', function () {
+                performSearchBookings();
+            });
+
+            // Show All Button Click Event
+            $(document).on('click', '#showAllButton', function () {
+                showAllBookings();
+            });
+
+            // Function to perform AJAX search and filtering
+            function performSearchBookings() {
+                const searchText = $('#searchTextBox').val();
+                const searchBy = $('#searchByFilter').val();
+                const startDateTime = $('#startDateTime').val();
+                const endDateTime = $('#endDateTime').val();
+
+                const params = {
+                    searchText: searchText,
+                    searchBy: searchBy,
+                    startDateTime: startDateTime,
+                    endDateTime: endDateTime
+                };
+
+                const url = '@Url.Action("SearchBookings", "Booking")?' + $.param(params);
+
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function (result) {
+                        $('#bookingTable').html(result);
+                    },
+                    error: function (xhr) {
+                        toastr.error('An error occurred while filtering the bookings.');
+                    }
+                });
+            }
+
+            // Function to reset filters and show all bookings
+            function showAllBookings() {
+                $('#searchTextBox').val('');
+                $('#searchByFilter').val('user');
+                $('#startDateTime').val('');
+                $('#endDateTime').val('').prop('disabled', true);
+
+                $.ajax({
+                    url: '@Url.Action("SearchBookings", "Booking")',
+                    type: 'GET',
+                    success: function (result) {
+                        $('#bookingTable').html(result);
+                    },
+                    error: function (xhr) {
+                        toastr.error('An error occurred while fetching all bookings.');
+                    }
+                });
+            }
+
+            //----------For User Searching and Filtering Selection Modal (crudModal2) (_UserSelection.cshtml): START ------------------
+
+            // Update placeholder based on selected "Search By" option
+            $('#crudModal2').on('change', '#searchBy', function () {
+                var searchBy = $(this).val();
+                var placeholder = '';
+                var validationPattern = '';
+                
+
+                switch (searchBy) {
+                    case 'id':
+                        placeholder = 'Enter Id';
+                        validationPattern = '^[0-9]+$'; // Only integers
+                        break;
+                    case 'email':
+                        placeholder = 'Enter Email';
+                        validationPattern = @Html.Raw($"\"{emailPattern}\""); // Using Razor to inject the email regex pattern
+                        break;
+                    case 'firstName':
+                        placeholder = 'Enter First Name';
+                        validationPattern = '^[a-zA-Z ]+$'; // Allow letters and spaces
+                        break;
+                    case 'lastName':
+                        placeholder = 'Enter Last Name';
+                        validationPattern = '^[a-zA-Z ]+$'; // Allow letters and spaces
+                        break;
+                }
+
+                // Update placeholder for search input
+                $('#searchUser').attr('placeholder', placeholder);
+
+                // Update the validation pattern based on search type
+                $('#searchUser').attr('pattern', validationPattern);
+            });
+
+            // Perform Search for Users
+            $('#crudModal2').on('click', '#userSearchButton', function () {
+                var searchTerm = $('#searchUser').val();
+                var searchBy = $('#searchBy').val();
+                console.log("Searching Users...");
+
+                // If the search term is empty, show an alert
+                if (!searchTerm) {
+                    toastr.info('Please enter a search term');
+                    return;
+                }
+
+                // Check if the search term matches the pattern for the selected search option
+                var pattern = new RegExp($('#searchUser').attr('pattern'));
+                if (!pattern.test(searchTerm)) {
+                    toastr.error('Invalid input. Please follow the format for ' + $('#searchBy option:selected').text());
+                    return;
+                }
+
+                // Create an object with search parameters
+                const params = {
+                    searchBy: searchBy,
+                    searchTerm: searchTerm
+                };
+
+                // Convert the params object to a URL-encoded string\
+                const url = '@Url.Action("SearchUsers", "Booking")?' + $.param(params);
+
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function (result) {
+                        $('#userTable').html(result);
+                    },
+                    error: function (xhr) {
+                        toastr.error('An error occurred while searching for users.');
+                    }
+                });
+            });
+
+            // Handle Show All Button Click Event
+            $('#crudModal2').on('click', '#userShowAllButton', function () {
+                // Clear search input and reset "Search By"
+                $('#searchUser').val('');
+                $('#searchBy').val('id');
+                $('#searchUser').attr('placeholder', 'Enter Id');
+
+                // Make an AJAX request to show all users
+                $.ajax({
+                    url: '@Url.Action("SearchUsers", "Booking")',
+                    type: 'GET',
+                    success: function (result) {
+                        $('#userTable').html(result);
+                    },
+                    error: function (xhr) {
+                        alert('An error occurred while fetching all users.');
+                    }
+                });
+            });
+
+            //----------For User Searching and Filtering Selection Modal (crudModal2) (_UserSelection.cshtml): END ------------------
+
+            //----------For Room Searching and Filtering Selection Modal (crudModal2) (_RoomSelection.cshtml): START ------------------
+
+            // Handle Search in Room Selection Modal
+            $(document).on('click', '#roomSearchButton', function () {
+                console.log("Searching Rooms");
+                performSearchRoom();
+            });
+
+            
+            // Function to perform AJAX search and filtering
+            function performSearchRoom() {
+                const roomName = $('#searchRoomName').val();
+                const roomType = $('#typeFilter').val();
+                const roomLocation = $('#locationFilter').val();
+                const roomCapacity = $('#capacityFilter').val();
+
+                // Collect selected amenities as an array
+                const selectedAmenities = $('#amenitiesFilter').val() || []; // Default to empty array if none selected
+
+                // Create an object with all the parameters
+                const params = {
+                    roomName: roomName,
+                    type: roomType,
+                    location: roomLocation,
+                    capacity: roomCapacity,
+                    amenities: selectedAmenities // Array of selected amenities
+                };
+
+                // Convert the params object to a URL-encoded string
+                const url = '@Url.Action("SearchRooms", "Booking")?' + $.param(params);
+
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function (result) {
+                        $('#roomTable').html(result);
+                    },
+                    error: function (xhr) {
+                        alert('An error occurred while filtering the rooms.');
+                    }
+                });
+            }
+
+            // Handle Show All in Room Selection Modal
+            $(document).on('click', '#roomShowAllButton', function () {
+                showAllRooms();
+            });
+
+            function showAllRooms() {
+                // Clear all filter inputs
+                $('#searchRoomName').val('');
+                $('#typeFilter').val('');
+                $('#locationFilter').val('');
+                $('#capacityFilter').val('');
+                $('#amenitiesFilter').val([]).trigger("chosen:updated");
+
+                // Make an AJAX request to show all rooms
+                $.ajax({
+                    url: '@Url.Action("SearchRooms", "Booking")',
+                    type: 'GET',
+                    success: function (result) {
+                        $('#roomTable').html(result);
+                    },
+                    error: function (xhr) {
+                        alert('An error occurred while fetching all rooms.');
+                    }
+                });
+            }
+
+
+            //----------For Room Searching and Filtering Selection Modal (crudModal2) (_RoomSelection.cshtml): END ------------------
+        });
+    </script>
+}
