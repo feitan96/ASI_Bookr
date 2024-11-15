@@ -1,7 +1,209 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@using ASI.Basecode.Services.ServiceModels
+@using static ASI.Basecode.Resources.Views.Screen
+@model UserViewModel
+@{
+    ViewBag.LoginView = true;
+    ViewData["Title"] = "Register Page";
 }
+@section styles {
+    <link rel="stylesheet" href="~/css/register.css" />
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="~/css/home.css" />
+</head>
+<body>
 
-<div class="text-center">
-    <h1 class="display-4">Bookr</h1>
-</div>
+    <!-- Header Section -->
+    <header>
+        <div class="logo">
+            <img src="~/img/logo-big.svg" />
+        </div>
+        <nav>
+            <a href="#services">Our Services</a>
+            <a href="#contact">Contact</a>
+            <a href="@Url.Action("Login", "Account")">Sign in</a>
+        </nav>
+
+    </header>
+
+
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+
+            <h1>Connect with Ease, <br>Book with Confidence</h1>
+            <button class="btn" onclick="window.location.href='@Url.Action("Login", "Account")'">Try Now!</button>
+        </div>
+        <div class="hero-image">
+            <img src="~/img/tina2 1.png" alt="Hero Illustration">
+
+        </div>
+    </section>
+
+    <!-- Introduction Section -->
+    <section class="intro">
+        <p>
+            Bookr is an innovative booking system designed for the Learning Resource and Activity Center (LRAC) of Cebu Institute of Technology - University. <br />
+            It streamlines the process of reserving various facilities such as activity centers, meeting rooms, and pitch rooms within the LRAC. <br />
+            The system provides a user-friendly interface for managing reservations, enhancing the user experience for both administrators and guests.
+        </p>
+    </section>
+
+    <!-- Services Section -->
+    <div class="services-container" id="services">
+        <h2>OUR SERVICES</h2>
+
+        <div class="service-box">
+            <div class="service-icon">
+                <i class="fas fa-calendar-check fa-3x"></i>
+            </div>
+            <h3 class="service-title">Facility Reservation</h3>
+            <div class="service-content">
+                <h3>Facility Reservation</h3>
+                <p>Easily reserve activity centers, meeting rooms, and pitch rooms within the LRAC through a user-friendly system. Minimize double bookings and ensure seamless scheduling.</p>
+            </div>
+        </div>
+
+        <div class="service-box">
+            <div class="service-icon">
+                <i class="fas fa-clock fa-3x"></i>
+            </div>
+            <h3 class="service-title">Real-Time Availability Check</h3>
+            <div class="service-content">
+                <h3>Real-Time Availability Check</h3>
+                <p>Quickly check up-to-date availability of all rooms and resources within the LRAC, allowing users to plan bookings without conflicts and maximize facility utilization.</p>
+            </div>
+        </div>
+
+        <div class="service-box">
+            <div class="service-icon">
+                <i class="fas fa-user-shield fa-3x"></i>
+            </div>
+            <h3 class="service-title">User Management and Access Control</h3>
+            <div class="service-content">
+                <h3>User Management and Access Control</h3>
+                <p>Administrators can manage users, assign roles, and control access, ensuring a secure and tailored experience aligned with each user’s needs and responsibilities.</p>
+            </div>
+        </div>
+
+        <div class="service-box">
+            <div class="service-icon">
+                <i class="fas fa-file-alt fa-3x"></i>
+            </div>
+            <h3 class="service-title">Comprehensive Booking History and Reports</h3>
+            <div class="service-content">
+                <h3>Comprehensive Booking History and Reports</h3>
+                <p>Access detailed records of all bookings and generate reports to track facility usage, optimize allocations, and make data-driven improvements.</p>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Top-Rated Rooms Section -->
+    <!-- Top-Rated Rooms Section -->
+    <section class="top-rated">
+        <!-- Overlay Image -->
+        <img src="~/img/background_homepage 1.png" alt="Overlay Image" class="top-rated-overlay">
+
+        <div class="content">
+            <!-- Left Side: Description -->
+            <div class="description">
+                <h2>TOP-RATED ROOMS</h2>
+                <p>We offer top-rated rooms with high-quality facilities and comfortable environments for your meetings and discussions. Explore our top-rated options below:</p>
+                <button class="btn" onclick="window.location.href='@Url.Action("Login", "Account")'">See More</button>
+            </div>
+
+            <!-- Right Side: Slideshow of Room Cards  wala pani(hihi)-->
+            <div class="slideshow-container">
+                <div class="room-card slideshow-card">
+                    <img src="~/img/room1.png" alt="Room 1" class="room-image">
+                    <h3>Room 1</h3>
+                    <p class="amenities">Accessible resources, High-speed internet access</p>
+                </div>
+                <div class="room-card slideshow-card">
+                    <img src="~/img/room1.png" alt="Room 2" class="room-image">
+                    <h3>Room 2</h3>
+                    <p class="amenities">Accessible resources, Projector available</p>
+                </div>
+                <!-- Add more room cards as needed -->
+            </div>
+
+        </div>
+    </section>
+
+
+
+
+    <!-- Footer Section -->
+    <footer id="contact">
+        <div class="footer-content">
+            <div class="details">
+                <h3>Details</h3>
+                <p>Desk Phone: +123456789</p>
+                <a href="#">Email: booking@rooms.com</a>
+            </div>
+            <div class="navigation">
+                <h3>Navigation</h3>
+                <div><a href="#">Home</a></div>
+                <div><a href="#">About us</a></div>
+                <div><a href="#">Services</a></div>
+            </div>
+            <div class="guest-links">
+                <h3>Guest Links</h3>
+                <div><a href="#">FAQs</a></div>
+                <div><a href="#">Privacy Policy</a></div>
+            </div>
+            <div class="working-hours">
+                <h3>Working Hours</h3>
+                <p>6:00 AM - 9:00 PM</p>
+            </div>
+        </div>
+        <p class="footer-note">@Copyright</p>
+    </footer>
+
+
+    <script>
+        const slides = document.querySelectorAll('.slideshow-card');
+        let currentIndex = 0;
+        const intervalTime = 2000; // 1.5 seconds
+
+        // Function to show the current slide
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.style.display = i === index ? 'block' : 'none';
+            });
+        }
+
+        // Function to go to the next slide
+        function nextSlide() {
+            currentIndex = (currentIndex + 1) % slides.length;
+            showSlide(currentIndex);
+        }
+
+        // Initialize the slideshow
+        showSlide(currentIndex);
+        setInterval(nextSlide, intervalTime);
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

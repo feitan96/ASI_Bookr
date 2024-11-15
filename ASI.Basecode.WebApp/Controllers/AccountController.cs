@@ -96,7 +96,7 @@ namespace ASI.Basecode.WebApp.Controllers
                 // Redirect based on role
                 if (User.IsInRole("Admin") || User.IsInRole("Superadmin"))
                 {
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Index", "Dashboard");
                 }
                 else if (User.IsInRole("User"))
                 {
