@@ -154,5 +154,28 @@ namespace ASI.Basecode.Services.Services
 
             return users;
         }
+
+        public void UpdateUserRole(int userId, string newRole)
+        {
+            var user = _repository.GetUsers().FirstOrDefault(x => x.Id == userId);
+            if (user == null) throw new ArgumentException("User not found.");
+
+            // Update Admin repository if role is changing
+            if (newRole == "Admin" && user.Role != "Admin")
+            {
+                _adminRepository.AddAdmin(new Admin { UserId = user.Id });
+            }
+            else if (newRole != "Admin" && user.Role == "Admin")
+            {
+                var admin = _adminRepository.GetAdmins().FirstOrDefault(a => a.UserId == user.Id);
+                if (admin != null) _adminRepository.RemoveAdmin(admin);
+            }
+
+            // Update the role and save changes
+            user.Role = newRole;
+            user.UpdatedDate = DateTime.Now;
+            _repository.UpdateUser(user);
+        }
+
     }
 }

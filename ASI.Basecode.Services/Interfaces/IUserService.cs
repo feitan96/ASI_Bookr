@@ -15,5 +15,7 @@ namespace ASI.Basecode.Services.Interfaces
         void HardDelete(int Id);
         PagedResult<UserViewModel> GetAllUsers(int pageNumber, int pageSize);
         List<UserViewModel> GetAllUser();
+        void UpdateUserRole(int userId, string newRole);
+
     }
 }

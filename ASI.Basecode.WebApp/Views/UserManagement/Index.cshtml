@@ -32,6 +32,23 @@
                     <button onclick="openModal('@Url.Action("View", "UserManagement", new { Id = user.Id })')" class="btn btn-info btn-sm">View</button>
                     <button onclick="openModal('@Url.Action("Edit", "UserManagement", new { Id = user.Id })')" class="btn btn-warning btn-sm">Edit</button>
                     <button onclick="openModal('@Url.Action("Delete", "UserManagement", new { Id = user.Id })')" class="btn btn-danger btn-sm">Delete</button>
+                    @if (User.IsInRole("Superadmin"))
+                    {
+                        if (user.Role == "User")
+                        {
+                            <form method="post" action="@Url.Action("Promote", "UserManagement")" style="display:inline;">
+                                <input type="hidden" name="id" value="@user.Id" />
+                                <button type="submit" class="btn btn-success btn-sm">Promote to Admin</button>
+                            </form>
+                        }
+                        else if (user.Role == "Admin")
+                        {
+                            <form method="post" action="@Url.Action("Demote", "UserManagement")" style="display:inline;">
+                                <input type="hidden" name="id" value="@user.Id" />
+                                <button type="submit" class="btn btn-secondary btn-sm">Demote to User</button>
+                            </form>
+                        }
+                    }
                 </td>
             </tr>
         }

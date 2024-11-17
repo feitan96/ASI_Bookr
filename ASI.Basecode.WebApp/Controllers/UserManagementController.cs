@@ -138,6 +138,40 @@ namespace ASI.Basecode.WebApp.Controllers
             _userService.HardDelete(Id);
             return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        [Authorize(Roles = "Superadmin")]
+        public IActionResult Promote(int id)
+        {
+            try
+            {
+                _userService.UpdateUserRole(id, "Admin");
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Index");
+            }
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Superadmin")]
+        public IActionResult Demote(int id)
+        {
+            try
+            {
+                _userService.UpdateUserRole(id, "User");
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Index");
+            }
+        }
+
+
         #endregion
     }
 }
