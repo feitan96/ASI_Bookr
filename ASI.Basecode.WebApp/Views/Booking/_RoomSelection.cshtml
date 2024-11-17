@@ -1,0 +1,83 @@
+﻿@using ASI.Basecode.Services.ServiceModels;
+@model IEnumerable<ASI.Basecode.Services.ServiceModels.RoomViewModel>
+
+@{
+    var amenities = ViewData["AmenitiesList"] as List<AmenityViewModel> ?? new List<AmenityViewModel>();
+}
+
+<div class="modal-header">
+    <h5 class="modal-title">Select a Room</h5>
+    <button type="button" class="close modal-close-btn" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<!-- Search and Filter Section -->
+<div class="mb-4">
+    <!-- Search Room Name Textbox -->
+    <div class="form-group">
+        <label for="searchRoomName">Search Room Name:</label>
+        <input type="text" id="searchRoomName" class="form-control" placeholder="Search Room Name" />
+    </div>
+
+    <!-- Type Dropdown -->
+    <div class="form-group">
+        <label for="typeFilter">Room Type:</label>
+        <select id="typeFilter" class="form-control">
+            <option value="">Select Type</option>
+            <option value="MeetingRoom">Meeting Room (Has TV)</option>
+            <option value="PrivateRoom">Private Room (Personal space for any work)</option>
+            <option value="StudyRoom">Study Room (Designed for studying)</option>
+            <option value="ConferenceRoom">Conference Room (Has TV and whiteboard)</option>
+            <option value="WorkshopRoom">Workshop Room (Has whiteboard only)</option>
+        </select>
+    </div>
+
+    <!-- Location Dropdown -->
+    <div class="form-group">
+        <label for="locationFilter">Location:</label>
+        <select id="locationFilter" class="form-control">
+            <option value="">Select Location</option>
+            <option value="FocusRoom">Focus Room (Quiet work space)</option>
+            <option value="Lounge">Lounge (Relaxation area)</option>
+            <option value="InnovationLab">Innovation Lab (For brainstorming)</option>
+            <option value="ResourceCenter">Resource Center (Equipped for research)</option>
+        </select>
+    </div>
+
+    <!-- Capacity Input -->
+    <div class="form-group">
+        <label for="capacityFilter">Minimum Capacity:</label>
+        <input type="number" id="capacityFilter" class="form-control" placeholder="Min Capacity" />
+    </div>
+
+    <!-- Amenities Multi-Select Dropdown -->
+    <div class="form-group">
+        <label for="amenitiesFilter">Amenities:</label>
+        <select data-placeholder="Input amenities to filter..." id="amenitiesFilter" class="form-control chosen-select" multiple name="test">
+            @foreach (var amenity in amenities)
+            {
+                <option value="@amenity.AmenityId">@amenity.AmenityName</option>
+            }
+        </select>
+    </div>
+
+    <!-- Buttons for Search and Show All -->
+    <div class="form-group">
+        <button id="roomSearchButton" class="btn btn-primary">Search</button>
+        <button id="roomShowAllButton" class="btn btn-primary">Show All</button>
+    </div>
+</div>
+
+
+<div class="modal-body">
+    <!-- Room Table -->
+    <div id="roomTable">
+        @Html.Partial("_RoomListSelection", Model) <!-- Default show all the rooms -->
+    </div>
+</div>
+
+
+@section Scripts {
+
+}

@@ -1,0 +1,30 @@
+﻿@model IEnumerable<ASI.Basecode.Services.ServiceModels.RoomViewModel>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.RoomId)</th>
+            <th>@Html.DisplayNameFor(model => model.Name)</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var room in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => room.RoomId)</td>
+                <td>@Html.DisplayFor(modelItem => room.Name)</td>
+                <td>
+                    <button onclick="openModal('@Url.Action("View", "Room", new { roomId = room.RoomId })', 'crudModal3')" class="btn btn-info btn-sm">View</button>
+                    <button class="btn btn-success btn-sm" onclick="selectRoom('@room.RoomId')">Select</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        //check selectRoom function on _RoomSelection.cshtml
+    </script>
+}

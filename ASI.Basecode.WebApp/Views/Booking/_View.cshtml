@@ -1,0 +1,99 @@
+﻿@model ASI.Basecode.Services.ServiceModels.BookingViewModel
+
+<div class="modal-header">
+    <h5 class="modal-title">Booking Details</h5>
+    <button type="button" class="close modal-close-btn" data-dismiss="modal modal-close-btn" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div>
+    <dl class="row">
+        <!-- Room Details -->
+        <dt class="col-sm-4">
+            Room Id
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.RoomId)
+        </dd>
+
+        <dt class="col-sm-4">
+            Name
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.Room.Name)
+        </dd>
+
+        <dt class="col-sm-4">
+            Description
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.Room.Description)
+        </dd>
+
+        <dt class="col-sm-4">
+            Type
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.Room.Type)
+        </dd>
+
+        <dt class="col-sm-4">
+            Capacity
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.Room.Capacity)
+        </dd>
+
+        <dt class="col-sm-4">
+            Location
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.Room.Location)
+        </dd>
+
+        <!-- Amenities from Room -->
+        <dt class="col-sm-4">
+            Amenities
+        </dt>
+        <dd class="col-sm-8">
+            @string.Join(", ", Model.Room.RoomAmenitiesName)
+        </dd>
+
+        <!-- User Details -->
+        <dt class="col-sm-4">
+            User Id
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.UserId)
+        </dd>
+
+        <dt class="col-sm-4">
+            User Full Name
+        </dt>
+        <dd class="col-sm-8">
+            @($"{Model.User.FirstName} {Model.User.LastName}")
+        </dd>
+
+        <!-- Booking Details -->
+        <dt class="col-sm-4">
+            Check In
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.BookingCheckInDateTime)
+        </dd>
+
+        <dt class="col-sm-4">
+            Check Out
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.BookingCheckOutDateTime)
+        </dd>
+
+        <dt class="col-sm-4">
+            Status
+        </dt>
+        <dd class="col-sm-8">
+            @Html.DisplayFor(model => model.Status)
+        </dd>
+    </dl>

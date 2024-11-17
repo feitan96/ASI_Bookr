@@ -1,0 +1,32 @@
+﻿@model IEnumerable<ASI.Basecode.Services.ServiceModels.UserViewModel>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.Id)</th>
+            <th>Full Name</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            @if(user.Role == "User")
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => user.Id)</td>
+                    <td>@($"{user.FirstName} {user.LastName}")</td>
+                    <td>
+                        <button onclick="openModal('@Url.Action("View", "UserManagement", new { Id = user.Id })', 'crudModal3')" class="btn btn-info btn-sm">View</button>
+                        <button class="btn btn-success btn-sm" onclick="selectUser('@user.Id', '@($"{user.FirstName} {user.LastName}")')">Select</button>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+    </script>
+}

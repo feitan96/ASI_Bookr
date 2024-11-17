@@ -22,7 +22,7 @@ namespace ASI.Basecode.Services.Services
 {
     public class RoomService : IRoomService
     {
-    #nullable enable
+        #nullable enable
 
         private readonly IRoomRepository _repository;
         private readonly IRoomAmenityService _roomamenityservice;
@@ -299,8 +299,7 @@ namespace ASI.Basecode.Services.Services
 
                 // Filter rooms that have bookings on the specified date
                 rooms = rooms.Where(r => r.Bookings.Any(b =>
-                    b.BookedDate.HasValue &&
-                    b.BookedDate.Value.Date == dateOnly
+                    b.BookingCheckInDateTime.Date == dateOnly
                 ));
             }
 
@@ -319,8 +318,7 @@ namespace ASI.Basecode.Services.Services
 
                 // Filter rooms that don't have bookings on the specified date
                 rooms = rooms.Where(r => !r.Bookings.Any(b =>
-                    b.BookedDate.HasValue &&
-                    b.BookedDate.Value.Date == dateOnly
+                    b.BookingCheckInDateTime.Date == dateOnly
                 ));
             }
 
@@ -387,7 +385,7 @@ namespace ASI.Basecode.Services.Services
             }
 
             var bookingsOnDate = room.Bookings
-                .Where(b => b.BookedDate?.Date == dateTime.Date);
+                .Where(b => b.BookingCheckInDateTime.Date == dateTime.Date);
 
             if (!bookingsOnDate.Any()) return true;
 
@@ -415,12 +413,12 @@ namespace ASI.Basecode.Services.Services
         //    }
         //}
 
-        public List<DateTime?>? GetRoomBookingDatesByRoomId(int roomId){
+        public List<DateTime>? GetRoomBookingDatesByRoomId(int roomId){
             Room? room = GetRoomModelById(roomId);
-            return (room != null) ? room.Bookings.Select(s => s.BookedDate).ToList(): null;
+            return (room != null) ? room.Bookings.Select(s => s.BookingCheckInDateTime).ToList(): null;
         }
 
-        public List<DateTime?>? GetRoomBookingDatesByRoomName(string roomName, bool fuzzyMatching)
+        public List<DateTime>? GetRoomBookingDatesByRoomName(string roomName, bool fuzzyMatching)
         {
             var room = GetRoomByName(roomName, fuzzyMatching);
             if (room != null)

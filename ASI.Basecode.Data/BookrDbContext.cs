@@ -49,16 +49,16 @@ namespace ASI.Basecode.Data
 
             modelBuilder.Entity<Amenity>(entity =>
             {
-                entity.Property(e => e.AmenityName)
-                    .HasMaxLength(250)
-                    .HasColumnName("Amenity");
+                entity.Property(e => e.AmenityName).HasMaxLength(250);
             });
 
             modelBuilder.Entity<Booking>(entity =>
             {
                 entity.ToTable("Booking");
 
-                entity.Property(e => e.BookedDate).HasColumnType("datetime");
+                entity.Property(e => e.BookingCheckInDateTime).HasColumnType("datetime");
+
+                entity.Property(e => e.BookingCheckOutDateTime).HasColumnType("datetime");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
@@ -105,15 +105,23 @@ namespace ASI.Basecode.Data
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
+                entity.Property(e => e.Description).IsRequired();
+
                 entity.Property(e => e.Image).HasMaxLength(250);
 
                 entity.Property(e => e.IsDeleted).HasDefaultValueSql("((0))");
 
-                entity.Property(e => e.Location).HasMaxLength(250);
+                entity.Property(e => e.Location)
+                    .IsRequired()
+                    .HasMaxLength(250);
 
-                entity.Property(e => e.Name).HasMaxLength(250);
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(250);
 
-                entity.Property(e => e.Type).HasMaxLength(250);
+                entity.Property(e => e.Type)
+                    .IsRequired()
+                    .HasMaxLength(250);
 
                 entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
             });
@@ -123,11 +131,13 @@ namespace ASI.Basecode.Data
                 entity.HasOne(d => d.Amenity)
                     .WithMany(p => p.RoomAmenities)
                     .HasForeignKey(d => d.AmenityId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_RoomAmenities_Amenities");
 
                 entity.HasOne(d => d.Room)
                     .WithMany(p => p.RoomAmenities)
                     .HasForeignKey(d => d.RoomId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_RoomAmenities_Room");
             });
 

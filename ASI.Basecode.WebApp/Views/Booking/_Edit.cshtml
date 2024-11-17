@@ -1,0 +1,109 @@
+﻿@using ASI.Basecode.Services.ServiceModels;
+@model ASI.Basecode.Services.ServiceModels.BookingViewModel
+
+@{
+    // var users = ViewData["UsersList"] as List<UserViewModel> ?? new List<UserViewModel>();
+}
+
+<div class="modal-header">
+    <h5 class="modal-title">Edit Booking</h5>
+    <button type="button" class="close modal-close-btn" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div class="modal-body">
+    <form id="editBookingForm" asp-action="Edit" method="post">
+        @* Don't change the form id=editBookingForm as it is required in populating the contents of roomSelectionContainer and userSelectionContainer *@
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="BookingId" />
+
+        <!-- Room Selection Button -->
+        <div class="form-group">
+            <label class="control-label">Select Room</label>
+            <button type="button" id="selectRoomBtn" class="btn btn-outline-primary form-control" onclick="openModal('@Url.Action("RoomSelection", "Booking")', 'crudModal2')">
+                Select a Room
+            </button>
+            <input type="hidden" asp-for="RoomId" id="RoomId"/>
+            <div id="roomSelectionContainer" class="roomSelectionContainer">
+                <!-- Room Selection Content (Updates if room is selected) -->
+            </div>
+            <span asp-validation-for="RoomId" class="text-danger"></span>
+        </div>
+
+        <!-- User Selection -->
+        <div class="form-group">
+            <label class="control-label">Select User</label>
+            <button type="button" id="selectRoomBtn" class="btn btn-outline-primary form-control" onclick="openModal('@Url.Action("UserSelection", "Booking")', 'crudModal2')">
+                Select User
+            </button>
+            <input type="hidden" asp-for="UserId" id="UserId"/>
+            <input type="hidden" id="UserFullName"/>
+            <div id="userSelectionContainer" class="userSelectionContainer">
+                <!-- User Selection Content (Updates if user is selected) -->
+            </div>
+            <span asp-validation-for="UserId" class="text-danger"></span>
+        </div>
+
+        <!-- Booking Check In Date and Time -->
+        <div class="form-group">
+            <label asp-for="BookingCheckInDateTime" class="control-label">Booking Check In Date and Time</label>
+            <input asp-for="BookingCheckInDateTime" class="form-control booking-time-input" type="text" placeholder="Start Date and Time" />
+            <span asp-validation-for="BookingCheckInDateTime" class="text-danger"></span>
+        </div>
+
+        <!-- Booking Check In Date and Time -->
+        <div class="form-group">
+            <label asp-for="BookingCheckOutDateTime" class="control-label">Booking Check Out Date and Time</label>
+            <input asp-for="BookingCheckOutDateTime" class="form-control booking-time-input" type="text" placeholder="End Date and Time" />
+            <span asp-validation-for="BookingCheckOutDateTime" class="text-danger"></span>
+        </div>
+
+        <!-- Status -->
+        <div class="form-group">
+            <label asp-for="Status" class="control-label">Status</label>
+            <select asp-for="Status" class="form-control">
+                <option value="">Select Status</option>
+                <option value="Pending">Pending</option>
+                <option value="Approved">Approve</option>
+                <option value="Disapproved">Disapprove</option>
+                <option value="Cancelled">Cancel</option>
+            </select>
+            <span asp-validation-for="Status" class="text-danger"></span>
+        </div>
+
+
+        <!-- Submit Button -->
+        <div class="form-group">
+            <input type="submit" value="Save" class="btn btn-primary" />
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // Check for error message and display Toastr notification
+        var errorMessage = '@TempData["ErrorMessage"]';
+        if (errorMessage) {
+            toastr.error(errorMessage);
+        }
+
+
+        // $('#crudModal1').on('shown.bs.modal', function () {
+        //     var roomId = $('#RoomId').val();
+        //     var userId = $('#UserId').val();
+
+        //     var selectedUser = users.find(user => user.Id == userId);
+        //     var userFullName = selectedUser.FirstName + ' ' + selectedUser.LastName;
+
+        //     console.log("Editing Booking...");
+        //     selectRoom(roomId);
+        //     selectUser(userId, userFullName);
+        // });
+
+    </script>
+}

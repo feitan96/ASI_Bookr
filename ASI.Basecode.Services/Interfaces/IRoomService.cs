@@ -36,8 +36,8 @@ namespace ASI.Basecode.Services.Interfaces
         bool IsRoomAvailableDate(int room, DateTime dateTime);
         //List<string>? ListAmenitiesByRoomId(int roomId);
         //List<string>? ListAmenitiesByRoomName(string roomName, bool fuzzyMatching);
-        List<DateTime?>? GetRoomBookingDatesByRoomId(int roomId); //Implement once booking implementation is done
-        List<DateTime?>? GetRoomBookingDatesByRoomName(string roomName, bool fuzzyMatching); //Implement once booking implementation is done
+        List<DateTime>? GetRoomBookingDatesByRoomId(int roomId); //Implement once booking implementation is done
+        List<DateTime>? GetRoomBookingDatesByRoomName(string roomName, bool fuzzyMatching); //Implement once booking implementation is done
         List<User>? GetBookedUsersByRoomId(int roomId);
         List<User>? GetBookedUsersByRoomName(string roomName, bool fuzzyMatching);
         List<string>? GetBookedUsersNameByRoomId(int roomId);

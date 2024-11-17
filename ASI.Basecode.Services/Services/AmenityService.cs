@@ -72,9 +72,9 @@ namespace ASI.Basecode.Services.Services
         }
 
         // DELETE
-        public void DeleteAmenity(int id)
+        public void DeleteAmenity(int Id)
         {
-            var amenity = _repository.GetAmenities().FirstOrDefault(x => x.AmenityId == id);
+            var amenity = _repository.GetAmenities().FirstOrDefault(x => x.AmenityId == Id);
             if (amenity == null) return;
 
             _repository.DeleteAmenity(amenity);

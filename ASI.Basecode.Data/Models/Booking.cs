@@ -10,10 +10,10 @@ namespace ASI.Basecode.Data.Models
         public int UserId { get; set; }
         public int? AdminId { get; set; }
         public int? SuperadminId { get; set; }
-        public DateTime? BookedDate { get; set; }
+        public DateTime BookingCheckInDateTime { get; set; }
+        public DateTime BookingCheckOutDateTime { get; set; }
         public string Status { get; set; }
         public DateTime? CreatedDate { get; set; }
-        public int? CreatedBy { get; set; }
         public int? UpdatedBy { get; set; }
         public DateTime? UpdatedDate { get; set; }
 
