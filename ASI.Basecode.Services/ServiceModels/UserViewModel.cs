@@ -23,6 +23,7 @@ namespace ASI.Basecode.Services.ServiceModels
         [Required(ErrorMessage = "Role is required.")]
         public string Role { get; set; }
 
+        [Required(ErrorMessage = "Phone Number is required.")]
         public string PhoneNumber { get; set; }
 
         [Required(ErrorMessage = "Password is required.")]
@@ -32,5 +33,15 @@ namespace ASI.Basecode.Services.ServiceModels
         [Compare("Password", ErrorMessage = "Password and Confirmation Password must match.")]
         public string ConfirmPassword { get; set; }
 
+    }
+
+    public class PagedResult<T>
+    {
+        public List<T> Items { get; set; }
+        public int TotalRecords { get; set; }
+        public int PageNumber { get; set; }
+        public int PageSize { get; set; }
+        public int CurrentPage { get; set; }
+        public int TotalPages => (int)Math.Ceiling((double)TotalRecords / PageSize);
     }
 }

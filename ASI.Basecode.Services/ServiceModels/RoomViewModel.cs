@@ -43,12 +43,15 @@ namespace ASI.Basecode.Services.ServiceModels
         [StringLength(int.MaxValue, ErrorMessage = "Description is too long.")]
         public string Description { get; set; }
 
+        [Required(ErrorMessage = "Room type is required.")]
         [StringLength(250, ErrorMessage = "Type cannot exceed 250 characters.")]
         public string Type { get; set; }
 
+        [Required(ErrorMessage = "Room capacity is required.")]
         [Range(1, int.MaxValue, ErrorMessage = "Capacity must be a positive number.")]
         public int? Capacity { get; set; }
 
+        [Required(ErrorMessage = "Room location is required.")]
         [StringLength(250, ErrorMessage = "Location cannot exceed 250 characters.")]
         public string Location { get; set; }
 
@@ -84,5 +87,15 @@ namespace ASI.Basecode.Services.ServiceModels
             }
 
         }
+
     }
+        public class PagedResultRoom<T>
+        {
+            public List<T> Items { get; set; }
+            public int TotalRecords { get; set; }
+            public int PageNumber { get; set; }
+            public int PageSize { get; set; }
+            public int CurrentPage { get; set; }
+            public int TotalPages => (int)Math.Ceiling((double)TotalRecords / PageSize);
+        }
 }

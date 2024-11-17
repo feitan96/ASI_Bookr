@@ -61,15 +61,38 @@ namespace ASI.Basecode.Services.Services
             {
                 throw new InvalidDataException(Resources.Messages.Errors.RoomExists);
             }
-        }   
+        }
 
         #endregion
 
         #region Read (CRUD)
 
+        public PagedResultRoom<RoomViewModel> GetRooms(int pageNumber, int pageSize)
+        {
+            var rooms = _repository.GetRooms()
+                                   .Where(x => (bool)!x.IsDeleted)
+                                   .Select(r => new RoomViewModel(r))
+                                   .ToList();
+
+            var totalRecords = rooms.Count();
+            var paginatedRooms = rooms.Skip((pageNumber - 1) * pageSize)
+                                      .Take(pageSize)
+                                      .ToList();
+
+            return new PagedResultRoom<RoomViewModel>
+            {
+                Items = paginatedRooms,
+                TotalRecords = totalRecords,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
+        }
+
+
         //Returns all room from database.
-        public List<RoomViewModel> GetRooms() {
-           var rooms = _repository.GetRooms().Where(x => x.IsDeleted == false).Select(room => new RoomViewModel(room)).ToList();
+        public List<RoomViewModel> GetRooms()
+        {
+            var rooms = _repository.GetRooms().Where(x => x.IsDeleted == false).Select(room => new RoomViewModel(room)).ToList();
             //rooms.ForEach(room =>
             //{
             //    room.RoomAmenities = _roomamenityservice.GetRoomAmenities(room.RoomId);

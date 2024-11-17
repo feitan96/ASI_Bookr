@@ -16,20 +16,41 @@
     @RenderSection("Styles", required: false)
 </head>
 <body>
-    @Html.Partial("_Header")
-    <div>
+    @if (User.IsInRole("Admin") || User.IsInRole("Superadmin"))
+    {
+        <!-- Sidebar and content for Admin and SuperAdmin -->
+        @Html.Partial("_Sidebar")
+        <div style="margin-left: 250px; padding: 20px;">
+            <main role="main">
+                @RenderBody()
+            </main>
+        </div>
+    }
+    else if (User.IsInRole("User"))
+    {
+        <!-- Header and content for User -->
+        @Html.Partial("_Header")
+        <div style="padding: 20px;">
+            <main role="main">
+                @RenderBody()
+            </main>
+        </div>
+    }
+    else
+    {
+        <!-- Default content for unauthenticated -->
         <main role="main">
             @RenderBody()
         </main>
-    </div>
+    }
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    @* <script src="~/lib/jquery/dist/jquery.min.js"></script> *@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="https://kit.fontawesome.com/7a7c645416.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     <script src="https://cdn.rawgit.com/harvesthq/chosen/gh-pages/chosen.jquery.min.js"></script>

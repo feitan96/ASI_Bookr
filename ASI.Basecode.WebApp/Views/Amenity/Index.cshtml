@@ -47,14 +47,15 @@
 </div>
 
 @section Scripts {
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.bundle.min.js"></script>
     <script>
         // Open modal and load content
         function openModal(url) {
             $.get(url, function (data) {
                 $('#crudModal .modal-body').html(data);
                 $('#crudModal').modal('show');
+
+                // Initialize client-side validation
+                $.validator.unobtrusive.parse('#crudModal .modal-body');
             });
         }
 
@@ -62,19 +63,28 @@
         $(document).on('submit', 'form', function (e) {
             e.preventDefault();
             var form = $(this);
+            var formData = new FormData(this);
 
             $.ajax({
                 type: form.attr('method'),
                 url: form.attr('action'),
-                data: form.serialize(),
+                data: formData,
+                processData: false,
+                contentType: false,
                 success: function (response) {
                     $('#crudModal').modal('hide');
                     location.reload(); // Reload page or update data to reflect changes
                 },
                 error: function (xhr) {
-                    alert('An error occurred. Please try again.');
+                    if (xhr.status === 400) { // Bad request due to validation
+                        $('#crudModal .modal-body').html(xhr.responseText);
+                        $.validator.unobtrusive.parse('#crudModal .modal-body'); // Re-parse validation for new content
+                    } else {
+                        alert('An error occurred. Please try again.');
+                    }
                 }
             });
         });
     </script>
 }
+

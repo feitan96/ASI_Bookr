@@ -55,16 +55,15 @@ namespace ASI.Basecode.WebApp.Controllers
 
         // GET: RoomController
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(int pageNumber = 1, int pageSize = 1)
         {
-
             var amenities = _amenityservice.GetAmenities();
-
             ViewData["AmenitiesList"] = amenities;
 
-            var rooms = _roomservice.GetRooms();
-            return View(rooms);
+            var pagedRooms = _roomservice.GetRooms(pageNumber, pageSize);
+            return View(pagedRooms);
         }
+
 
         #region Get Methods
         //Create, Edit, View, Delete

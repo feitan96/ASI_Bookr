@@ -11,9 +11,13 @@ using System.IO;
 using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Linq;
+using static ASI.Basecode.Resources.Constants.Enums;
 
 namespace ASI.Basecode.WebApp.Controllers
 {
+    [Authorize(Roles = "Admin,Superadmin")]
+
     public class UserManagementController : ControllerBase<UserManagementController>
     {
         private readonly IUserService _userService;
@@ -27,33 +31,36 @@ namespace ASI.Basecode.WebApp.Controllers
         {
             this._userService = userService;
         }
-        private List<SelectListItem> Roles()
+        private List<SelectListItem> GetRoles()
         {
-            return new List<SelectListItem>
-            {
-                new SelectListItem { Value = "User", Text = "User" },
-                new SelectListItem { Value = "Admin", Text = "Admin" },
-                new SelectListItem { Value = "SuperAdmin", Text = "SuperAdmin" }
-            };
+            return Enum.GetValues(typeof(ASI.Basecode.Resources.Constants.Enums.Roles))
+                       .Cast<ASI.Basecode.Resources.Constants.Enums.Roles>()
+                       .Select(role => new SelectListItem
+                       {
+                           Value = role.ToString(),
+                           Text = role.ToString()
+                       }).ToList();
         }
-        public IActionResult Index()
+
+        public IActionResult Index(int pageNumber = 1, int pageSize = 1)
         {
-            var data = _userService.GetAllUser();
-            return View(data);
+            var pagedUsers = _userService.GetAllUsers(pageNumber, pageSize);
+            return View(pagedUsers);
         }
+
 
         #region Get Methods
         [HttpGet]
         public IActionResult Create()
         {
-            ViewBag.Roles = Roles();
+            ViewBag.Roles = GetRoles();
             return PartialView("_Create");
         }
 
         [HttpGet]
         public IActionResult Edit(int Id)
         {
-            ViewBag.Roles = Roles();
+            ViewBag.Roles = GetRoles();
             var data = _userService.GetUser(Id);
             return PartialView("_Edit", data);
         }
@@ -94,7 +101,7 @@ namespace ASI.Basecode.WebApp.Controllers
             {
                 TempData["ErrorMessage"] = Resources.Messages.Errors.ServerError;
             }
-            ViewBag.Roles = Roles();
+            ViewBag.Roles = GetRoles();
             return View();
         }
 
@@ -114,7 +121,7 @@ namespace ASI.Basecode.WebApp.Controllers
             {
                 TempData["ErrorMessage"] = ex.Message;;
             }
-            ViewBag.Roles = Roles();
+            ViewBag.Roles = GetRoles();
             return View();
         }
 

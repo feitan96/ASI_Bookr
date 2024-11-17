@@ -6,8 +6,9 @@
             <th>@Html.DisplayNameFor(model => model.Name)</th>
             <th>@Html.DisplayNameFor(model => model.Description)</th>
             <th>@Html.DisplayNameFor(model => model.Type)</th>
+            <th>@Html.DisplayNameFor(model => model.Capacity)</th>
             <th>@Html.DisplayNameFor(model => model.Location)</th>
-            <th>@Html.DisplayNameFor(model => model.RoomAmenities)</th>
+            <th>Amenities</th>
             <th></th>
         </tr>
     </thead>
@@ -18,6 +19,7 @@
                 <td>@Html.DisplayFor(modelItem => room.Name)</td>
                 <td>@Html.DisplayFor(modelItem => room.Description)</td>
                 <td>@Html.DisplayFor(modelItem => room.Type)</td>
+                <td>@Html.DisplayFor(modelItem => room.Capacity)</td>
                 <td>@Html.DisplayFor(modelItem => room.Location)</td>
                 <td>@string.Join(", ", room.RoomAmenitiesName)</td>
                 <td>

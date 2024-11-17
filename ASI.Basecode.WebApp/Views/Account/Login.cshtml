@@ -12,8 +12,10 @@
 </div>
 
 <div class="container-fluid p-0 d-flex">
-    <div class="card rounded-0 vh-100 d-none d-md-flex align-items-center justify-content-center col-md-6" style="background-color: var(--background-color);">
-        <img src="~/img/logo-big.svg" style="z-index: 1; width: 20%; position: absolute; top:28px; left: 37px" />
+    <div class="card rounded-0 vh-100 d-none d-md-flex align-items-center justify-content-center col-md-6" style="background-color: var(--background-color-login);">
+        <a href="@Url.Action("Index", "Home")">
+            <img src="~/img/logo-big.svg" style="z-index: 1; width: 20%; position: absolute; top: 28px; left: 37px" />
+        </a>
         <img src="~/img/tina.png" class="float-animation" style="width: 70%; z-index: 2;" />
         <img src="~/img/geometric-left.svg" class="geometric-right" />
         <p class="text-muted" style="position: absolute; bottom: 0;">@Copyright</p>

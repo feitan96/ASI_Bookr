@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ASI.Basecode.Services.ServiceModels.UserViewModel>
+﻿@model ASI.Basecode.Services.ServiceModels.PagedResult<ASI.Basecode.Services.ServiceModels.UserViewModel>
 
 @{
     ViewData["Title"] = "User Management";
@@ -20,7 +20,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var user in Model)
+        @foreach (var user in Model.Items)
         {
             <tr>
                 <td>@user.FirstName</td>
@@ -38,11 +38,31 @@
     </tbody>
 </table>
 
+<!-- Pagination Controls -->
+<div class="pagination">
+    @* "Previous" button *@
+    @if (Model.PageNumber > 1)
+    {
+        <a class="btn btn-secondary" asp-action="Index" asp-route-pageNumber="@(Model.PageNumber - 1)" asp-route-pageSize="@Model.PageSize">Previous</a>
+    }
+
+    @* Page Number Links *@
+    @for (int i = 1; i <= Model.TotalPages; i++)
+    {
+        <a class="btn @(Model.PageNumber == i ? "btn-primary" : "btn-secondary")" asp-action="Index" asp-route-pageNumber="@i" asp-route-pageSize="@Model.PageSize">@i</a>
+    }
+
+    @* "Next" button *@
+    @if (Model.PageNumber < Model.TotalPages)
+    {
+        <a class="btn btn-secondary" asp-action="Index" asp-route-pageNumber="@(Model.PageNumber + 1)" asp-route-pageSize="@Model.PageSize">Next</a>
+    }
+</div>
+
 <!-- Modal -->
 <div id="crudModal" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-dialog-scrollable" role="document">
         <div class="modal-content">
-            
             <div class="modal-body">
                 <!-- Content will be loaded here -->
             </div>
@@ -51,13 +71,15 @@
 </div>
 
 @section Scripts {
-
     <script>
         // Open modal and load content
         function openModal(url) {
             $.get(url, function (data) {
                 $('#crudModal .modal-body').html(data);
                 $('#crudModal').modal('show');
+
+                // Initialize client-side validation
+                $.validator.unobtrusive.parse('#crudModal .modal-body');
             });
         }
 
@@ -65,19 +87,28 @@
         $(document).on('submit', 'form', function (e) {
             e.preventDefault();
             var form = $(this);
+            var formData = new FormData(this);
 
             $.ajax({
                 type: form.attr('method'),
                 url: form.attr('action'),
-                data: form.serialize(),
+                data: formData,
+                processData: false,
+                contentType: false,
                 success: function (response) {
                     $('#crudModal').modal('hide');
                     location.reload(); // Reload page or update data to reflect changes
                 },
                 error: function (xhr) {
-                    alert('An error occurred. Please try again.');
+                    if (xhr.status === 400) { // Bad request due to validation
+                        $('#crudModal .modal-body').html(xhr.responseText);
+                        $.validator.unobtrusive.parse('#crudModal .modal-body'); // Re-parse validation for new content
+                    } else {
+                        alert('An error occurred. Please try again.');
+                    }
                 }
             });
         });
     </script>
 }
+
