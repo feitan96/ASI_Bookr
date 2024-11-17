@@ -12,20 +12,17 @@
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>@Html.DisplayNameFor(model => model.AmenityId)</th>
             <th>@Html.DisplayNameFor(model => model.AmenityName)</th>
-            <th></th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var amenity in Model)
         {
             <tr>
-                <td>@Html.DisplayFor(modelItem => amenity.AmenityId)</td>
                 <td>@Html.DisplayFor(modelItem => amenity.AmenityName)</td>
 
                 <td>
-                    <button onclick="openModal('@Url.Action("View", "Amenity", new { amenityId = amenity.AmenityId })')" class="btn btn-info btn-sm">View</button>
                     <button onclick="openModal('@Url.Action("Edit", "Amenity", new { amenityId  = amenity.AmenityId })')" class="btn btn-warning btn-sm">Edit</button>
                     <button onclick="openModal('@Url.Action("Delete", "Amenity", new { amenityId = amenity.AmenityId })')" class="btn btn-danger btn-sm">Delete</button>
                 </td>

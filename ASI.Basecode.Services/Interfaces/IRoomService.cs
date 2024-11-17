@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ASI.Basecode.Data.Models;
 using static ASI.Basecode.Resources.Constants.Enums;
 using ASI.Basecode.Services.ServiceModels;
+using static ASI.Basecode.Services.ServiceModels.RoomViewModel;
 
 namespace ASI.Basecode.Services.Interfaces
 {
@@ -16,7 +17,7 @@ namespace ASI.Basecode.Services.Interfaces
         int AddRoom(RoomViewModel model, int id); //return the generate roomId
 
         //READ
-        PagedResultRoom<RoomViewModel> GetPagedRooms(int pageNumber, int pageSize);
+        PaginatedList<RoomViewModel> GetPagedRooms(string roomName, string type, string location, int? capacity, List<int> amenities, int pageIndex, int pageSize);
         List<RoomViewModel> GetRooms();
         Room? GetRoomModelById(int roomId);
         RoomViewModel? GetRoomById(int roomId);

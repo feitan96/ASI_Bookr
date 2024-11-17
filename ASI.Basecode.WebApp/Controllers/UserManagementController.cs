@@ -139,6 +139,17 @@ namespace ASI.Basecode.WebApp.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpGet]
+        [Authorize(Roles = "Superadmin")]
+        public IActionResult ChangeRoleModal(int id)
+        {
+            var user = _userService.GetUser(id);
+            if (user == null)
+                return NotFound("User not found.");
+
+            return PartialView("_ChangeRoleModal", user);
+        }
+
         [HttpPost]
         [Authorize(Roles = "Superadmin")]
         public IActionResult Promote(int id)
@@ -146,12 +157,11 @@ namespace ASI.Basecode.WebApp.Controllers
             try
             {
                 _userService.UpdateUserRole(id, "Admin");
-                return RedirectToAction("Index");
+                return Json(new { success = true, message = "User promoted successfully." });
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = ex.Message;
-                return RedirectToAction("Index");
+                return Json(new { success = false, message = ex.Message });
             }
         }
 
@@ -162,12 +172,11 @@ namespace ASI.Basecode.WebApp.Controllers
             try
             {
                 _userService.UpdateUserRole(id, "User");
-                return RedirectToAction("Index");
+                return Json(new { success = true, message = "User demoted successfully." });
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = ex.Message;
-                return RedirectToAction("Index");
+                return Json(new { success = false, message = ex.Message });
             }
         }
 
