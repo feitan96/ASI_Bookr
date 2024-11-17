@@ -31,7 +31,7 @@ namespace ASI.Basecode.Data
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Data Source=(LocalDB)\\MSSQLLocalDB;AttachDbFilename=C:\\Users\\Predator\\BookrDb.mdf;Integrated Security=True;Connect Timeout=30");
+                optionsBuilder.UseSqlServer("Addr=localhost; database=BookrDb; Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True");
             }
         }
 
@@ -49,16 +49,12 @@ namespace ASI.Basecode.Data
 
             modelBuilder.Entity<Amenity>(entity =>
             {
-                entity.Property(e => e.AmenityName)
-                    .HasMaxLength(250)
-                    .HasColumnName("Amenity");
+                entity.Property(e => e.AmenityName).HasMaxLength(250);
             });
 
             modelBuilder.Entity<Booking>(entity =>
             {
                 entity.ToTable("Booking");
-
-                entity.Property(e => e.BookedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
@@ -105,15 +101,23 @@ namespace ASI.Basecode.Data
 
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
+                entity.Property(e => e.Description).IsRequired();
+
                 entity.Property(e => e.Image).HasMaxLength(250);
 
                 entity.Property(e => e.IsDeleted).HasDefaultValueSql("((0))");
 
-                entity.Property(e => e.Location).HasMaxLength(250);
+                entity.Property(e => e.Location)
+                    .IsRequired()
+                    .HasMaxLength(250);
 
-                entity.Property(e => e.Name).HasMaxLength(250);
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(250);
 
-                entity.Property(e => e.Type).HasMaxLength(250);
+                entity.Property(e => e.Type)
+                    .IsRequired()
+                    .HasMaxLength(250);
 
                 entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
             });
@@ -123,11 +127,13 @@ namespace ASI.Basecode.Data
                 entity.HasOne(d => d.Amenity)
                     .WithMany(p => p.RoomAmenities)
                     .HasForeignKey(d => d.AmenityId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_RoomAmenities_Amenities");
 
                 entity.HasOne(d => d.Room)
                     .WithMany(p => p.RoomAmenities)
                     .HasForeignKey(d => d.RoomId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_RoomAmenities_Room");
             });
 
@@ -175,6 +181,10 @@ namespace ASI.Basecode.Data
                     .HasMaxLength(250);
 
                 entity.Property(e => e.PhoneNumber).HasMaxLength(250);
+
+                entity.Property(e => e.ResetTokenExpiry).HasColumnType("datetime");
+
+                entity.Property(e => e.PasswordResetToken).HasMaxLength(50);
 
                 entity.Property(e => e.Role)
                     .IsRequired()

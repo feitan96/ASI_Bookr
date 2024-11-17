@@ -14,6 +14,9 @@ namespace ASI.Basecode.Services.Interfaces
         void SoftDelete(int Id);
         void HardDelete(int Id);
         PagedResult<UserViewModel> GetAllUsers(int pageNumber, int pageSize);
+        string GeneratePasswordResetToken(string email);
+        Status ResetPassword(ResetPasswordModel model);
+        ChangePassToken IsTokenValid(string token);
         List<UserViewModel> GetAllUser();
     }
 }

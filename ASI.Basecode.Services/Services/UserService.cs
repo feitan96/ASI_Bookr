@@ -35,6 +35,7 @@ namespace ASI.Basecode.Services.Services
 
             return user != null ? LoginResult.Success : LoginResult.Failed;
         }
+        
 
         public PagedResult<UserViewModel> GetAllUsers(int pageNumber, int pageSize)
         {
@@ -80,6 +81,43 @@ namespace ASI.Basecode.Services.Services
             return user;
         }
 
+        #region Forgot Password
+        public string GeneratePasswordResetToken(string email)
+        {
+            var user = _repository.GetUsers().Where(x => x.Email.Equals(email)).FirstOrDefault();
+            if (user == null) return null;
+
+            var token = Guid.NewGuid().ToString();
+            user.PasswordResetToken = token;
+            user.ResetTokenExpiry = DateTime.Now.AddHours(1);
+            _repository.UpdateUser(user);
+
+            return token;
+        }
+
+        public Status ResetPassword(ResetPasswordModel model)
+        {
+            var user = _repository.GetUsers().FirstOrDefault(u => u.PasswordResetToken == model.Token && u.ResetTokenExpiry > DateTime.Now);
+            if (user == null) return Status.Error;
+
+            user.Password = PasswordManager.EncryptPassword(model.NewPassword);
+            user.PasswordResetToken = null;
+            user.ResetTokenExpiry = null;
+            _repository.UpdateUser(user);
+
+            return Status.Success;
+        }
+
+        public ChangePassToken IsTokenValid(string token)
+        {
+            var user = _repository.GetUsers().FirstOrDefault(u => u.PasswordResetToken == token && u.ResetTokenExpiry > DateTime.Now);
+            if (user == null) return ChangePassToken.Invalid;
+
+            return ChangePassToken.Valid;
+        }
+        #endregion
+
+        #region User CRUD
         public void AddUser(UserViewModel model, int userId)
         {
             if (_repository.UserExists(model.Email)) throw new InvalidDataException(Resources.Messages.Errors.UserExists);
@@ -139,6 +177,7 @@ namespace ASI.Basecode.Services.Services
                 _repository.DeleteUser(user);
             }
         }
+        #endregion
 
         public List<UserViewModel> GetAllUser()
         {
