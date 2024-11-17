@@ -23,6 +23,12 @@
             Success = 0,
             Failed = 1,
         }
+
+        public enum ChangePassToken
+        {
+            Invalid= 0,
+            Valid = 1,
+        }
         public enum Roles
         {
             Admin,

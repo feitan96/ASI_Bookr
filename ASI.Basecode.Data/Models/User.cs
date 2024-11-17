@@ -28,6 +28,8 @@ namespace ASI.Basecode.Data.Models
         public bool? AllowNotifications { get; set; }
         public bool IsDarkMode { get; set; }
         public int DefaultBookDuration { get; set; }
+        public string PasswordResetToken { get; set; }
+        public DateTime? ResetTokenExpiry { get; set; }
 
         public virtual ICollection<Admin> Admins { get; set; }
         public virtual ICollection<Booking> Bookings { get; set; }
