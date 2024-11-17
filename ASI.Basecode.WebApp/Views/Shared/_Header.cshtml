@@ -1,20 +1,15 @@
 ﻿@using Microsoft.AspNetCore.Http
 @inject IHttpContextAccessor HttpContextAccessor
 <header class="@((ViewBag.LoginView == true) ? "hide-navbar" : "")">
-    <div class="logosec hover-pointer">
-        <img src="~/img/asi-logo-invert.svg"
-             style="width: 185px;" alt="logo"
-             onclick="window.location.href = '@Url.Action("Index", "Home")';">
+    <div class="sidebar-header" style="padding: 20px; display: flex; align-items: center; border-top-right-radius: 10px; border-bottom-right-radius: 10px;">
+        <a  style="display: flex; align-items: center; text-decoration: none;">
+            <img src="~/img/bookr_logo_maroon.png" alt="Logo" style="margin-right: 10px;">
+            <span style="color: #820000; font-size: 24px; font-family: Inter; font-weight: 800;">Bookr</span>
+        </a>
     </div>
-    <div>
-        <a asp-action="Index" asp-controller="UserManagement">User Management</a>
-    </div>
-    <div>
+    @* <div>
         <a asp-action="Index" asp-controller="Room">Room Management</a>
-    </div>
-    <div>
-        <a asp-action="Index" asp-controller="Amenity">Amenity Management</a>
-    </div>
+    </div> *@
     <div class="logosec">
         @HttpContextAccessor.HttpContext.Session.GetString("Name")
         <div class="mr-20 hover-pointer" style="position: relative">
@@ -27,7 +22,7 @@
                 <ul>
                     <li>
                         <i class="fa-solid fa-gear"></i>
-                        <a href="#">Settings</a>
+                        <a asp-action="Index" asp-controller="Profile" class="sidebar-link">Settings</a>
                     </li>
                     <li>
                         <i class="fa-solid fa-right-from-bracket"></i>

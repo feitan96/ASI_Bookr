@@ -40,6 +40,7 @@ namespace ASI.Basecode.WebApp
             this._services.AddScoped<IRoomAmenityService, RoomAmenityService>();
             this._services.AddScoped<IAmenityService, AmenityService>();
             this._services.AddScoped<IImageService, ImageService>();
+            this._services.AddScoped<IProfileService, ProfileService>();
 
 
             // Repositories

@@ -67,7 +67,7 @@ namespace ASI.Basecode.Services.Services
 
         #region Read (CRUD)
 
-        public PagedResultRoom<RoomViewModel> GetRooms(int pageNumber, int pageSize)
+        public PagedResultRoom<RoomViewModel> GetPagedRooms(int pageNumber, int pageSize)
         {
             var rooms = _repository.GetRooms()
                                    .Where(x => (bool)!x.IsDeleted)

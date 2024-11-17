@@ -55,13 +55,13 @@ namespace ASI.Basecode.WebApp.Controllers
 
         // GET: RoomController
         [HttpGet]
-        public IActionResult Index(int pageNumber = 1, int pageSize = 1)
+        public IActionResult Index()
         {
             var amenities = _amenityservice.GetAmenities();
             ViewData["AmenitiesList"] = amenities;
 
-            var pagedRooms = _roomservice.GetRooms(pageNumber, pageSize);
-            return View(pagedRooms);
+            var rooms = _roomservice.GetRooms();
+            return View(rooms);
         }
 
 

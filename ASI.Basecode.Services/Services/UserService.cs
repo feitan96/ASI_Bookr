@@ -37,21 +37,34 @@ namespace ASI.Basecode.Services.Services
         }
         
 
-        //mawagtang ni sya nga function nig mag pagination
-        public List<UserViewModel> GetAllUser()
+        public PagedResult<UserViewModel> GetAllUsers(int pageNumber, int pageSize)
         {
-            var users = _repository.GetUsers().Where(x => x.IsDeleted == false).Select(s => new UserViewModel
-            {
-                Id = s.Id,
-                FirstName = s.FirstName,
-                LastName = s.LastName,
-                Email = s.Email,
-                Role = s.Role,
-                PhoneNumber = s.PhoneNumber,
-            }).ToList();
+            var users = _repository.GetUsers()
+                           .Where(x => (bool)!x.IsDeleted);
 
-            return users;
+            var totalRecords = users.Count();
+            var paginatedUsers = users.Skip((pageNumber - 1) * pageSize)
+                                      .Take(pageSize)
+                                      .Select(s => new UserViewModel
+                                      {
+                                          Id = s.Id,
+                                          FirstName = s.FirstName,
+                                          LastName = s.LastName,
+                                          Email = s.Email,
+                                          Role = s.Role,
+                                          PhoneNumber = s.PhoneNumber,
+                                      })
+                                      .ToList();
+
+            return new PagedResult<UserViewModel>
+            {
+                Items = paginatedUsers,
+                TotalRecords = totalRecords,
+                PageNumber = pageNumber,
+                PageSize = pageSize
+            };
         }
+
         public UserViewModel GetUser(int Id)
         {
             var user = _repository.GetUsers().Where(x => x.Id.Equals(Id)).Select(s => new UserViewModel
@@ -62,7 +75,7 @@ namespace ASI.Basecode.Services.Services
                 Email = s.Email,
                 Role = s.Role,
                 PhoneNumber = s.PhoneNumber,
-                Password = PasswordManager.DecryptPassword(s.Password)
+                Password = s.Password
             }).FirstOrDefault();
 
             return user;
@@ -140,9 +153,8 @@ namespace ASI.Basecode.Services.Services
                 var admin = _adminRepository.GetAdmins().Where(x => x.UserId.Equals(user.Id)).FirstOrDefault();
                 if (admin != null) _adminRepository.RemoveAdmin(admin);
             }
-
+            if(model.Password != user.Password) model.Password = PasswordManager.EncryptPassword(model.Password);
             _mapper.Map(model, user);
-            user.Password = PasswordManager.EncryptPassword(model.Password);
             user.UpdatedDate = DateTime.Now;
             user.UpdatedBy = userId;
 
@@ -167,32 +179,19 @@ namespace ASI.Basecode.Services.Services
         }
         #endregion
 
-        public PagedResult<UserViewModel> GetAllUsers(int pageNumber, int pageSize)
+        public List<UserViewModel> GetAllUser()
         {
-            var users = _repository.GetUsers()
-                           .Where(x => (bool)!x.IsDeleted);
-
-            var totalRecords = users.Count();
-            var paginatedUsers = users.Skip((pageNumber - 1) * pageSize)
-                                      .Take(pageSize)
-                                      .Select(s => new UserViewModel
-                                      {
-                                          Id = s.Id,
-                                          FirstName = s.FirstName,
-                                          LastName = s.LastName,
-                                          Email = s.Email,
-                                          Role = s.Role,
-                                          PhoneNumber = s.PhoneNumber,
-                                      })
-                                      .ToList();
-
-            return new PagedResult<UserViewModel>
+            var users = _repository.GetUsers().Where(x => x.IsDeleted == false).Select(s => new UserViewModel
             {
-                Items = paginatedUsers,
-                TotalRecords = totalRecords,
-                PageNumber = pageNumber,
-                PageSize = pageSize
-            };
+                Id = s.Id,
+                FirstName = s.FirstName,
+                LastName = s.LastName,
+                Email = s.Email,
+                Role = s.Role,
+                PhoneNumber = s.PhoneNumber,
+            }).ToList();
+
+            return users;
         }
     }
 }

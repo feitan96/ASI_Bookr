@@ -11,7 +11,7 @@ namespace ASI.Basecode.WebApp.Controllers
     /// <summary>
     /// Home Controller
     /// </summary>
-    public class HomeController : ControllerBase<HomeController>
+    public class AnalyticsController : ControllerBase<AnalyticsController>
     {
         /// <summary>
         /// Constructor
@@ -21,7 +21,7 @@ namespace ASI.Basecode.WebApp.Controllers
         /// <param name="configuration"></param>
         /// <param name="localizer"></param>
         /// <param name="mapper"></param>
-        public HomeController(IHttpContextAccessor httpContextAccessor,
+        public AnalyticsController(IHttpContextAccessor httpContextAccessor,
                               ILoggerFactory loggerFactory,
                               IConfiguration configuration,
                               IMapper mapper = null) : base(httpContextAccessor, loggerFactory, configuration, mapper)
@@ -34,7 +34,6 @@ namespace ASI.Basecode.WebApp.Controllers
         /// </summary>
         /// <returns> Home View </returns>
         /*[Authorize(Roles = "Admin,Superadmin,User")]*/
-        [AllowAnonymous]
         public IActionResult Index()
         {
             return View();

@@ -4,6 +4,7 @@ using ASI.Basecode.Services.Interfaces;
 using ASI.Basecode.Services.Manager;
 using ASI.Basecode.Services.ServiceModels;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,22 +18,22 @@ namespace ASI.Basecode.Services.Services
         private readonly IUserRepository _repository;
         private readonly IMapper _mapper;
 
-        public ProfileService(IUserRepository repository, IMapper mapper)
+        public ProfileService(IUserRepository repository, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
-            _mapper = mapper;
             _repository = repository;
+            _mapper = mapper;
         }
         public ProfileViewModel GetUser(int Id)
         {
-            var user = _repository.GetUsers().Where(x => x.Id.Equals(Id)).Select(s => new ProfileViewModel
+            var user = _repository.GetUsers().Where(x => x.Id == Id && !(bool)x.IsDeleted).Select(s => new ProfileViewModel
             {
                 Id = s.Id,
                 FirstName = s.FirstName,
                 LastName = s.LastName,
                 Email = s.Email,
                 PhoneNumber = s.PhoneNumber,
-                AllowNotifications = s.Equals(true),
-                IsDarkMode = s.Equals(true),
+                AllowNotifications = (bool)s.AllowNotifications,
+                IsDarkMode = (bool)s.IsDarkMode,
                 DefaultBookDuration = s.DefaultBookDuration,
             }).FirstOrDefault();
 
@@ -40,12 +41,16 @@ namespace ASI.Basecode.Services.Services
         }
         public void UpdateUser(ProfileViewModel model, int userId)
         {
-            var user = _repository.GetUsers().Where(x => x.Id.Equals(model.Id)).FirstOrDefault();
-            if (model.Email != user.Email)
+            var user = _repository.GetUsers().Where(x => x.Id == model.Id && !(bool)x.IsDeleted).FirstOrDefault();
+            if (user == null)
             {
-                if (_repository.UserExists(model.Email)) throw new InvalidDataException(Resources.Messages.Errors.UserExists);
+                throw new ArgumentNullException("User not found or has been deleted.");
             }
-
+            // Optional check to ensure unique email if updating email
+            // if (model.Email != user.Email && _repository.UserExists(model.Email))
+            // {
+            //     throw new InvalidDataException(Resources.Messages.Errors.UserExists);
+            // }
             _mapper.Map(model, user);
             user.UpdatedDate = DateTime.Now;
             user.UpdatedBy = userId;

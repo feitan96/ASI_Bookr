@@ -92,18 +92,26 @@ namespace ASI.Basecode.WebApp.Controllers
             var loginResult = _userService.AuthenticateUser(model.Email, model.Password, ref user);
             if (loginResult == LoginResult.Success)
             {
-                // 認証OK
+                // Sign in the user
                 await this._signInManager.SignInAsync(user);
                 this._session.SetString("Name", $"{user.FirstName} {user.LastName}");
-                return RedirectToAction("Index", "Home");
+
+                // Redirect based on role
+                if (User.IsInRole("Admin") || User.IsInRole("Superadmin"))
+                {
+                    return RedirectToAction("Index", "Dashboard");
+                }
+                else if (User.IsInRole("User"))
+                {
+                    return RedirectToAction("Index", "Room");
+                }
             }
             else
             {
-                // 認証NG
                 TempData["ErrorMessage"] = "Incorrect Email or Password";
-                return View();
             }
-            //return View();
+
+            return View();
         }
 
         /// <summary>

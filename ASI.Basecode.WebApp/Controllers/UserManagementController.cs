@@ -12,9 +12,12 @@ using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Linq;
+using static ASI.Basecode.Resources.Constants.Enums;
 
 namespace ASI.Basecode.WebApp.Controllers
 {
+    [Authorize(Roles = "Admin,Superadmin")]
+
     public class UserManagementController : ControllerBase<UserManagementController>
     {
         private readonly IUserService _userService;
@@ -39,10 +42,10 @@ namespace ASI.Basecode.WebApp.Controllers
                        }).ToList();
         }
 
-        public IActionResult Index(int pageNumber = 1, int pageSize = 1)
+        public IActionResult Index()
         {
-            var pagedUsers = _userService.GetAllUsers(pageNumber, pageSize);
-            return View(pagedUsers);
+            var users = _userService.GetAllUser();
+            return View(users);
         }
 
 

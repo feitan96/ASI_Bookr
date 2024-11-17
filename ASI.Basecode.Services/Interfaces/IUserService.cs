@@ -8,7 +8,6 @@ namespace ASI.Basecode.Services.Interfaces
     public interface IUserService
     {
         LoginResult AuthenticateUser(string email, string password, ref User user);
-        List<UserViewModel> GetAllUser();
         UserViewModel GetUser(int Id);
         void AddUser(UserViewModel model, int userId);
         void UpdateUser(UserViewModel model, int userId);
@@ -18,5 +17,6 @@ namespace ASI.Basecode.Services.Interfaces
         string GeneratePasswordResetToken(string email);
         Status ResetPassword(ResetPasswordModel model);
         ChangePassToken IsTokenValid(string token);
+        List<UserViewModel> GetAllUser();
     }
 }
