@@ -100,7 +100,7 @@ namespace ASI.Basecode.WebApp.Controllers
                 }
                 else if (User.IsInRole("User"))
                 {
-                    return RedirectToAction("Index", "Room");
+                    return RedirectToAction("Index", "UserRoom");
                 }
             }
             else

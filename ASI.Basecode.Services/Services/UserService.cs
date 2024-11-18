@@ -142,7 +142,7 @@ namespace ASI.Basecode.Services.Services
 
 
         //mawagtang ni sya nga function nig mag pagination
-        /*public List<UserViewModel> GetAllUser()
+        public List<UserViewModel> GetAllUser()
         {
             var users = _repository.GetUsers().Where(x => x.IsDeleted == false).Select(s => new UserViewModel
             {
@@ -155,6 +155,6 @@ namespace ASI.Basecode.Services.Services
             }).ToList();
 
             return users;
-        }*/
+        }
     }
 }

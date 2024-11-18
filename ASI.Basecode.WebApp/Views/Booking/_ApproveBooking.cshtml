@@ -1,0 +1,39 @@
+﻿@using ASI.Basecode.Services.ServiceModels;
+@model ASI.Basecode.Services.ServiceModels.BookingViewModel
+
+@{
+}
+
+<div class="modal-header">
+    <h3 class="modal-title">Approve Booking</h3>
+    <button type="button" class="close modal-close-btn" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div style="padding-top: 10px; padding-left: 15px;">
+    <h5>Are you sure you want to approve this booking? We will notify the user after approval.</h5>
+</div>
+
+<div class="modal-body">
+    <form id="approveBookingForm" asp-action="ApproveBooking" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="BookingId"/>
+        <input type="hidden" asp-for="RoomId" />
+        <input type="hidden" asp-for="UserId" />
+        <input type="hidden" asp-for="BookingCheckInDateTime" />
+        <input type="hidden" asp-for="BookingCheckOutDateTime" />
+
+        <!-- Submit Button -->
+        <div class="form-group">
+            <input type="submit" value="Yes" class="btn btn-success" />
+            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

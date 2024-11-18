@@ -3,31 +3,35 @@
 <table class="table table-striped">
     <thead>
         <tr>
-            <th>@Html.DisplayNameFor(model => model.BookingId)</th>
-            <th>Room</th>
-            <th>User</th>
-            <th>@Html.DisplayNameFor(model => model.BookingCheckInDateTime)</th>
-            <th>@Html.DisplayNameFor(model => model.BookingCheckOutDateTime)</th>
+            <th hidden>@Html.DisplayNameFor(model => model.BookingId)</th>
+            <th>Room Name</th>
+            <th>User Full Name</th>
+            <th>Check In</th>
+            <th>Check Out</th>
             <th>@Html.DisplayNameFor(model => model.Status)</th>
-            <th>@Html.DisplayNameFor(model => model.CreatedDate)</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
         @foreach (var booking in Model)
         {
+            var isDisabled = booking.Status == "Approved" || booking.Status == "Disapproved" ? "disabled" : "";
+            var btnClass = isDisabled == "disabled" ? "btn-secondary" : "btn-success";
+            var disapproveBtnClass = isDisabled == "disabled" ? "btn-secondary" : "btn-danger";
+
             <tr>
-                <td>@Html.DisplayFor(modelItem => booking.BookingId)</td>
-                <td>@Html.DisplayFor(modelItem => booking.RoomId) | @Html.DisplayFor(modelItem => booking.RoomName)</td>
-                <td>@Html.DisplayFor(modelItem => booking.UserId) | @Html.DisplayFor(modelItem => booking.UserFullName)</td>
+                <td hidden>@Html.DisplayFor(modelItem => booking.BookingId)</td>
+                <td>@Html.DisplayFor(modelItem => booking.RoomName)</td>
+                <td>@Html.DisplayFor(modelItem => booking.UserFullName)</td>
                 <td>@Html.DisplayFor(modelItem => booking.FormattedCheckInDate)</td>
-                <td>@Html.DisplayFor(modelItem => booking.FormattedCheckInDate)</td>
+                <td>@Html.DisplayFor(modelItem => booking.FormattedCheckOutDate)</td>
                 <td>@Html.DisplayFor(modelItem => booking.Status)</td>
-                <td>@Html.DisplayFor(modelItem => booking.CreatedDate)</td>
                 <td>
                     <button onclick="openModal('@Url.Action("View", "Booking", new { bookingId = booking.BookingId })', 'crudModal1')" class="btn btn-info btn-sm">View</button>
-                    <button onclick="openModal('@Url.Action("Edit", "Booking", new { bookingId = booking.BookingId })', 'crudModal1')" class="btn btn-warning btn-sm">Edit</button>
-                    <button onclick="openModal('@Url.Action("Delete", "Booking", new { bookingId = booking.BookingId })', 'crudModal1')" class="btn btn-danger btn-sm">Delete</button>
+                    <button onclick="openModal('@Url.Action("Approve", "Booking", new { bookingId = booking.BookingId })', 'crudModal1')" class="btn @btnClass btn-sm" @isDisabled>Approve</button>
+                    <button onclick="openModal('@Url.Action("Disapprove", "Booking", new { bookingId = booking.BookingId })', 'crudModal1')" class="btn @disapproveBtnClass btn-sm" @isDisabled>Disapprove</button>
+                    @* <button onclick="openModal('@Url.Action("Edit", "Booking", new { bookingId = booking.BookingId })', 'crudModal1')" class="btn btn-warning btn-sm">Edit</button> *@
+                    @* <button onclick="openModal('@Url.Action("Delete", "Booking", new { bookingId = booking.BookingId })', 'crudModal1')" class="btn btn-danger btn-sm">Delete</button> *@
                 </td>
             </tr>
         }

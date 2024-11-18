@@ -12,6 +12,7 @@ using System.Linq;
 using System;
 using ASI.Basecode.Services.ServiceModels;
 using System.IO;
+using ASI.Basecode.Data.Models;
 
 namespace ASI.Basecode.WebApp.Controllers
 {
@@ -115,6 +116,22 @@ namespace ASI.Basecode.WebApp.Controllers
         }
 
         [HttpGet]
+        public IActionResult Approve(int bookingId)
+        {
+            var booking = _bookingservice.GetBooking(bookingId);
+
+            return PartialView("_ApproveBooking", booking);
+        }
+
+        [HttpGet]
+        public IActionResult Disapprove(int bookingId)
+        {
+            var booking = _bookingservice.GetBooking(bookingId);
+
+            return PartialView("_DisapproveBooking", booking);
+        }
+
+        [HttpGet]
         public IActionResult RoomSelection()
         { 
             var rooms = _roomservice.GetRooms();
@@ -211,8 +228,7 @@ namespace ASI.Basecode.WebApp.Controllers
         }
 
         [HttpGet]
-        [HttpGet]
-        public IActionResult SearchBookings(string searchText, string searchBy, DateTime? startDateTime, DateTime? endDateTime)
+        public IActionResult SearchBookings(string searchText, string searchBy, string startDateTime, string endDateTime)
         {
             var bookings = _bookingservice.GetBookings();
 
@@ -250,13 +266,16 @@ namespace ASI.Basecode.WebApp.Controllers
                 }
             }
 
-            // Filter by date range if both startDateTime and endDateTime are provided
-            if (startDateTime.HasValue && endDateTime.HasValue)
+            if (DateTime.TryParse(startDateTime, out var start) &&
+                DateTime.TryParse(endDateTime, out var end))
             {
+                // Filter by date range if both startDateTime and endDateTime are provided
                 bookings = bookings.Where(b =>
-                    b.BookingCheckInDateTime < endDateTime.Value &&
-                    b.BookingCheckOutDateTime > startDateTime.Value).ToList();
+                        b.BookingCheckInDateTime < end &&
+                        b.BookingCheckOutDateTime > start).ToList();
             }
+               
+
 
             return PartialView("_BookingList", bookings);
         }
@@ -297,11 +316,10 @@ namespace ASI.Basecode.WebApp.Controllers
         // POST: BookingController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(BookingViewModel model)
+        public IActionResult Edit(BookingViewModel model)
         {
             try
             {
-
                 // Print the entire form data
                 //var formData = Request.Form;
 
@@ -319,11 +337,45 @@ namespace ASI.Basecode.WebApp.Controllers
             }
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ApproveBooking(BookingViewModel model)
+        {
+            try
+            {
+                model.Status = "Approved";
+                _bookingservice.UpdateBookingInfo(model, int.Parse(Id));
+
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DisapproveBooking(BookingViewModel model)
+        {
+            try
+            {
+                model.Status = "Disapproved";
+                _bookingservice.UpdateBookingInfo(model, int.Parse(Id));
+
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
 
         // POST: BookingController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult HardDelete(int bookingId)
+        public IActionResult HardDelete(int bookingId)
         {
             _bookingservice.HardDeleteBooking(bookingId);
             return RedirectToAction("Index");

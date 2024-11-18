@@ -1,0 +1,34 @@
+﻿@model IEnumerable<ASI.Basecode.Services.ServiceModels.RoomViewModel>
+
+<!-- Room Table -->
+<div id="roomTable">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.Name)</th>
+                @*<th>@Html.DisplayNameFor(model => model.Description)</th>*@
+                <th>@Html.DisplayNameFor(model => model.Type)</th>
+                <th>@Html.DisplayNameFor(model => model.Location)</th>
+                <th>@Html.DisplayNameFor(model => model.Capacity)</th>
+                @*<th>Amenities</th>*@
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var room in Model)
+            {
+                <tr>
+                    <td>@room.Name</td>
+                    @*<td>@room.Description</td>*@
+                    <td>@room.Type</td>
+                    <td>@room.Location</td>
+                    <td>@room.Capacity</td>
+                    @*<td>@string.Join(", ", room.RoomAmenitiesName)</td>*@
+                    <td>
+                        <button onclick="openModal('@Url.Action("View", "UserRoom", new { roomId = room.RoomId })', 'crudModal1')" class="btn btn-info btn-sm">See Details</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -17,15 +17,20 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Hosting;
 using System.Threading.Tasks;
 using System.Text.Json;
+using System.Globalization;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ASI.Basecode.WebApp.Controllers
 {
-    public class RoomController : ControllerBase<RoomController>
+    [Authorize(Roles = "User")]
+
+    public class UserRoomController : ControllerBase<UserRoomController>
     {
         private readonly IRoomService _roomservice;
         private readonly IAmenityService _amenityservice; //uncomment If need external amenityservice
         private readonly IRoomAmenityService _roomamenityservice;// uncomment If need external roomamenityservice
         private readonly IImageService _imageservice;
+        private readonly IBookingService _bookingservice;
         private readonly IWebHostEnvironment _environment;
 
         /// <summary>
@@ -36,10 +41,11 @@ namespace ASI.Basecode.WebApp.Controllers
         /// <param name="configuration"></param>
         /// <param name="localizer"></param>
         /// <param name="mapper"></param>
-        public RoomController(IAmenityService amenityService,
+        public UserRoomController(IAmenityService amenityService,
                               IRoomAmenityService roomAmenityService,
                               IRoomService roomService,
                               IImageService imageService,
+                              IBookingService bookingService,
                               IHttpContextAccessor httpContextAccessor,
                               ILoggerFactory loggerFactory,
                               IConfiguration configuration,
@@ -51,19 +57,10 @@ namespace ASI.Basecode.WebApp.Controllers
             this._amenityservice = amenityService;
             this._environment = environment;  // Set the environment field
             this._imageservice = imageService;
+            this._bookingservice = bookingService;
         }
 
-        // GET: RoomController
-        //[HttpGet]
-        //public IActionResult Index(int pageNumber = 1, int pageSize = 1)
-        //{
-        //    var amenities = _amenityservice.GetAmenities();
-        //    ViewData["AmenitiesList"] = amenities;
-
-        //    var pagedRooms = _roomservice.GetRooms(pageNumber, pageSize);
-        //    return View(pagedRooms);
-        //}
-
+        // GET: UserRoomController
         [HttpGet]
         public IActionResult Index()
         {
@@ -77,7 +74,7 @@ namespace ASI.Basecode.WebApp.Controllers
 
         #region Get Methods
         //Create, Edit, View, Delete
-        // GET: RoomController/Create
+        // GET: UserRoomController/Create
         [HttpGet]
         public IActionResult Create()
         {
@@ -93,7 +90,7 @@ namespace ASI.Basecode.WebApp.Controllers
             return PartialView("_Create");
         }
 
-        // GET: RoomController/Edit/5
+        // GET: UserRoomController/Edit/5
         [HttpGet]
         public IActionResult Edit(int roomId)
         {
@@ -117,7 +114,7 @@ namespace ASI.Basecode.WebApp.Controllers
         }
 
         [HttpGet]
-        // GET: RoomController/View/5
+        // GET: UserRoomController/View/5
         public IActionResult View(int roomId)
         {
             var room = _roomservice.GetRoomById(roomId);
@@ -129,8 +126,17 @@ namespace ASI.Basecode.WebApp.Controllers
             return PartialView("_View", room);
         }
 
+        [HttpGet]
+        public IActionResult Book(int roomId)
+        {
+            ViewData["RoomId"] = roomId;
+            
+            return PartialView("_Book");
+        }
 
-        // GET: RoomController/Delete/5
+
+
+        // GET: UserRoomController/Delete/5
         [HttpGet]
         public IActionResult Delete(int roomId)
         {
@@ -189,7 +195,7 @@ namespace ASI.Basecode.WebApp.Controllers
 
         #region Post Methods
         //Create, Edit, SoftDelete, HardDelete
-        // POST: RoomController/Create
+        // POST: UserRoomController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(RoomViewModel model)
@@ -237,7 +243,7 @@ namespace ASI.Basecode.WebApp.Controllers
 
 
                             //Add image to database
-                            ImageViewModel imageModel = new ImageViewModel(roomId, fileName);
+                            ImageViewModel imageModel = new ImageViewModel(model.RoomId, fileName);
                             _imageservice.AddImage(imageModel);
                         }
                     }
@@ -260,7 +266,7 @@ namespace ASI.Basecode.WebApp.Controllers
             return View();
         }
 
-        // POST: RoomController/Edit/5
+        // POST: UserRoomController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(RoomViewModel model)
@@ -348,6 +354,58 @@ namespace ASI.Basecode.WebApp.Controllers
         }
 
         [HttpPost]
+        public IActionResult Book(BookingViewModel model, string startDateTime, string endDateTime)
+        {
+            //string bookingDate = Request.Form["bookingDate"];
+            //string checkInTime = Request.Form["checkInTime"];
+            //string checkOutTime = Request.Form["checkOutTime"];
+
+            //DateTime checkInDateTime = DateTime.ParseExact($"{bookingDate} {checkInTime}", "yyyy-MM-dd h:mm tt", CultureInfo.InvariantCulture);
+            //DateTime checkOutDateTime = DateTime.ParseExact($"{bookingDate} {checkOutTime}", "yyyy-MM-dd h:mm tt", CultureInfo.InvariantCulture);
+
+            //model.BookingCheckInDateTime = checkInDateTime;
+            //model.BookingCheckOutDateTime = checkOutDateTime;
+
+            try
+            {
+
+                if (DateTime.TryParse(startDateTime, out var start) &&
+                    DateTime.TryParse(endDateTime, out var end))
+                {
+
+                    Console.WriteLine($"Start DateTime: {startDateTime}");
+                    Console.WriteLine($"End DateTime: {endDateTime}");
+
+                    model.BookingCheckInDateTime = start;
+                    model.BookingCheckOutDateTime = end;
+                    model.UserId = int.Parse(Id);
+
+                  _bookingservice.AddBooking(model);
+                }
+                else
+                {
+                    //throw error for unsuccessful dateTime Parsing
+                }
+
+                return RedirectToAction("Index"); ;
+            }
+            catch (ArgumentNullException ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
+            catch (InvalidDataException ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = Resources.Messages.Errors.ServerError;
+            }
+            return View();
+        }
+
+
+        [HttpPost]
         public async Task<JsonResult> DeleteImage()
         {
 
@@ -393,7 +451,7 @@ namespace ASI.Basecode.WebApp.Controllers
             }
         }
 
-        // POST: RoomController/Delete/5
+        // POST: UserRoomController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult SoftDelete(int roomId)

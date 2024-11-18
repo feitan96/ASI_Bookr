@@ -1,4 +1,6 @@
-﻿@model ASI.Basecode.Services.ServiceModels.PagedResult<ASI.Basecode.Services.ServiceModels.UserViewModel>
+﻿@* @model ASI.Basecode.Services.ServiceModels.PagedResult<ASI.Basecode.Services.ServiceModels.UserViewModel>
+ *@
+@model IEnumerable<ASI.Basecode.Services.ServiceModels.UserViewModel>
 
 @{
     ViewData["Title"] = "User Management";
@@ -20,7 +22,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var user in Model.Items)
+        @foreach (var user in Model)
         {
             <tr>
                 <td>@user.FirstName</td>
@@ -39,25 +41,25 @@
 </table>
 
 <!-- Pagination Controls -->
-<div class="pagination">
-    @* "Previous" button *@
+@* <div class="pagination">
+    
     @if (Model.PageNumber > 1)
     {
         <a class="btn btn-secondary" asp-action="Index" asp-route-pageNumber="@(Model.PageNumber - 1)" asp-route-pageSize="@Model.PageSize">Previous</a>
     }
 
-    @* Page Number Links *@
+    
     @for (int i = 1; i <= Model.TotalPages; i++)
     {
         <a class="btn @(Model.PageNumber == i ? "btn-primary" : "btn-secondary")" asp-action="Index" asp-route-pageNumber="@i" asp-route-pageSize="@Model.PageSize">@i</a>
     }
 
-    @* "Next" button *@
+    
     @if (Model.PageNumber < Model.TotalPages)
     {
         <a class="btn btn-secondary" asp-action="Index" asp-route-pageNumber="@(Model.PageNumber + 1)" asp-route-pageSize="@Model.PageSize">Next</a>
     }
-</div>
+</div> *@
 
 <!-- Modal -->
 <div id="crudModal" class="modal fade" tabindex="-1" role="dialog">

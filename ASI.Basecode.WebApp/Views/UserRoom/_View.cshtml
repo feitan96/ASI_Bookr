@@ -28,7 +28,7 @@
                                     <div class="d-flex justify-content-center">
                                         <img src="@Url.Content($"~/uploads/rooms/{image.Guid}")"
                                              class="object-fit-cover rounded"
-                                             alt="Room Image"   
+                                             alt="Room Image"
                                              style="width: 200px; height: 200px;" />
                                     </div>
                                 </div>
@@ -50,8 +50,6 @@
                 </div>
             </div>
         }
-        <input type="hidden" asp-for="RoomId" />
-
         <dt class="col-sm-4">
             Name
         </dt>
@@ -89,4 +87,6 @@
             @string.Join(", ", Model.RoomAmenitiesName)
         </dd>
     </dl>
+
+    <button onclick="openModal('@Url.Action("Book", "UserRoom", new { roomId = Model.RoomId })', 'crudModal2')" class="btn btn-success btn-sm">Book</button>
 </div>

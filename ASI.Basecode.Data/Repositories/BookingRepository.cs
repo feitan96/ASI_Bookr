@@ -53,8 +53,21 @@ namespace ASI.Basecode.Data.Repositories
 
         public void UpdateBookingInfo(Booking booking)
         {
-            this.GetDbSet<Booking>().Update(booking);
-            UnitOfWork.SaveChanges();
+            try
+            {
+                this.GetDbSet<Booking>().Update(booking);
+                UnitOfWork.SaveChanges();
+                Console.WriteLine("Booking updated successfully.");
+            }
+            catch (Exception ex)
+            {
+                // Log the error message and stack trace
+                Console.WriteLine($"Error adding booking: {ex.Message}");
+                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+
+                // Optionally, rethrow the exception if you want it to propagate
+                throw;
+            }
         }
         public void DeleteBooking(Booking booking)
         {

@@ -3,7 +3,7 @@
 
 <div class="sidebar-container" style="width: 250px; position: fixed; height: 100vh;  border-top-right-radius: 10px; border-bottom-right-radius: 10px; background-color: white; box-shadow: 2px 0 5px rgba(0,0,0,0.1);">
     <div class="sidebar-header" style="padding: 20px; display: flex; align-items: center;">
-        <a asp-action="Index" asp-controller="Home" style="display: flex; align-items: center; text-decoration: none;">
+        <a asp-action="Index" asp-controller="Dashboard" style="display: flex; align-items: center; text-decoration: none;">
             <img src="~/img/bookr_logo_maroon.png" alt="Logo" style="margin-right: 10px;">
             <span style="color: #820000; font-size: 24px; font-family: Inter; font-weight: 800;">Bookr</span>
         </a>
@@ -11,7 +11,7 @@
     <hr style="border-color: #D9D9D9; margin: 0;">
     <nav class="sidebar-nav" style="padding: 20px; display: flex; flex-direction: column; gap: 15px;">
         <a asp-action="Index" asp-controller="Dashboard" class="sidebar-link">Dashboard</a>
-        <a asp-action="Index" asp-controller="Dashboard" class="sidebar-link">Bookings</a>
+        <a asp-action="Index" asp-controller="Booking" class="sidebar-link">Bookings</a>
         <a asp-action="Index" asp-controller="Room" class="sidebar-link">Rooms</a>
         <a asp-action="Index" asp-controller="Amenity" class="sidebar-link">Amenities</a>
         <a asp-action="Index" asp-controller="UserManagement" class="sidebar-link">Users</a>

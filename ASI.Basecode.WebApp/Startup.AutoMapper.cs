@@ -28,6 +28,7 @@ namespace ASI.Basecode.WebApp
             {
                 CreateMap<UserViewModel, User>();
                 CreateMap<User, UserViewModel>();
+                CreateMap<ProfileViewModel, User>();
 
                 // Add mapping between RoomViewModel and Room
                 CreateMap<RoomViewModel, Room>()

@@ -1,0 +1,57 @@
+﻿@model ASI.Basecode.Services.ServiceModels.BookingViewModel;
+
+@{
+    var roomId = ViewData["RoomId"];
+}
+
+<div class="modal-header">
+    <h5 class="modal-title">Book Room</h5>
+    <button type="button" class="close modal-close-btn" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div class="modal-body">
+    <form id="createBookingForm" asp-action="Book" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="RoomId" id="RoomId" value=@roomId/>
+        <input type="hidden" asp-for="Status" id="Status" value="Pending"/>
+
+        <!-- Booking Date Picker (Col-2) -->
+        <div class="form-group">
+            <label class="control-label">Select Date</label>
+            <input type="text" id="bookingDate" class="form-control booking-date-input" placeholder="Booking Date" />
+        </div>
+
+        <!-- Check-in Time Picker (Col-2) -->
+        <div class="form-group">
+            <label class="control-label">Select Check In Time</label>
+            <input type="text" id="checkInTime" class="form-control booking-time-input" placeholder="Check-in Time" />
+        </div>
+
+        <!-- Check-out Time Picker (Col-2) -->
+        <div class="form-group">
+            <label class="control-label">Select Check Out Time</label>
+            <input type="text" id="checkOutTime" class="form-control booking-time-input" placeholder="Check-out Time" />
+        </div>
+
+        <!-- Submit Button -->
+        <div class="form-group">
+            <input type="submit" value="Save" class="btn btn-primary" />
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // Check for error message and display Toastr notification
+        var errorMessage = '@TempData["ErrorMessage"]';
+        if (errorMessage) {
+            toastr.error(errorMessage);
+        }
+
+    </script>
+}

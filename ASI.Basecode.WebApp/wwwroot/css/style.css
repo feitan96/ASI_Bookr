@@ -12,6 +12,7 @@
 
 :root {
     --background-color: #f8f9fa;
+    --darkbackground-color: #000;
     --cit-yellow: #FEC601;
     --background-color-login: #610000;
 }

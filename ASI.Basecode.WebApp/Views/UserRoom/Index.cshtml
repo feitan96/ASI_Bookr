@@ -1,0 +1,320 @@
+﻿@using ASI.Basecode.Services.ServiceModels
+@model IEnumerable<ASI.Basecode.Services.ServiceModels.RoomViewModel>
+
+@{
+    ViewData["Title"] = "Index";
+    var amenities = ViewData["AmenitiesList"] as List<AmenityViewModel> ?? new List<AmenityViewModel>();
+}
+
+<h1>Book Room</h1>
+
+<div class="form-row mb-3 align-items-end">
+    <!-- Search Room Name Textbox (Col-2) -->
+    <div class="col-md-2">
+        <input type="text" id="searchRoomName" class="form-control" placeholder="Search Room Name" />
+    </div>
+
+    <!-- Type Dropdown (Col-2) -->
+    <div class="col-md-2">
+        <select id="typeFilter" class="form-control">
+            <option value="">Select Type</option>
+            <option value="MeetingRoom">Meeting Room (Has TV)</option>
+            <option value="PrivateRoom">Private Room (Personal space for any work)</option>
+            <option value="StudyRoom">Study Room (Designed for studying)</option>
+            <option value="ConferenceRoom">Conference Room (Has TV and whiteboard)</option>
+            <option value="WorkshopRoom">Workshop Room (Has whiteboard only)</option>
+        </select>
+    </div>
+
+    <!-- Location Dropdown (Col-2) -->
+    <div class="col-md-2">
+        <select id="locationFilter" class="form-control">
+            <option value="">Select Location</option>
+            <option value="FocusRoom">Focus Room (Dedicated space for quiet work and concentration)</option>
+            <option value="Lounge">Lounge (Casual area for relaxation and informal meetings)</option>
+            <option value="InnovationLab">Innovation Lab (Room designed for brainstorming and project development)</option>
+            <option value="ResourceCenter">Resource Center (Equipped with tools and materials for research and study)</option>
+        </select>
+    </div>
+
+    <!-- Capacity Input (Col-1) -->
+    <div class="col-md-1">
+        <input type="number" id="capacityFilter" class="form-control" min="1" max="20" placeholder="Min Capacity" />
+    </div>
+
+    <!-- Amenities Multi-Select Dropdown (Col-3) -->
+    <div class="col-md-3">
+        <select data-placeholder="Input amenities to filter..." size="2" id="amenitiesFilter" class="form-control chosen-select" multiple name="test">
+            @foreach (var amenity in amenities)
+            {
+                <option value="@amenity.AmenityId">@amenity.AmenityName</option>
+            }
+        </select>
+    </div>
+
+    <!-- Clear Filter Button (Col-2) -->
+    <div class="col-md-2">
+        <button id="clearFiltersButton" class="btn btn-primary btn-block">Clear Search/Filter</button>
+    </div>
+</div>
+
+<!-- Booking Table -->
+<div id="roomTable">
+    @Html.Partial("_RoomList", Model) <!-- Default to show all bookings -->
+</div>
+ 
+<!-- Modal Layer 1-->
+<div id="crudModal1" class="modal fade" tabindex="-1" role="dialog" style="z-index: 1050;">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Layer 2-->
+<div id="crudModal2" class="modal fade" tabindex="-1" role="dialog" style="z-index: 1060;">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Layer 3-->
+<div id="crudModal3" class="modal fade" tabindex="-1" role="dialog" style="z-index: 1070;">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(".chosen-select").chosen({
+            no_results_text: "Oops, amenity not found!"
+        });
+
+        $('#crudModal2').on('shown.bs.modal', function () {
+            // Initialize Booking Date Picker
+            $('#bookingDate').flatpickr({
+                dateFormat: 'Y-m-d',
+                minDate: 'today',
+                onChange: function (selectedDates, dateStr, instance) {
+                    // Enable Check-in Time input only if booking date is selected
+                    if (dateStr) {
+                        $('#checkInTime').prop('disabled', false);
+                    } else {
+                        $('#checkInTime').prop('disabled', true).val(''); // Disable and clear Check-in Time input
+                        $('#checkOutTime').prop('disabled', true).val(''); // Also disable and clear Check-out Time input
+                    }
+                }
+            });
+
+            // Initialize Check-in Time Picker
+            $('#checkInTime').flatpickr({
+                enableTime: true,
+                noCalendar: true,
+                dateFormat: 'h:i K',
+                minTime: '07:00',
+                maxTime: '20:00',
+                minuteIncrement: 30,
+                time_24hr: false,
+                onOpen: function (selectedDates, dateStr, instance) {
+                    // Prevent opening the Check-in Time picker if booking date is not selected
+                    if (!$('#bookingDate').val()) {
+                        instance.close();
+                    }
+                },
+                onChange: function (selectedDates, dateStr, instance) {
+                    // Enable Check-out Time input only if Check-in Time is selected
+                    if (dateStr) {
+                        $('#checkOutTime').prop('disabled', false);
+                    } else {
+                        $('#checkOutTime').prop('disabled', true).val(''); // Disable and clear Check-out Time input
+                    }
+                }
+            });
+
+            // Initialize Check-out Time Picker
+            $('#checkOutTime').flatpickr({
+                enableTime: true,
+                noCalendar: true,
+                dateFormat: 'h:i K',
+                minTime: '07:00',
+                maxTime: '20:00',
+                minuteIncrement: 30,
+                time_24hr: false,
+                onOpen: function (selectedDates, dateStr, instance) {
+                    // Prevent opening the Check-out Time picker if Check-in Time is not selected
+                    if (!$('#checkInTime').val()) {
+                        instance.close();
+                    }
+                }
+            });
+        });
+
+
+        //------------------- Modal Handling: START ----------------------------
+        // Update the openModal function to call initializeRoomSelection with modalId
+        function openModal(url, modalId) {
+            // Show a "Please wait" notification using Toastr
+            toastr.info('Please wait...', 'Loading', { timeOut: 0, extendedTimeOut: 0, closeButton: true });
+
+            // Start the AJAX request
+            $.get(url)
+                .done(function (data) {
+                    // Load the content into the modal body
+                    $(`#${modalId} .modal-body`).html(data);
+
+                    // Initialize components based on modalId
+                    if (modalId === "crudModal1") {
+                    } else if (modalId === "crudModal2") {
+                        closeModal("crudModal1");
+                    } else if (modalId === "crudModal3") {
+                        closeModal("crudModal2");
+                    }
+
+                    // Hide the Toastr notification after loading completes
+                    toastr.clear();
+
+                    // Show the modal after content is fully loaded
+                    $(`#${modalId}`).modal('show');
+                })
+                .fail(function () {
+                    // Show error notification if the AJAX request fails
+                    toastr.error('Failed to load content. Please try again.', 'Error');
+                });
+        }
+
+        // Single function to close any modal dynamically by passing the modal ID
+        function closeModal(modalId) {
+            $(`#${modalId}`).modal('hide'); // Using string interpolation
+        }
+
+        function showModal(modalId) {
+            $(`#${modalId}`).modal('show'); // Using string interpolation
+        }
+
+
+        //Once the close button of the modal is clicked handling of the following modal is done:
+        $(document).on('click', '.modal-close-btn', function () {
+            const currentModal = $(this).closest('.modal');
+            console.log("Modal Close Button clicked");
+
+            // Check which modal is currently active
+            if (currentModal.attr('id') === 'crudModal2') {
+                // Hide modal 2 and go back to modal 1
+                $('#crudModal2').modal('hide');
+                $('#crudModal1').modal('show');
+            } else if (currentModal.attr('id') === 'crudModal3') {
+                // Hide modal 3 and go back to modal 2
+                $('#crudModal3').modal('hide');
+                $('#crudModal2').modal('show');
+            } else {
+                // Default behavior: hide the current modal
+                currentModal.modal('hide');
+            }
+        });
+
+        //------------------- Modal Handling: END ----------------------------
+
+        $(document).on('submit', '#createBookingForm', function (e) {
+            e.preventDefault();
+
+            const bookingDate = $('#bookingDate').val();
+            const checkInTime = $('#checkInTime').val();
+            const checkOutTime = $('#checkOutTime').val();
+
+            const startDateTime = `${bookingDate} ${checkInTime}`;
+            const endDateTime = `${bookingDate} ${checkOutTime}`;
+
+            const formData = new FormData(this);
+            formData.append('StartDateTime', startDateTime);
+            formData.append('EndDateTime', endDateTime);
+
+            $.ajax({
+                type: 'POST',
+                url: $(this).attr('action'),
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function () {
+                    $('#crudModal2').modal('hide');
+                    location.reload();
+                },
+                error: function () {
+                    alert('Failed to book the room.');
+                }
+            });
+
+        });
+
+        // Trigger performSearch when any filter changes
+        $('#searchRoomName, #typeFilter, #locationFilter, #capacityFilter, #amenitiesFilter').on('change keyup', function () {
+            performSearch();
+        });
+
+        // Bind clearFilters function to the Clear Search/Filter button
+        $('#clearFiltersButton').on('click', function () {
+            clearFilters();
+        });
+
+        function performSearch() {
+            const roomName = $('#searchRoomName').val();
+            const roomType = $('#typeFilter').val();
+            const roomLocation = $('#locationFilter').val();
+            const roomCapacity = $('#capacityFilter').val();
+            const selectedAmenities = $('#amenitiesFilter').val() || [];
+
+            const params = {
+                roomName: roomName,
+                type: roomType,
+                location: roomLocation,
+                capacity: roomCapacity,
+                amenities: selectedAmenities
+            };
+
+            const url = '@Url.Action("Search", "UserRoom")?' + $.param(params);
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function (result) {
+                    $('#roomTable').html(result);
+                },
+                error: function () {
+                    alert('An error occurred while filtering the rooms.');
+                }
+            });
+        }
+
+        function clearFilters() {
+            // Clear all filter inputs
+            $('#searchRoomName').val('');
+            $('#typeFilter').val('');
+            $('#locationFilter').val('');
+            $('#capacityFilter').val('');
+            $('#amenitiesFilter').val([]).trigger("chosen:updated");
+
+            // Reload the table with default data
+            $.ajax({
+                url: '@Url.Action("Search", "UserRoom")',
+                type: 'GET',
+                success: function (result) {
+                    $('#roomTable').html(result);
+                },
+                error: function () {
+                    alert('An error occurred while fetching all rooms.');
+                }
+            });
+        }
+    </script>
+}

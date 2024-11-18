@@ -1,5 +1,5 @@
 ﻿@using ASI.Basecode.Services.ServiceModels
-@model ASI.Basecode.Services.ServiceModels.PagedResultRoom<ASI.Basecode.Services.ServiceModels.RoomViewModel>
+@model IEnumerable<ASI.Basecode.Services.ServiceModels.RoomViewModel>
 
 @{
     ViewData["Title"] = "Index";
@@ -67,17 +67,23 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>@Html.DisplayNameFor(model => model.Items.FirstOrDefault().Name)</th>
+                @*<th>@Html.DisplayNameFor(model => model.Items.FirstOrDefault().Name)</th>
                 <th>@Html.DisplayNameFor(model => model.Items.FirstOrDefault().Description)</th>
                 <th>@Html.DisplayNameFor(model => model.Items.FirstOrDefault().Type)</th>
                 <th>@Html.DisplayNameFor(model => model.Items.FirstOrDefault().Capacity)</th>
                 <th>@Html.DisplayNameFor(model => model.Items.FirstOrDefault().Location)</th>
+                <th>Amenities</th>*@
+                <th>@Html.DisplayNameFor(model => model.Name)</th>
+                <th>@Html.DisplayNameFor(model => model.Description)</th>
+                <th>@Html.DisplayNameFor(model => model.Type)</th>
+                <th>@Html.DisplayNameFor(model => model.Capacity)</th>
+                <th>@Html.DisplayNameFor(model => model.Location)</th>
                 <th>Amenities</th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var room in Model.Items)
+            @foreach (var room in Model)
             {
                 <tr>
                     <td>@room.Name</td>
@@ -98,7 +104,7 @@
 </div>
 
 <!-- Pagination Controls -->
-<div class="pagination">
+@*<div class="pagination">
     @if (Model.PageNumber > 1)
     {
         <a class="btn btn-secondary" asp-action="Index" asp-route-pageNumber="@(Model.PageNumber - 1)" asp-route-pageSize="@Model.PageSize">Previous</a>
@@ -111,7 +117,7 @@
     {
         <a class="btn btn-secondary" asp-action="Index" asp-route-pageNumber="@(Model.PageNumber + 1)" asp-route-pageSize="@Model.PageSize">Next</a>
     }
-</div>
+</div>*@
 
 <!-- Modal -->
 <div id="crudModal" class="modal fade" tabindex="-1" role="dialog">
@@ -136,6 +142,7 @@
                 $('#crudModal').modal('show');
                 $.validator.unobtrusive.parse('#crudModal .modal-body');
             });
+
         }
 
         $(document).on('submit', 'form', function (e) {

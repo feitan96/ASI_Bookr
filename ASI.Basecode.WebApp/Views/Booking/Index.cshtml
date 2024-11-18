@@ -16,37 +16,37 @@
 <h1>Booking Management</h1>
 
 <div class="form-row mb-3 align-items-end">
-    <!-- Search Textbox (Col-3) -->
-    <div class="col-md-3">
+    <!-- Search Textbox (Col-2) -->
+    <div class="col-md-2">
         <input type="text" id="searchTextBox" class="form-control" placeholder="Search by ID/User First/Last Name" />
     </div>
 
     <!-- Search By Dropdown (Col-2) -->
-    <div class="col-md-3">
+    <div class="col-md-2">
         <select id="searchByFilter" class="form-control">
             <option value="user">Search by User</option>
             <option value="room">Search by Room</option>
         </select>
     </div>
 
-    <!-- Start DateTime Picker (Col-2) -->
+    <!-- Booking Date Picker (Col-2) -->
     <div class="col-md-2">
-        <input type="text" id="startDateTime" class="form-control booking-time-input" placeholder="Start Date and Time" />
+       <input type="text" id="bookingDate" class="form-control" placeholder="Booking Date" />
     </div>
 
-    <!-- End DateTime Picker (Col-2) -->
+    <!-- Check-in Time Picker (Col-2) -->
     <div class="col-md-2">
-        <input type="text" id="endDateTime" class="form-control booking-time-input" placeholder="End Date and Time" disabled />
+       <input type="text" id="checkInTime" class="form-control" placeholder="Check-in Time"/>
     </div>
 
-    <!-- Search Button (Col-1) -->
-    <div class="col-md-1">
-        <button id="searchButton" class="btn btn-primary btn-block">Search</button>
+    <!-- Check-out Time Picker (Col-2) -->
+    <div class="col-md-2">
+       <input type="text" id="checkOutTime" class="form-control" placeholder="Check-out Time"/>
     </div>
 
-    <!-- Show All Button (Col-1) -->
-    <div class="col-md-1">
-        <button id="showAllButton" class="btn btn-primary btn-block">Show All</button>
+    <!-- Clear Search/Filter (Col-1) -->
+    <div class="col-md-2">
+        <button id="clearSearchFilter" class="btn btn-primary btn-block">Clear Search/Filter</button>
     </div>
 </div>
 
@@ -94,15 +94,60 @@
 
 @section Scripts {
     <script defer>
-        flatpickr('.booking-time-input', {
+        // Initialize Booking Date Picker
+        $('#bookingDate').flatpickr({
+            dateFormat: 'Y-m-d',
+            onChange: function (selectedDates, dateStr, instance) {
+                // Enable Check-in Time input only if booking date is selected
+                if (dateStr) {
+                    $('#checkInTime').prop('disabled', false);
+                } else {
+                    $('#checkInTime').prop('disabled', true).val(''); // Disable and clear Check-in Time input
+                    $('#checkOutTime').prop('disabled', true).val(''); // Also disable and clear Check-out Time input
+                }
+            }
+        });
+
+        // Initialize Check-in Time Picker
+        $('#checkInTime').flatpickr({
             enableTime: true,
-            noCalendar: false,
-            dateFormat: 'Y-m-d h:i K',
-            minDate: 'today',
+            noCalendar: true,
+            dateFormat: 'h:i K',
             minTime: '07:00',
             maxTime: '20:00',
             minuteIncrement: 30,
-            time_24hr: false
+            time_24hr: false,
+            onOpen: function (selectedDates, dateStr, instance) {
+                // Prevent opening the Check-in Time picker if booking date is not selected
+                if (!$('#bookingDate').val()) {
+                    instance.close();
+                }
+            },
+            onChange: function (selectedDates, dateStr, instance) {
+                // Enable Check-out Time input only if Check-in Time is selected
+                if (dateStr) {
+                    $('#checkOutTime').prop('disabled', false);
+                } else {
+                    $('#checkOutTime').prop('disabled', true).val(''); // Disable and clear Check-out Time input
+                }
+            }
+        });
+
+        // Initialize Check-out Time Picker
+        $('#checkOutTime').flatpickr({
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: 'h:i K',
+            minTime: '07:00',
+            maxTime: '20:00',
+            minuteIncrement: 30,
+            time_24hr: false,
+            onOpen: function (selectedDates, dateStr, instance) {
+                // Prevent opening the Check-out Time picker if Check-in Time is not selected
+                if (!$('#checkInTime').val()) {
+                    instance.close();
+                }
+            }
         });
 
         var noRoomSelectedHtmlDefault = '<span id="selectedRoomName" class="d-block mt-2">~ No Room Selected ~</span>';
@@ -374,98 +419,106 @@
             });
         });
 
+        // Handle dynamic placeholder text change
+        $('#searchTextBox').on('change keyup', function () {
+            performSearchBookings();
+        });
+
+        // Handle dynamic placeholder text change
+        $('#searchByFilter').on('change', function () {
+            const searchBy = $(this).val();
+            const placeholderText = searchBy === 'user' ? 'Search by User First/Last Name/ID' : 'Search by Room Name/ID';
+            $('#searchTextBox').attr('placeholder', placeholderText);
+            performSearchBookings();
+        });
+
+        // Validate Check-in and Check-out times
+        $('#checkOutTime').on('change', function () {
+            performSearchBookings();
+        });
+
+        $('#bookingDate').on('change', function () {
+            if ($('#checkInTime').val() && $('#checkOutTime').val()) {
+                performSearchBookings();
+            }
+        });
+
+        // Trigger performSearchBookings if #checkInTime is changed and #checkOutTime has a value
+        $('#checkInTime').on('change', function () {
+            if ($('#checkOutTime').val()) {
+                performSearchBookings();
+            }
+        });
+
+        // Show All Button Click Event
+        $(document).on('click', '#clearSearchFilter', function () {
+            showAllBookings();
+        });
+
+        // Function to perform AJAX search and filtering
+        function performSearchBookings() {
+            const searchText = $('#searchTextBox').val();
+            const searchBy = $('#searchByFilter').val();
+
+            // Get values from the input fields directly
+            const bookingDate = $('#bookingDate').val();
+            const checkInTime = $('#checkInTime').val();
+            const checkOutTime = $('#checkOutTime').val();
+
+            const startDateTime = `${bookingDate} ${checkInTime}`;
+            const endDateTime = `${bookingDate} ${checkOutTime}`;
+
+            console.log(startDateTime);
+            console.log(endDateTime);
+
+            const params = {
+                searchText: searchText,
+                searchBy: searchBy,
+                startDateTime: startDateTime,
+                endDateTime: endDateTime
+            };
+
+            const url = '@Url.Action("SearchBookings", "Booking")?' + $.param(params);
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                success: function (result) {
+                    $('#bookingTable').html(result);
+                },
+                error: function (xhr) {
+                    toastr.error('An error occurred while filtering the bookings.');
+                }
+            });
+        }
+
+        // Function to reset filters and show all bookings
+        function showAllBookings() {
+            $('#searchTextBox').val('');
+            $('#searchByFilter').val('user');
+            $('#bookingDate').val('');
+            $('#checkInTime').val('');
+            $('#checkOutTime').val('');
+            $('#endDateTime').val('').prop('disabled', true);
+
+            $.ajax({
+                url: '@Url.Action("SearchBookings", "Booking")',
+                type: 'GET',
+                success: function (result) {
+                    $('#bookingTable').html(result);
+                },
+                error: function (xhr) {
+                    toastr.error('An error occurred while fetching all bookings.');
+                }
+            });
+        }
+
         $(document).ready(function () {
 
-            // Handle dynamic placeholder text change
-            $('#searchByFilter').on('change', function () {
-                const searchBy = $(this).val();
-                const placeholderText = searchBy === 'user' ? 'Search by User First/Last Name/ID' : 'Search by Room Name/ID';
-                $('#searchTextBox').attr('placeholder', placeholderText);
-            });
-
-            // Enable end date picker only if start date is selected
-            $('#startDateTime').on('change', function () {
-                const startDateTime = $(this).val();
-                if (startDateTime) {
-                    $('#endDateTime').prop('disabled', false);
-                } else {
-                    $('#endDateTime').val('').prop('disabled', true);
-                }
-            });
-
-            // Validate end date selection
-            $('#endDateTime').on('change', function () {
-                const startDateTime = $('#startDateTime').val();
-                const endDateTime = $(this).val();
-
-                if (!startDateTime) {
-                    toastr.error('Please select the start datetime first.');
-                    $(this).val('');
-                    return;
-                }
-
-                if (new Date(endDateTime) < new Date(startDateTime)) {
-                    toastr.error('End datetime cannot be earlier than start datetime.');
-                    $(this).val('');
-                }
-            });
-
-            // Search Button Click Event
-            $(document).on('click', '#searchButton', function () {
-                performSearchBookings();
-            });
-
-            // Show All Button Click Event
-            $(document).on('click', '#showAllButton', function () {
-                showAllBookings();
-            });
-
-            // Function to perform AJAX search and filtering
-            function performSearchBookings() {
-                const searchText = $('#searchTextBox').val();
-                const searchBy = $('#searchByFilter').val();
-                const startDateTime = $('#startDateTime').val();
-                const endDateTime = $('#endDateTime').val();
-
-                const params = {
-                    searchText: searchText,
-                    searchBy: searchBy,
-                    startDateTime: startDateTime,
-                    endDateTime: endDateTime
-                };
-
-                const url = '@Url.Action("SearchBookings", "Booking")?' + $.param(params);
-
-                $.ajax({
-                    url: url,
-                    type: 'GET',
-                    success: function (result) {
-                        $('#bookingTable').html(result);
-                    },
-                    error: function (xhr) {
-                        toastr.error('An error occurred while filtering the bookings.');
-                    }
-                });
-            }
-
-            // Function to reset filters and show all bookings
-            function showAllBookings() {
-                $('#searchTextBox').val('');
-                $('#searchByFilter').val('user');
-                $('#startDateTime').val('');
-                $('#endDateTime').val('').prop('disabled', true);
-
-                $.ajax({
-                    url: '@Url.Action("SearchBookings", "Booking")',
-                    type: 'GET',
-                    success: function (result) {
-                        $('#bookingTable').html(result);
-                    },
-                    error: function (xhr) {
-                        toastr.error('An error occurred while fetching all bookings.');
-                    }
-                });
-            }
+            // Search Button Click Event //Uncomment if added search button
+            // $(document).on('click', '#searchButton', function () {
+            //     performSearchBookings();
+            // });
 
             //----------For User Searching and Filtering Selection Modal (crudModal2) (_UserSelection.cshtml): START ------------------
 
