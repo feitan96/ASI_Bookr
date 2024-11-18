@@ -19,9 +19,7 @@ namespace ASI.Basecode.Data.Repositories
 
         public IQueryable<Booking> GetBookings()
         {
-            var bookings = this.GetDbSet<Booking>().Include(booking => booking.Admin)
-                .Include(booking => booking.Room).ThenInclude(room => room.RoomAmenities).ThenInclude(roomAmenity => roomAmenity.Amenity)
-                .Include(booking => booking.Superadmin)
+            var bookings = this.GetDbSet<Booking>().Include(booking => booking.Room).ThenInclude(room => room.RoomAmenities).ThenInclude(roomAmenity => roomAmenity.Amenity)
                 .Include(booking => booking.User);
 
             return bookings;

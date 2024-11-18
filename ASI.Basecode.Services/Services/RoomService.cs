@@ -22,7 +22,7 @@ namespace ASI.Basecode.Services.Services
 {
     public class RoomService : IRoomService
     {
-        #nullable enable
+#nullable enable
 
         private readonly IRoomRepository _repository;
         private readonly IRoomAmenityService _roomamenityservice;
@@ -108,7 +108,7 @@ namespace ASI.Basecode.Services.Services
         }
 
         // Finds and returns a room by its ID. If no room is found, returns null.
-        public RoomViewModel? GetRoomById(int roomId)   
+        public RoomViewModel? GetRoomById(int roomId)
         {
             Room? room = _repository.GetRooms().Where(x => x.RoomId == roomId).FirstOrDefault();
             if (room != null)
@@ -241,7 +241,8 @@ namespace ASI.Basecode.Services.Services
 
             // Return the filtered list as a List<RoomViewModel>
             var roomModels = rooms.Select(room => new RoomViewModel(room)).ToList();
-            roomModels.ForEach(roomModel => {
+            roomModels.ForEach(roomModel =>
+            {
                 roomModel.Images = _imageservice.GetImagesByRoomId(roomModel.RoomId); //get the associated images of the rooms if it exists on the database
             });
             return roomModels;
@@ -288,46 +289,48 @@ namespace ASI.Basecode.Services.Services
         //}
 
         //Rooms that are booked on a specific date
-        public List<RoomViewModel> GetRoomsByDate(DateTime? date)
-        {
-            var rooms = _repository.GetRooms().AsQueryable();
+        //Commented: Changes due to Booking TableDefinition Changes: 18/11/2024
+        //public List<RoomViewModel> GetRoomsByDate(DateTime? date)
+        //{
+        //    var rooms = _repository.GetRooms().AsQueryable();
 
-            if (date.HasValue)
-            {
-                // Convert the parameter date to date only (without time)
-                var dateOnly = date.Value.Date;
+        //    if (date.HasValue)
+        //    {
+        //        // Convert the parameter date to date only (without time)
+        //        var dateOnly = date.Value.Date;
 
-                // Filter rooms that have bookings on the specified date
-                rooms = rooms.Where(r => r.Bookings.Any(b =>
-                    b.BookingCheckInDateTime.Date == dateOnly
-                ));
-            }
+        //        // Filter rooms that have bookings on the specified date
+        //        rooms = rooms.Where(r => r.Bookings.Any(b =>
+        //            b.BookingCheckInDateTime.Date == dateOnly
+        //        ));
+        //    }
 
-            return rooms.Select(room => new RoomViewModel(room)).ToList();
-        }
+        //    return rooms.Select(room => new RoomViewModel(room)).ToList();
+        //}
 
         // Alternative implementation if you want rooms that are NOT booked on that date
-        public List<RoomViewModel> GetAvailableRoomsByDate(DateTime? date)
-        {
-            var rooms = _repository.GetRooms().AsQueryable();
+        //Commented: Changes due to Booking TableDefinition Changes: 18/11/2024
+        //public List<RoomViewModel> GetAvailableRoomsByDate(DateTime? date)
+        //{
+        //    var rooms = _repository.GetRooms().AsQueryable();
 
-            if (date.HasValue)
-            {
-                // Convert the parameter date to date only (without time)
-                var dateOnly = date.Value.Date;
+        //    if (date.HasValue)
+        //    {
+        //        // Convert the parameter date to date only (without time)
+        //        var dateOnly = date.Value.Date;
 
-                // Filter rooms that don't have bookings on the specified date
-                rooms = rooms.Where(r => !r.Bookings.Any(b =>
-                    b.BookingCheckInDateTime.Date == dateOnly
-                ));
-            }
+        //        // Filter rooms that don't have bookings on the specified date
+        //        rooms = rooms.Where(r => !r.Bookings.Any(b =>
+        //            b.BookingCheckInDateTime.Date == dateOnly
+        //        ));
+        //    }
 
-            var roomModels = rooms.Select(room => new RoomViewModel(room)).ToList();
-            roomModels.ForEach(roomModel => {
-                roomModel.Images = _imageservice.GetImagesByRoomId(roomModel.RoomId); //get the associated images of the rooms if it exists on the database
-            });
-            return roomModels;
-        }
+        //    var roomModels = rooms.Select(room => new RoomViewModel(room)).ToList();
+        //    roomModels.ForEach(roomModel => {
+        //        roomModel.Images = _imageservice.GetImagesByRoomId(roomModel.RoomId); //get the associated images of the rooms if it exists on the database
+        //    });
+        //    return roomModels;
+        //}
 
         #endregion
 
@@ -357,7 +360,7 @@ namespace ASI.Basecode.Services.Services
         public void HardDeleteRoom(int roomId)
         {
             var room = _repository.GetRooms().Where(x => x.RoomId.Equals(roomId)).FirstOrDefault();
-            if(room != null)
+            if (room != null)
             {
                 _repository.DeleteRoom(room);
             }
@@ -376,23 +379,24 @@ namespace ASI.Basecode.Services.Services
         #endregion
 
         #region Others
-        public bool IsRoomAvailableDate(int roomId, DateTime dateTime)
-        {
-            Room? room = GetRoomModelById(roomId);
-            if (room == null)
-            {
-                throw new ArgumentException($"RoomId {roomId} queried doesn't exist, please try again");
-            }
+        //Commented: Changes due to Booking TableDefinition Changes: 18/11/2024
+        //public bool IsRoomAvailableDate(int roomId, DateTime dateTime)
+        //{
+        //    Room? room = GetRoomModelById(roomId);
+        //    if (room == null)
+        //    {
+        //        throw new ArgumentException($"RoomId {roomId} queried doesn't exist, please try again");
+        //    }
 
-            var bookingsOnDate = room.Bookings
-                .Where(b => b.BookingCheckInDateTime.Date == dateTime.Date);
+        //    var bookingsOnDate = room.Bookings
+        //        .Where(b => b.BookingCheckInDateTime.Date == dateTime.Date);
 
-            if (!bookingsOnDate.Any()) return true;
+        //    if (!bookingsOnDate.Any()) return true;
 
-            // Room is available if all bookings for that date are either disapproved or cancelled
-            return bookingsOnDate.All(b =>
-                b.Status?.ToLower() != "approved");
-        }
+        //    // Room is available if all bookings for that date are either disapproved or cancelled
+        //    return bookingsOnDate.All(b =>
+        //        b.Status?.ToLower() != "approved");
+        //}
 
         //public List<string>? ListAmenitiesByRoomId(int roomId)
         //{
@@ -413,81 +417,84 @@ namespace ASI.Basecode.Services.Services
         //    }
         //}
 
-        public List<DateTime>? GetRoomBookingDatesByRoomId(int roomId){
-            Room? room = GetRoomModelById(roomId);
-            return (room != null) ? room.Bookings.Select(s => s.BookingCheckInDateTime).ToList(): null;
-        }
+        //Commented: Changes due to Booking TableDefinition Changes: 18/11/2024 :START
+        //public List<DateTime>? GetRoomBookingDatesByRoomId(int roomId){
+        //        Room? room = GetRoomModelById(roomId);
+        //        return (room != null) ? room.Bookings.Select(s => s.BookingCheckInDateTime).ToList(): null;
+        //    }
 
-        public List<DateTime>? GetRoomBookingDatesByRoomName(string roomName, bool fuzzyMatching)
-        {
-            var room = GetRoomByName(roomName, fuzzyMatching);
-            if (room != null)
-            {
-                return GetRoomBookingDatesByRoomId(room.RoomId);
-            }
-            else
-            {
-                return null;
-            }
-        }
+        //    public List<DateTime>? GetRoomBookingDatesByRoomName(string roomName, bool fuzzyMatching)
+        //    {
+        //        var room = GetRoomByName(roomName, fuzzyMatching);
+        //        if (room != null)
+        //        {
+        //            return GetRoomBookingDatesByRoomId(room.RoomId);
+        //        }
+        //        else
+        //        {
+        //            return null;
+        //        }
+        //    }
 
-        public List<User>? GetBookedUsersByRoomId(int roomId)
-        {
-            var room = GetRoomModelById(roomId);
-            return (room != null) ?room.Bookings.Select(b => b.User).Distinct().ToList(): null;
-        }
+        //    public List<User>? GetBookedUsersByRoomId(int roomId)
+        //    {
+        //        var room = GetRoomModelById(roomId);
+        //        return (room != null) ?room.Bookings.Select(b => b.User).Distinct().ToList(): null;
+        //    }
 
 
 
-        public List<User>? GetBookedUsersByRoomName(string roomName, bool fuzzyMatching)
-        {
-            var room = GetRoomByName(roomName, fuzzyMatching);
-            if (room != null)
-            {
-                return GetBookedUsersByRoomId(room.RoomId);
-            }
-            else
-            {
-                return null;
-            }
-        }
+        //    public List<User>? GetBookedUsersByRoomName(string roomName, bool fuzzyMatching)
+        //    {
+        //        var room = GetRoomByName(roomName, fuzzyMatching);
+        //        if (room != null)
+        //        {
+        //            return GetBookedUsersByRoomId(room.RoomId);
+        //        }
+        //        else
+        //        {
+        //            return null;
+        //        }
+        //    }
 
-        public List<string>? GetBookedUsersNameByRoomId(int roomId)
-        {
-            var room = GetRoomModelById(roomId);
-            if (room == null) return null;
+        //    public List<string>? GetBookedUsersNameByRoomId(int roomId)
+        //    {
+        //        var room = GetRoomModelById(roomId);
+        //        if (room == null) return null;
 
-            return room.Bookings
-                .Select(b => FormatUserName(b.User))
-                .Where(name => !string.IsNullOrEmpty(name))
-                .Distinct()
-                .ToList();
-        }
+        //        return room.Bookings
+        //            .Select(b => FormatUserName(b.User))
+        //            .Where(name => !string.IsNullOrEmpty(name))
+        //            .Distinct()
+        //            .ToList();
+        //    }
 
-        public List<string>? GetBookedUsersNameByRoomName(string roomName, bool fuzzyMatching)
-        {
-            var room = GetRoomByName(roomName, fuzzyMatching);
-            if (room != null)
-            {
-                return GetBookedUsersNameByRoomId(room.RoomId);
-            }
-            else
-            {
-                return null;
-            }
-        }
+        //    public List<string>? GetBookedUsersNameByRoomName(string roomName, bool fuzzyMatching)
+        //    {
+        //        var room = GetRoomByName(roomName, fuzzyMatching);
+        //        if (room != null)
+        //        {
+        //            return GetBookedUsersNameByRoomId(room.RoomId);
+        //        }
+        //        else
+        //        {
+        //            return null;
+        //        }
+        //    }
 
-        string FormatUserName(User user)
-        {
-            string firstName = user.FirstName?.Trim() ?? "";
-            string lastName = user.LastName?.Trim() ?? "";
+        //    string FormatUserName(User user)
+        //    {
+        //        string firstName = user.FirstName?.Trim() ?? "";
+        //        string lastName = user.LastName?.Trim() ?? "";
 
-            if (string.IsNullOrEmpty(firstName) && string.IsNullOrEmpty(lastName))
-                return "";
+        //        if (string.IsNullOrEmpty(firstName) && string.IsNullOrEmpty(lastName))
+        //            return "";
 
-            return $"{firstName} {lastName}".Trim();
-        }
+        //        return $"{firstName} {lastName}".Trim();
+        //    }
+        //Commented: Changes due to Booking TableDefinition Changes: 18/11/2024 :END
 
         #endregion
     }
 }
+
