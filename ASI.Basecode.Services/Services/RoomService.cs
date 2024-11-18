@@ -286,7 +286,7 @@ namespace ASI.Basecode.Services.Services
         //}
 
         //Rooms that are booked on a specific date
-        public List<RoomViewModel> GetRoomsByDate(DateTime? date)
+        /*public List<RoomViewModel> GetRoomsByDate(DateTime? date)
         {
             var rooms = _repository.GetRooms().AsQueryable();
 
@@ -303,10 +303,10 @@ namespace ASI.Basecode.Services.Services
             }
 
             return rooms.Select(room => new RoomViewModel(room)).ToList();
-        }
+        }*/
 
         // Alternative implementation if you want rooms that are NOT booked on that date
-        public List<RoomViewModel> GetAvailableRoomsByDate(DateTime? date)
+       /* public List<RoomViewModel> GetAvailableRoomsByDate(DateTime? date)
         {
             var rooms = _repository.GetRooms().AsQueryable();
 
@@ -327,7 +327,7 @@ namespace ASI.Basecode.Services.Services
                 roomModel.Images = _imageservice.GetImagesByRoomId(roomModel.RoomId); //get the associated images of the rooms if it exists on the database
             });
             return roomModels;
-        }
+        }*/
 
         #endregion
 
@@ -376,7 +376,7 @@ namespace ASI.Basecode.Services.Services
         #endregion
 
         #region Others
-        public bool IsRoomAvailableDate(int roomId, DateTime dateTime)
+        /*public bool IsRoomAvailableDate(int roomId, DateTime dateTime)
         {
             Room? room = GetRoomModelById(roomId);
             if (room == null)
@@ -392,7 +392,7 @@ namespace ASI.Basecode.Services.Services
             // Room is available if all bookings for that date are either disapproved or cancelled
             return bookingsOnDate.All(b =>
                 b.Status?.ToLower() != "approved");
-        }
+        }*/
 
         //public List<string>? ListAmenitiesByRoomId(int roomId)
         //{
@@ -413,7 +413,7 @@ namespace ASI.Basecode.Services.Services
         //    }
         //}
 
-        public List<DateTime?>? GetRoomBookingDatesByRoomId(int roomId){
+        /*public List<DateTime?>? GetRoomBookingDatesByRoomId(int roomId){
             Room? room = GetRoomModelById(roomId);
             return (room != null) ? room.Bookings.Select(s => s.BookedDate).ToList(): null;
         }
@@ -429,7 +429,7 @@ namespace ASI.Basecode.Services.Services
             {
                 return null;
             }
-        }
+        }*/
 
         public List<User>? GetBookedUsersByRoomId(int roomId)
         {

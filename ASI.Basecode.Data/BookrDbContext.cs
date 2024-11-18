@@ -21,6 +21,7 @@ namespace ASI.Basecode.Data
         public virtual DbSet<Amenity> Amenities { get; set; }
         public virtual DbSet<Booking> Bookings { get; set; }
         public virtual DbSet<Image> Images { get; set; }
+        public virtual DbSet<RecurringBooking> RecurringBookings { get; set; }
         public virtual DbSet<Room> Rooms { get; set; }
         public virtual DbSet<RoomAmenity> RoomAmenities { get; set; }
         public virtual DbSet<Superadmin> Superadmins { get; set; }
@@ -31,7 +32,7 @@ namespace ASI.Basecode.Data
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Addr=localhost; database=BookrDb; Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True");
+                optionsBuilder.UseSqlServer("Addr=localhost; database=BookrDb; Trusted_Connection=True; MultipleActiveResultSets=true; TrustServerCertificate=True");
             }
         }
 
@@ -49,36 +50,30 @@ namespace ASI.Basecode.Data
 
             modelBuilder.Entity<Amenity>(entity =>
             {
-                entity.Property(e => e.AmenityName)
-                    .HasMaxLength(250)
-                    .HasColumnName("Amenity");
+                entity.Property(e => e.AmenityName).HasMaxLength(250);
             });
 
             modelBuilder.Entity<Booking>(entity =>
             {
                 entity.ToTable("Booking");
 
+                entity.Property(e => e.BookingEndDate).HasColumnType("date");
+
+                entity.Property(e => e.BookingStartDate).HasColumnType("date");
+
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
                 entity.Property(e => e.Status).HasMaxLength(50);
 
-                entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
+                entity.Property(e => e.Title).HasMaxLength(100);
 
-                entity.HasOne(d => d.Admin)
-                    .WithMany(p => p.Bookings)
-                    .HasForeignKey(d => d.AdminId)
-                    .HasConstraintName("FK_Booking_Admin");
+                entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Room)
                     .WithMany(p => p.Bookings)
                     .HasForeignKey(d => d.RoomId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Booking_Room");
-
-                entity.HasOne(d => d.Superadmin)
-                    .WithMany(p => p.Bookings)
-                    .HasForeignKey(d => d.SuperadminId)
-                    .HasConstraintName("FK_Booking_Superadmin");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Bookings)
@@ -95,6 +90,23 @@ namespace ASI.Basecode.Data
                     .WithMany(p => p.Images)
                     .HasForeignKey(d => d.RoomId)
                     .HasConstraintName("FK_Images_Room");
+            });
+
+            modelBuilder.Entity<RecurringBooking>(entity =>
+            {
+                entity.HasKey(e => e.RecurringId);
+
+                entity.ToTable("RecurringBooking");
+
+                entity.Property(e => e.Day)
+                    .IsRequired()
+                    .HasMaxLength(10);
+
+                entity.HasOne(d => d.Booking)
+                    .WithMany(p => p.RecurringBookings)
+                    .HasForeignKey(d => d.BookingId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_RecurringBooking_Booking");
             });
 
             modelBuilder.Entity<Room>(entity =>
@@ -182,11 +194,11 @@ namespace ASI.Basecode.Data
                     .IsRequired()
                     .HasMaxLength(250);
 
+                entity.Property(e => e.PasswordResetToken).HasMaxLength(50);
+
                 entity.Property(e => e.PhoneNumber).HasMaxLength(250);
 
                 entity.Property(e => e.ResetTokenExpiry).HasColumnType("datetime");
-
-                entity.Property(e => e.PasswordResetToken).HasMaxLength(50);
 
                 entity.Property(e => e.Role)
                     .IsRequired()
