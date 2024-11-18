@@ -49,7 +49,9 @@ namespace ASI.Basecode.Data
 
             modelBuilder.Entity<Amenity>(entity =>
             {
-                entity.Property(e => e.AmenityName).HasMaxLength(250);
+                entity.Property(e => e.AmenityName)
+                    .HasMaxLength(250)
+                    .HasColumnName("Amenity");
             });
 
             modelBuilder.Entity<Booking>(entity =>
