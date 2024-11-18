@@ -29,6 +29,10 @@ namespace ASI.Basecode.Services.ServiceModels
         public int? AdminId { get; set; }
         public int? SuperadminId { get; set; }
 
+        public DateTime BookingStartDate { get; set; }
+        public TimeSpan CheckInTime { get; set; }
+        public TimeSpan CheckOutTime { get; set; }
+
         [Required]
         public DateTime BookingCheckInDateTime { get; set; }
 
