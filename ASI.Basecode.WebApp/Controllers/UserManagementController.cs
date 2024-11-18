@@ -148,11 +148,11 @@ namespace ASI.Basecode.WebApp.Controllers
             try
             {
                 _userService.UpdateUserRole(id, "Admin");
-                return Json(new { success = true, message = "User promoted successfully." });
+                return Json(new { success = true, successMessage = "User promoted successfully." });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = ex.Message });
+                return Json(new { success = false, errorMessage = ex.Message });
             }
         }
 
@@ -163,11 +163,11 @@ namespace ASI.Basecode.WebApp.Controllers
             try
             {
                 _userService.UpdateUserRole(id, "User");
-                return Json(new { success = true, message = "User demoted successfully." });
+                return Json(new { success = true, successMessage = "User demoted successfully." });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = ex.Message });
+                return Json(new { success = false, errorMessage = ex.Message });
             }
         }
 
