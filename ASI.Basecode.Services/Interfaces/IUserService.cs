@@ -18,5 +18,7 @@ namespace ASI.Basecode.Services.Interfaces
         Status ResetPassword(ResetPasswordModel model);
         ChangePassToken IsTokenValid(string token);
         List<UserViewModel> GetAllUser();
+        void UpdateUserRole(int userId, string newRole);
+
     }
 }

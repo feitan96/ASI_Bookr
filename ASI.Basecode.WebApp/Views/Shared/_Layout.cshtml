@@ -17,7 +17,7 @@
 <body>
     @if (User.IsInRole("Admin") || User.IsInRole("Superadmin"))
     {
-        <!-- Sidebar and content for Admin and SuperAdmin -->
+        <!-- Sidebar and content for Admin and Superadmin -->
         @Html.Partial("_Sidebar")
         <div style="margin-left: 250px; padding: 20px;">
             <main role="main">

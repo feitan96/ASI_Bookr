@@ -20,7 +20,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var user in Model)
+        @foreach (var user in Model.Where(u => u.Role != "Superadmin"))
         {
             <tr>
                 <td>@user.FirstName</td>
@@ -32,10 +32,20 @@
                     <button onclick="openModal('@Url.Action("View", "UserManagement", new { Id = user.Id })')" class="btn btn-info btn-sm">View</button>
                     <button onclick="openModal('@Url.Action("Edit", "UserManagement", new { Id = user.Id })')" class="btn btn-warning btn-sm">Edit</button>
                     <button onclick="openModal('@Url.Action("Delete", "UserManagement", new { Id = user.Id })')" class="btn btn-danger btn-sm">Delete</button>
+
+                    @if (User.IsInRole("Superadmin"))
+                    {
+                        <button onclick="openRoleChangeModal('@Url.Action("ChangeRoleModal", "UserManagement", new { id = user.Id })')"
+                                class="btn btn-success btn-sm">
+                            @(user.Role == "User" ? "Promote to Admin" : "Demote to User")
+                        </button>
+                    }
+
                 </td>
             </tr>
         }
     </tbody>
+
 </table>
 
 <!-- Modal -->
@@ -85,6 +95,31 @@
                     } else {
                         alert('An error occurred. Please try again.');
                     }
+                }
+            });
+        });
+
+        function openRoleChangeModal(url) {
+            $.get(url, function (data) {
+                $('#crudModal .modal-body').html(data); // Load partial view content
+                $('#crudModal').modal('show');         // Show modal
+            });
+        }
+
+        // Handle form submission inside modal
+        $(document).on('submit', '#changeRoleForm', function (e) {
+            e.preventDefault();
+
+            const form = $(this);
+            const url = form.attr('action');
+            const formData = form.serialize();
+
+            $.post(url, formData, function (response) {
+                if (response.success) {
+                    $('#crudModal').modal('hide');
+                    location.reload(); // Reload page to reflect changes
+                } else {
+                    alert(response.message); // Show error message
                 }
             });
         });

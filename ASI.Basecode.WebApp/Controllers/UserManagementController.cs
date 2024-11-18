@@ -138,6 +138,49 @@ namespace ASI.Basecode.WebApp.Controllers
             _userService.HardDelete(Id);
             return RedirectToAction("Index");
         }
+
+        [HttpGet]
+        [Authorize(Roles = "Superadmin")]
+        public IActionResult ChangeRoleModal(int id)
+        {
+            var user = _userService.GetUser(id);
+            if (user == null)
+                return NotFound("User not found.");
+
+            return PartialView("_ChangeRoleModal", user);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Superadmin")]
+        public IActionResult Promote(int id)
+        {
+            try
+            {
+                _userService.UpdateUserRole(id, "Admin");
+                return Json(new { success = true, message = "User promoted successfully." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Superadmin")]
+        public IActionResult Demote(int id)
+        {
+            try
+            {
+                _userService.UpdateUserRole(id, "User");
+                return Json(new { success = true, message = "User demoted successfully." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+
         #endregion
     }
 }
