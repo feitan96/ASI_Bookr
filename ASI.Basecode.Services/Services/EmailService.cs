@@ -50,7 +50,7 @@ namespace ASI.Basecode.Services.Services
         }
         public void SendPasswordResetEmail(string email, string resetToken)
         {
-            var resetLink = $"https://localhost:55151/Account/ResetPassword?token={resetToken}";
+            var resetLink = $"https://localhost:2317/Account/ResetPassword?token={resetToken}";
             var subject = "Password Reset Request";
             var body = $"Click the link below to reset your password:\n\n{resetLink}";
 
