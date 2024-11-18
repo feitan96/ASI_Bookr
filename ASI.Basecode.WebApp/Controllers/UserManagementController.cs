@@ -40,7 +40,7 @@ namespace ASI.Basecode.WebApp.Controllers
                                Value = role.ToString(),
                                Text = role.ToString()
                            }).ToList();
-            if (userRole == "Superadmin") return allRoles;
+            if (userRole == "Superadmin") return allRoles.Where(role => role.Value != "Superadmin").ToList();
             if (userRole == "Admin") return allRoles.Where(role => role.Value != "Superadmin" && role.Value != "Admin").ToList();
 
             return null;
