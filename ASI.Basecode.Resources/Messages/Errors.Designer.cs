@@ -70,6 +70,15 @@ namespace ASI.Basecode.Resources.Messages {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Password must have atleast 1 uppercase letter, digit, special character, and a minimum of 8 characters.
+        /// </summary>
+        public static string PasswordError {
+            get {
+                return ResourceManager.GetString("PasswordError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to RoomAmenity mapping already exists!.
         /// </summary>
         public static string RoomAmenityExists {

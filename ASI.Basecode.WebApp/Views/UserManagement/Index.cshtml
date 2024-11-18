@@ -85,16 +85,21 @@
                 processData: false,
                 contentType: false,
                 success: function (response) {
-                    $('#crudModal').modal('hide');
-                    location.reload(); // Reload page or update data to reflect changes
+                    if (response.success === false) {
+                        toastr.error(response.errorMessage);
+                        return false; // Keep the modal open
+                    } else {
+                        $('#crudModal').modal('hide');
+                        toastr.success(response.successMessage);
+
+                        // location.reload();
+                        $.get('@Url.Action("Index", "UserManagement")', function (data) {
+                            $('table tbody').html($(data).find('table tbody').html());
+                        });
+                    }
                 },
                 error: function (xhr) {
-                    if (xhr.status === 400) { // Bad request due to validation
-                        $('#crudModal .modal-body').html(xhr.responseText);
-                        $.validator.unobtrusive.parse('#crudModal .modal-body'); // Re-parse validation for new content
-                    } else {
-                        alert('An error occurred. Please try again.');
-                    }
+                    toastr.error('An error occurred. Please try again.');
                 }
             });
         });

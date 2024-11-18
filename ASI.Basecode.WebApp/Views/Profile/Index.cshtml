@@ -77,18 +77,22 @@ else
                 data: formData,
                 processData: false,
                 contentType: false,
-                success: function () {
-                    $('#editProfileModal').modal('hide'); // Close modal on success
-                    location.reload(); // Reload the page to reflect changes
+                success: function (response) {
+                    if (response.success === false) {
+                        toastr.error(response.errorMessage);
+                        return false; // Keep the modal open
+                    } else {
+                        $('#editProfileModal').modal('hide');
+                        toastr.success(response.successMessage);
+
+                        // location.reload();
+                        $.get('@Url.Action("Index", "Profile")', function (data) {
+                            $('.card-body').html($(data).find('.card-body').html());
+                        });
+                    }
                 },
                 error: function (xhr) {
-                    if (xhr.status === 400) {
-                        // If there are validation errors, reload the modal content
-                        $('#editProfileModal .modal-body').html(xhr.responseText);
-                        $.validator.unobtrusive.parse('#editProfileModal .modal-body'); // Reinitialize validation
-                    } else {
-                        alert('An error occurred. Please try again.');
-                    }
+                        toastr.error('An error occurred. Please try again.');
                 }
             });
         });
