@@ -17,6 +17,7 @@ using FuzzySharp.SimilarityRatio.Scorer.StrategySensitive;
 using FuzzySharp.SimilarityRatio;
 using System.Data.Entity.Core.Objects.DataClasses;
 using LinqKit;
+using static ASI.Basecode.Services.ServiceModels.RoomViewModel;
 
 namespace ASI.Basecode.Services.Services
 {
@@ -67,25 +68,33 @@ namespace ASI.Basecode.Services.Services
 
         #region Read (CRUD)
 
-        public PagedResultRoom<RoomViewModel> GetRooms(int pageNumber, int pageSize)
+        public PaginatedList<RoomViewModel> GetPagedRooms(string roomName, string type, string location, int? capacity, List<int> amenities, int pageIndex, int pageSize)
         {
-            var rooms = _repository.GetRooms()
-                                   .Where(x => (bool)!x.IsDeleted)
-                                   .Select(r => new RoomViewModel(r))
-                                   .ToList();
+            var query = _repository.GetRooms().Where(r => (bool)!r.IsDeleted);
 
-            var totalRecords = rooms.Count();
-            var paginatedRooms = rooms.Skip((pageNumber - 1) * pageSize)
-                                      .Take(pageSize)
-                                      .ToList();
+            // Apply filters (if any)
+            if (!string.IsNullOrEmpty(roomName))
+                query = query.Where(r => r.Name.Contains(roomName));
 
-            return new PagedResultRoom<RoomViewModel>
-            {
-                Items = paginatedRooms,
-                TotalRecords = totalRecords,
-                PageNumber = pageNumber,
-                PageSize = pageSize
-            };
+            if (!string.IsNullOrEmpty(type))
+                query = query.Where(r => r.Type == type);
+
+            if (!string.IsNullOrEmpty(location))
+                query = query.Where(r => r.Location == location);
+
+            if (capacity.HasValue)
+                query = query.Where(r => r.Capacity >= capacity);
+
+            if (amenities != null && amenities.Any())
+                query = query.Where(r => amenities.All(a => r.RoomAmenities.Any(ra => ra.AmenityId == a)));
+
+            var paginatedRooms = PaginatedList<RoomViewModel>.Create(
+                query.Select(r => new RoomViewModel(r)),
+                pageIndex,
+                pageSize
+            );
+
+            return paginatedRooms;
         }
 
 
@@ -93,17 +102,6 @@ namespace ASI.Basecode.Services.Services
         public List<RoomViewModel> GetRooms()
         {
             var rooms = _repository.GetRooms().Where(x => x.IsDeleted == false).Select(room => new RoomViewModel(room)).ToList();
-            //rooms.ForEach(room =>
-            //{
-            //    room.RoomAmenities = _roomamenityservice.GetRoomAmenities(room.RoomId);
-            //    room.RoomAmenities.ForEach(
-            //        roomAmenity =>
-            //        {
-            //            roomAmenity.Amenity = _amenityservice.GetAmenity(roomAmenity.AmenityId);
-            //        }
-            //        );
-            //    room.Images = _imageservice.GetImagesByRoomId(room.RoomId); //get the associated images of the rooms if it exists on the database
-            //});
             return rooms;
         }
 

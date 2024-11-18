@@ -42,15 +42,13 @@ namespace ASI.Basecode.Services.Services
         public void UpdateUser(ProfileViewModel model, int userId)
         {
             var user = _repository.GetUsers().Where(x => x.Id == model.Id && !(bool)x.IsDeleted).FirstOrDefault();
-            if (user == null)
-            {
-                throw new ArgumentNullException("User not found or has been deleted.");
-            }
+
             // Optional check to ensure unique email if updating email
-            // if (model.Email != user.Email && _repository.UserExists(model.Email))
-            // {
-            //     throw new InvalidDataException(Resources.Messages.Errors.UserExists);
-            // }
+            if (model.Email != user.Email)
+            {
+                if (_repository.UserExists(model.Email)) throw new InvalidDataException(Resources.Messages.Errors.UserExists);
+            }
+
             _mapper.Map(model, user);
             user.UpdatedDate = DateTime.Now;
             user.UpdatedBy = userId;

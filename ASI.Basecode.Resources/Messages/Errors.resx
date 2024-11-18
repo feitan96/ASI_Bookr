@@ -132,4 +132,7 @@
   <data name="UserExists" xml:space="preserve">
     <value>Email already exists!</value>
   </data>
+  <data name="PasswordError" xml:space="preserve">
+    <value>Password must have atleast 1 uppercase letter, digit, special character, and a minimum of 8 characters</value>
+  </data>
 </root>

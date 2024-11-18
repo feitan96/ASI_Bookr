@@ -45,11 +45,18 @@ namespace ASI.Basecode.WebApp.Controllers
         [HttpGet]
         public IActionResult Edit()
         {
-            if (Id == null) throw new ArgumentNullException("Logged in user ID not found.");
-            var userIdClaim = int.Parse(Id);
+            try
+            {
+                if (Id == null) throw new ArgumentNullException("Logged in user ID not found.");
+                var userIdClaim = int.Parse(Id);
 
-            var data = _profileService.GetUser(userIdClaim);
-            return PartialView("_Edit", data);
+                var data = _profileService.GetUser(userIdClaim);
+                return PartialView("_Edit", data);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, errorMessage = ex.Message });
+            }
         }
         #endregion
 
@@ -63,18 +70,12 @@ namespace ASI.Basecode.WebApp.Controllers
                 var userIdClaim = int.Parse(Id);
 
                 _profileService.UpdateUser(model, userIdClaim);
-                return RedirectToAction("Index");
+                return Json(new { success = true, successMessage = "User updated successfully" });
             }
-            catch (ArgumentNullException ex)
+            catch (Exception ex)
             {
-                TempData["ErrorMessage"] = ex.Message;
+                return Json(new { success = false, errorMessage = ex.Message });
             }
-            catch (InvalidDataException ex)
-            {
-                TempData["ErrorMessage"] = ex.Message;
-            }
-
-            return View();
         }
         #endregion
     }
