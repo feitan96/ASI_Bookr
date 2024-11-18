@@ -31,15 +31,19 @@ namespace ASI.Basecode.WebApp.Controllers
         {
             this._userService = userService;
         }
-        private List<SelectListItem> GetRoles()
+        private List<SelectListItem> GetRoles(string userRole)
         {
-            return Enum.GetValues(typeof(ASI.Basecode.Resources.Constants.Enums.Roles))
-                       .Cast<ASI.Basecode.Resources.Constants.Enums.Roles>()
-                       .Select(role => new SelectListItem
-                       {
-                           Value = role.ToString(),
-                           Text = role.ToString()
-                       }).ToList();
+            var allRoles = Enum.GetValues(typeof(ASI.Basecode.Resources.Constants.Enums.Roles))
+                           .Cast<ASI.Basecode.Resources.Constants.Enums.Roles>()
+                           .Select(role => new SelectListItem
+                           {
+                               Value = role.ToString(),
+                               Text = role.ToString()
+                           }).ToList();
+            if (userRole == "Superadmin") return allRoles.Where(role => role.Value != "Superadmin").ToList();
+            if (userRole == "Admin") return allRoles.Where(role => role.Value != "Superadmin" && role.Value != "Admin").ToList();
+
+            return null;
         }
 
         public IActionResult Index()
@@ -53,14 +57,13 @@ namespace ASI.Basecode.WebApp.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            ViewBag.Roles = GetRoles();
+            ViewBag.Roles = GetRoles(UserRole);
             return PartialView("_Create");
         }
 
         [HttpGet]
         public IActionResult Edit(int Id)
         {
-            ViewBag.Roles = GetRoles();
             var data = _userService.GetUser(Id);
             return PartialView("_Edit", data);
         }
@@ -87,22 +90,13 @@ namespace ASI.Basecode.WebApp.Controllers
             try
             {
                 _userService.AddUser(model, int.Parse(Id));
-                return RedirectToAction("Index");
-            }
-            catch (ArgumentNullException ex)
-            {
-                TempData["ErrorMessage"] = ex.Message;
-            }
-            catch (InvalidDataException ex)
-            {
-                TempData["ErrorMessage"] = ex.Message;
+                //return RedirectToAction("Index");
+                return Json(new { success = true, successMessage = "User created successfully" });
             }
             catch (Exception ex)
             {
-                TempData["ErrorMessage"] = Resources.Messages.Errors.ServerError;
+                return Json(new { success = false, errorMessage = ex.Message });
             }
-            ViewBag.Roles = GetRoles();
-            return View();
         }
 
         [HttpPost]
@@ -111,32 +105,29 @@ namespace ASI.Basecode.WebApp.Controllers
             try
             {
                 _userService.UpdateUser(model, int.Parse(Id));
-                return RedirectToAction("Index");
+                //return RedirectToAction("Index");
+                return Json(new { success = true, successMessage = "User updated successfully"});
             }
-            catch (ArgumentNullException ex)
+            catch (Exception ex)
             {
-                TempData["ErrorMessage"] = ex.Message;
+                return Json(new { success = false, errorMessage = ex.Message });
             }
-            catch (InvalidDataException ex)
-            {
-                TempData["ErrorMessage"] = ex.Message;;
-            }
-            ViewBag.Roles = GetRoles();
-            return View();
         }
 
         [HttpPost]
         public IActionResult SoftDelete(int Id)
         {
             _userService.SoftDelete(Id);
-            return RedirectToAction("Index");
+            //return RedirectToAction("Index");
+            return Json(new { success = true, successMessage = "User removed successfully" });
         }
         //unused
         [HttpPost]
         public IActionResult HardDelete(int Id)
         {
             _userService.HardDelete(Id);
-            return RedirectToAction("Index");
+            //return RedirectToAction("Index");
+            return Json(new { success = true, successMessage = "User deleted successfully" });
         }
 
         [HttpGet]
@@ -157,11 +148,11 @@ namespace ASI.Basecode.WebApp.Controllers
             try
             {
                 _userService.UpdateUserRole(id, "Admin");
-                return Json(new { success = true, message = "User promoted successfully." });
+                return Json(new { success = true, successMessage = "User promoted successfully." });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = ex.Message });
+                return Json(new { success = false, errorMessage = ex.Message });
             }
         }
 
@@ -172,11 +163,11 @@ namespace ASI.Basecode.WebApp.Controllers
             try
             {
                 _userService.UpdateUserRole(id, "User");
-                return Json(new { success = true, message = "User demoted successfully." });
+                return Json(new { success = true, successMessage = "User demoted successfully." });
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = ex.Message });
+                return Json(new { success = false, errorMessage = ex.Message });
             }
         }
 

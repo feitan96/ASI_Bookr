@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using static ASI.Basecode.Resources.Constants.Enums;
 
 namespace ASI.Basecode.Services.Services
@@ -121,12 +122,12 @@ namespace ASI.Basecode.Services.Services
         public void AddUser(UserViewModel model, int userId)
         {
             if (_repository.UserExists(model.Email)) throw new InvalidDataException(Resources.Messages.Errors.UserExists);
-
+            if (!IsValidPassword(model.Password)) throw new InvalidDataException(Resources.Messages.Errors.PasswordError);
             var user = new User();
             _mapper.Map(model, user);
             user.Password = PasswordManager.EncryptPassword(model.Password);
-            user.CreatedDate = user.UpdatedDate = DateTime.Now;
-            user.CreatedBy = user.UpdatedBy = userId;
+            user.CreatedDate = DateTime.Now;
+            user.CreatedBy = userId;
             user.IsDeleted = user.IsDarkMode = false;
             user.AllowNotifications = true;
             user.DefaultBookDuration = 3;
@@ -144,17 +145,13 @@ namespace ASI.Basecode.Services.Services
                 if (_repository.UserExists(model.Email)) throw new InvalidDataException(Resources.Messages.Errors.UserExists);
             }
 
-            if (model.Role == "Admin" && user.Role != "Admin")
-            {
-                _adminRepository.AddAdmin(new Admin { UserId = user.Id });
-            }
-            else if (model.Role != "Admin" && user.Role == "Admin")
-            {
-                var admin = _adminRepository.GetAdmins().Where(x => x.UserId.Equals(user.Id)).FirstOrDefault();
-                if (admin != null) _adminRepository.RemoveAdmin(admin);
-            }
-            if(model.Password != user.Password) model.Password = PasswordManager.EncryptPassword(model.Password);
+            if (model.Password != user.Password) user.Password = PasswordManager.EncryptPassword(model.Password);
+
             _mapper.Map(model, user);
+
+            var password = PasswordManager.DecryptPassword(model.Password);
+            if (!IsValidPassword(password)) throw new InvalidDataException(Resources.Messages.Errors.PasswordError);
+
             user.UpdatedDate = DateTime.Now;
             user.UpdatedBy = userId;
 
@@ -193,7 +190,6 @@ namespace ASI.Basecode.Services.Services
 
             return users;
         }
-
         public void UpdateUserRole(int userId, string newRole)
         {
             var user = _repository.GetUsers().FirstOrDefault(x => x.Id == userId);
@@ -215,6 +211,16 @@ namespace ASI.Basecode.Services.Services
             user.UpdatedDate = DateTime.Now;
             _repository.UpdateUser(user);
         }
-
+        public static bool IsValidPassword(string password)
+        {
+            // Password must have at least:
+            // - One uppercase letter
+            // - One digit
+            // - One special character
+            // - Minimum of 8 characters
+            //var passwordPattern = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$";
+            var passwordPattern = @"^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$";
+            return Regex.IsMatch(password, passwordPattern);
+        }
     }
 }

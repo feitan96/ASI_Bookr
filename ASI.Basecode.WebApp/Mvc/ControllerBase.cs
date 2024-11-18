@@ -79,6 +79,14 @@ namespace ASI.Basecode.WebApp.Mvc
         }
 
         /// <summary>
+        /// Get UserRole.
+        /// </summary>
+        public string UserRole
+        {
+            get { return User.FindFirst(ClaimTypes.Role).Value; }
+        }
+
+        /// <summary>
         /// Get Role.
         /// </summary>
         public string Supervisor

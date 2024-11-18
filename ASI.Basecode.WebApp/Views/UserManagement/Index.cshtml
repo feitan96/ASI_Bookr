@@ -35,7 +35,7 @@
 
                     @if (User.IsInRole("Superadmin"))
                     {
-                        <button onclick="openRoleChangeModal('@Url.Action("ChangeRoleModal", "UserManagement", new { id = user.Id })')"
+                        <button onclick="openModal('@Url.Action("ChangeRoleModal", "UserManagement", new { id = user.Id })')"
                                 class="btn btn-success btn-sm">
                             @(user.Role == "User" ? "Promote to Admin" : "Demote to User")
                         </button>
@@ -85,41 +85,21 @@
                 processData: false,
                 contentType: false,
                 success: function (response) {
-                    $('#crudModal').modal('hide');
-                    location.reload(); // Reload page or update data to reflect changes
+                    if (response.success === false) {
+                        toastr.error(response.errorMessage);
+                        return false; // Keep the modal open
+                    } else {
+                        $('#crudModal').modal('hide');
+                        toastr.success(response.successMessage);
+
+                        // location.reload();
+                        $.get('@Url.Action("Index", "UserManagement")', function (data) {
+                            $('table tbody').html($(data).find('table tbody').html());
+                        });
+                    }
                 },
                 error: function (xhr) {
-                    if (xhr.status === 400) { // Bad request due to validation
-                        $('#crudModal .modal-body').html(xhr.responseText);
-                        $.validator.unobtrusive.parse('#crudModal .modal-body'); // Re-parse validation for new content
-                    } else {
-                        alert('An error occurred. Please try again.');
-                    }
-                }
-            });
-        });
-
-        function openRoleChangeModal(url) {
-            $.get(url, function (data) {
-                $('#crudModal .modal-body').html(data); // Load partial view content
-                $('#crudModal').modal('show');         // Show modal
-            });
-        }
-
-        // Handle form submission inside modal
-        $(document).on('submit', '#changeRoleForm', function (e) {
-            e.preventDefault();
-
-            const form = $(this);
-            const url = form.attr('action');
-            const formData = form.serialize();
-
-            $.post(url, formData, function (response) {
-                if (response.success) {
-                    $('#crudModal').modal('hide');
-                    location.reload(); // Reload page to reflect changes
-                } else {
-                    alert(response.message); // Show error message
+                    toastr.error('An error occurred. Please try again.');
                 }
             });
         });

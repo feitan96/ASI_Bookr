@@ -31,9 +31,9 @@
         }
         public enum Roles
         {
+            User,
             Admin,
-            Superadmin,
-            User
+            Superadmin
         }
 
         public enum RoomType
