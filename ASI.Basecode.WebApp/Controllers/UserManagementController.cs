@@ -21,15 +21,18 @@ namespace ASI.Basecode.WebApp.Controllers
     public class UserManagementController : ControllerBase<UserManagementController>
     {
         private readonly IUserService _userService;
+        private readonly IEmailService _emailService;
 
         public UserManagementController(
                             IUserService userService,
+                            IEmailService emailService,
                             IHttpContextAccessor httpContextAccessor,
                             ILoggerFactory loggerFactory,
                             IConfiguration configuration,
                             IMapper mapper) : base(httpContextAccessor, loggerFactory, configuration, mapper, userService)
         {
             this._userService = userService;
+            this._emailService = emailService;
         }
         private List<SelectListItem> GetRoles(string userRole)
         {
@@ -147,7 +150,18 @@ namespace ASI.Basecode.WebApp.Controllers
         {
             try
             {
+                // Get the user details before updating
+                var user = _userService.GetUser(id);
+
+                // Update user role
                 _userService.UpdateUserRole(id, "Admin");
+
+                // Send email notification
+                string subject = "Role Change Notification";
+                string body = $"Good day, {user.FirstName} {user.LastName}. You have been Promoted to Admin. Thank you.";
+
+                _emailService.SendEmail(user.Email, subject, body);
+
                 return Json(new { success = true, successMessage = "User promoted successfully." });
             }
             catch (Exception ex)
@@ -162,7 +176,18 @@ namespace ASI.Basecode.WebApp.Controllers
         {
             try
             {
+                // Get the user details before updating
+                var user = _userService.GetUser(id);
+
+                // Update user role
                 _userService.UpdateUserRole(id, "User");
+
+                // Send email notification
+                string subject = "Role Change Notification";
+                string body = $"Good day, {user.FirstName} {user.LastName}. You have been Demoted to User. Thank you.";
+
+                _emailService.SendEmail(user.Email, subject, body);
+
                 return Json(new { success = true, successMessage = "User demoted successfully." });
             }
             catch (Exception ex)
