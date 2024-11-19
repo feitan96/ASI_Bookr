@@ -60,21 +60,28 @@
 </div>
 
 @section Scripts {
+    <script src="~/js/loading.js"></script>
     <script>
         // Open modal and load content
         function openModal(url) {
+            showLoading('Loading content...'); // Customizable loading message
             $.get(url, function (data) {
                 $('#crudModal .modal-body').html(data);
                 $('#crudModal').modal('show');
+                hideLoading();
 
                 // Initialize client-side validation
                 $.validator.unobtrusive.parse('#crudModal .modal-body');
+            }).fail(function () {
+                hideLoading();
+                toastr.error('Failed to load content');
             });
         }
 
         // Handle form submission within modal
         $(document).on('submit', 'form', function (e) {
             e.preventDefault();
+            showLoading(); // Show loading on form submission
             var form = $(this);
             var formData = new FormData(this);
 
@@ -85,24 +92,25 @@
                 processData: false,
                 contentType: false,
                 success: function (response) {
+                    hideLoading(); // Hide loading on successful response
                     if (response.success === false) {
                         toastr.error(response.errorMessage);
-                        return false; // Keep the modal open
+                        return false;
                     } else {
                         $('#crudModal').modal('hide');
                         toastr.success(response.successMessage);
 
-                        // location.reload();
+                        // Reload table content
                         $.get('@Url.Action("Index", "UserManagement")', function (data) {
                             $('table tbody').html($(data).find('table tbody').html());
                         });
                     }
                 },
                 error: function (xhr) {
+                    hideLoading(); // Hide loading on error
                     toastr.error('An error occurred. Please try again.');
                 }
             });
         });
     </script>
 }
-

@@ -40,4 +40,11 @@
   <ItemGroup>
     <Folder Include="wwwroot\uploads\rooms\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Views\Shared\_LoadingSpinner.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
 </Project>
