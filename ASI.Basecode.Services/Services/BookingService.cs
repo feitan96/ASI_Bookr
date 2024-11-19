@@ -20,13 +20,17 @@ namespace ASI.Basecode.Services.Services
         #nullable enable
 
         private readonly IBookingRepository _repository;
+        private readonly IUserService _userservice;
         private readonly IRoomService _roomservice;
+        private readonly IEmailService _emailService;
         private readonly IMapper _mapper;
 
-        public BookingService(IBookingRepository repository, IRoomService roomService, IMapper mapper)
+        public BookingService(IBookingRepository repository,  IUserService userService,IRoomService roomService, IEmailService emailService, IMapper mapper)
         {
             _mapper = mapper;
+            _userservice = userService;
             _roomservice = roomService;
+            _emailService = emailService;
             _repository = repository;
         }
 
@@ -112,6 +116,46 @@ namespace ASI.Basecode.Services.Services
             catch (Exception)
             {
                 throw; //rethrow error
+            }
+        }
+
+        public void UpdateBookingStatus(BookingViewModel model, int userId, string status)
+        {
+            var booking = new Booking();
+            try
+            {
+                _mapper.Map(model, booking);
+                booking.User = null;
+                booking.Room = null;
+                booking.UpdatedDate = DateTime.Now;
+                booking.UpdatedBy = userId;
+                booking.Status = status;
+                booking.ApproveDisapproveBy = userId;
+
+                _repository.UpdateBookingInfo(booking);
+
+                // Get user email from the booking
+                var userDetails = _userservice.GetUser(model.UserId);
+                if (userDetails != null)
+                {
+                    // Prepare email content
+                    var subject = $"Bookr: Your LRAC Booking has been {status}";
+                    var body = $@"Your booking with details:
+Title: {model.Title}
+Room: {model.RoomName}
+Date: {model.BookingStartDate.ToString("MMMM dd, yyyy")}
+Check-in Time: {model.CheckInTime.ToString(@"hh\:mm")}
+Check-out Time: {model.CheckOutTime.ToString(@"hh\:mm")}
+
+Has been {status}. Thank you, Teknoy!";
+
+                    // Send email
+                    _emailService.SendEmail(userDetails.Email, subject, body);
+                }
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
 

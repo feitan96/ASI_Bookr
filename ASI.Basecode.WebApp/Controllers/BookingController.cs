@@ -13,6 +13,7 @@ using System;
 using ASI.Basecode.Services.ServiceModels;
 using System.IO;
 using ASI.Basecode.Data.Models;
+using Serilog.Core;
 
 namespace ASI.Basecode.WebApp.Controllers
 {
@@ -22,6 +23,7 @@ namespace ASI.Basecode.WebApp.Controllers
         private readonly IRoomService _roomservice;
         private readonly IAmenityService _amenityservice;
         private readonly IUserService _userservice;
+        private readonly IEmailService _emailService;
         private readonly IWebHostEnvironment _environment;
 
         /// <summary>
@@ -36,6 +38,7 @@ namespace ASI.Basecode.WebApp.Controllers
                               IAmenityService amenityService,
                               IRoomService roomService,
                               IUserService userService,
+                              IEmailService emailService,
                               IHttpContextAccessor httpContextAccessor,
                               ILoggerFactory loggerFactory,
                               IConfiguration configuration,
@@ -44,6 +47,7 @@ namespace ASI.Basecode.WebApp.Controllers
         {
             this._roomservice = roomService;
             this._userservice = userService;
+            this._emailService = emailService;
             this._amenityservice = amenityService;
             this._bookingservice = bookingService;
             this._environment = environment;  // Set the environment field
@@ -343,14 +347,13 @@ namespace ASI.Basecode.WebApp.Controllers
         {
             try
             {
-                model.Status = "Approved";
-                _bookingservice.UpdateBookingInfo(model, int.Parse(Id));
-
+                _bookingservice.UpdateBookingStatus(model, int.Parse(Id), "Approved");
                 return RedirectToAction("Index");
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                TempData["ErrorMessage"] = "Failed to approve booking. Please try again.";
+                return View(model);
             }
         }
 
@@ -360,14 +363,13 @@ namespace ASI.Basecode.WebApp.Controllers
         {
             try
             {
-                model.Status = "Disapproved";
-                _bookingservice.UpdateBookingInfo(model, int.Parse(Id));
-
+                _bookingservice.UpdateBookingStatus(model, int.Parse(Id), "Disapproved");
                 return RedirectToAction("Index");
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                TempData["ErrorMessage"] = "Failed to disapprove booking. Please try again.";
+                return View(model);
             }
         }
 

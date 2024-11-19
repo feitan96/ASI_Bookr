@@ -21,6 +21,7 @@ namespace ASI.Basecode.Services.Interfaces
 
         //UPDATE
         void UpdateBookingInfo(BookingViewModel model, int userId);
+        void UpdateBookingStatus(BookingViewModel model, int userId, string status);
 
         //DELETE
         //void SoftDeleteBooking(int Id);
