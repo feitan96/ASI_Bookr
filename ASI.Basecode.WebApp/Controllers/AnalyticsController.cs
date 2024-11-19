@@ -1,42 +1,56 @@
-﻿using ASI.Basecode.WebApp.Mvc;
-using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using ASI.Basecode.Services.Interfaces;
+using ASI.Basecode.Services.ServiceModels;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+using System;
+using System.Globalization;
+using System.Linq;
 
 namespace ASI.Basecode.WebApp.Controllers
 {
-    /// <summary>
-    /// Home Controller
-    /// </summary>
-    public class AnalyticsController : ControllerBase<AnalyticsController>
+    public class AnalyticsController : Controller
     {
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="httpContextAccessor"></param>
-        /// <param name="loggerFactory"></param>
-        /// <param name="configuration"></param>
-        /// <param name="localizer"></param>
-        /// <param name="mapper"></param>
-        public AnalyticsController(IHttpContextAccessor httpContextAccessor,
-                              ILoggerFactory loggerFactory,
-                              IConfiguration configuration,
-                              IMapper mapper = null) : base(httpContextAccessor, loggerFactory, configuration, mapper)
-        {
+        private readonly IBookingService _bookingService;
 
+        public AnalyticsController(IBookingService bookingService)
+        {
+            _bookingService = bookingService;
         }
 
-        /// <summary>
-        /// Returns Home View.
-        /// </summary>
-        /// <returns> Home View </returns>
-        /*[Authorize(Roles = "Admin,Superadmin,User")]*/
         public IActionResult Index()
         {
-            return View();
+            var bookings = _bookingService.GetBookings()
+                .Where(b => b.Status == "Approved")
+                .ToList();
+
+            // Determine weekly range
+            var startDate = bookings.Min(b => b.BookingStartDate).Date;
+            var endDate = bookings.Max(b => b.BookingStartDate).Date;
+            var weeks = Enumerable.Range(0, (endDate - startDate).Days / 7 + 1)
+                .Select(i => startDate.AddDays(i * 7))
+                .ToList();
+
+            // Compute weekly room usage (in hours) per room
+            var weeklyRoomUsage = bookings
+                .GroupBy(b => b.Room.Name)
+                .Select(group => new WeeklyRoomUsageViewModel
+                {
+                    RoomName = group.Key,
+                    WeeklyBookingFrequency = weeks.Select(weekStart =>
+                        group
+                            .Where(b => b.BookingStartDate >= weekStart && b.BookingStartDate < weekStart.AddDays(7))
+                            .Sum(b => (b.CheckOutTime - b.CheckInTime).TotalHours)
+                    ).Select(hours => (int)Math.Round(hours)).ToList(),
+                    Weeks = weeks.Select(w => w.ToString("MMM dd")).ToList()
+                }).ToList();
+
+            var viewModel = new AnalyticsViewModel
+            {
+                WeeklyRoomUsage = weeklyRoomUsage
+            };
+
+            return View(viewModel);
         }
+
+
     }
 }
