@@ -6,7 +6,7 @@
     var amenities = ViewData["AmenitiesList"] as List<AmenityViewModel> ?? new List<AmenityViewModel>();
 }
 
-<h3>Room Management</h3>
+<h1>Room Management</h1>
 
 <div class="form-row mb-3 align-items-end">
     <!-- Search Room Name Textbox (Col-2) -->
@@ -62,19 +62,17 @@
     <button class="btn btn-primary mb-3" onclick="openModal('@Url.Action("Create", "Room")')">Add New Rooms</button>
 </p>
 
-<div class="form-row mb-3">
-    <!-- Add Toggle Button -->
-    <div class="col-md-2">
-        <button id="toggleViewBtn" class="btn btn-secondary">Switch to Card View</button>
-    </div>
-</div>
-
-<!-- Room Views -->
-<div id="roomListView" class="room-view">
-    <!-- Room Table -->
+<!-- Room Table -->
+<div id="roomTable">
     <table class="table table-striped">
         <thead>
             <tr>
+                @*<th>@Html.DisplayNameFor(model => model.Items.FirstOrDefault().Name)</th>
+                <th>@Html.DisplayNameFor(model => model.Items.FirstOrDefault().Description)</th>
+                <th>@Html.DisplayNameFor(model => model.Items.FirstOrDefault().Type)</th>
+                <th>@Html.DisplayNameFor(model => model.Items.FirstOrDefault().Capacity)</th>
+                <th>@Html.DisplayNameFor(model => model.Items.FirstOrDefault().Location)</th>
+                <th>Amenities</th>*@
                 <th>@Html.DisplayNameFor(model => model.Name)</th>
                 <th>@Html.DisplayNameFor(model => model.Description)</th>
                 <th>@Html.DisplayNameFor(model => model.Type)</th>
@@ -104,18 +102,6 @@
         </tbody>
     </table>
 </div>
-
-<div id="roomCardView" class="room-view" style="display: none;">
-    <div class="row">
-        @foreach (var room in Model)
-        {
-            <div class="col-md-4">
-                @Html.Partial("_RoomCard", room)
-            </div>
-        }
-    </div>
-</div>
-
 
 <!-- Pagination Controls -->
 @*<div class="pagination">
@@ -216,36 +202,13 @@
                 url: url,
                 type: 'GET',
                 success: function (result) {
-                    if ($('#roomListView').is(':visible')) {
-                        $('#roomListView').html(result);
-                    } else if ($('#roomCardView').is(':visible')) {
-                        $('#roomCardView .row').html(result); // Update cards
-                    }
+                    $('#roomTable').html(result);
                 },
                 error: function () {
                     alert('An error occurred while filtering the rooms.');
                 }
             });
         }
-
-        // $(document).ready(function () {
-        //     // Toggle between list and card views without losing filter state
-        //     $("#toggleViewBtn").on("click", function () {
-        //         const isListView = $("#roomListView").is(":visible");
-        //         if (isListView) {
-        //             $("#roomListView").hide();
-        //             $("#roomCardView").show();
-        //             $(this).text("Switch to List View").removeClass("btn-secondary").addClass("btn-primary");
-        //         } else {
-        //             $("#roomCardView").hide();
-        //             $("#roomListView").show();
-        //             $(this).text("Switch to Card View").removeClass("btn-primary").addClass("btn-secondary");
-        //         }
-        //         // Reapply search filters after switching views
-        //         performSearch();
-        //     });
-        // });
-
 
         function clearFilters() {
             // Clear all filter inputs
@@ -267,33 +230,5 @@
                 }
             });
         }
-
-        $(document).ready(function () {
-            $("#toggleViewBtn").on("click", function () {
-                const isListView = $("#roomListView").is(":visible");
-                if (isListView) {
-                    $("#roomListView").hide();
-                    $("#roomCardView").show();
-                    $(this).text("Switch to List View").removeClass("btn-secondary").addClass("btn-primary");
-                } else {
-                    $("#roomCardView").hide();
-                    $("#roomListView").show();
-                    $(this).text("Switch to Card View").removeClass("btn-primary").addClass("btn-secondary");
-                }
-            });
-        });
-
-        function initializeChosen() {
-            $(".chosen-select").chosen({
-                no_results_text: "Oops, amenity not found!",
-                width: "100%" // Optional: Ensures the select box fits well within the modal
-            });
-        }
-
-        // Call this function after the modal content is loaded
-        $(document).on('shown.bs.modal', '#crudModal', function () {
-            initializeChosen();
-        });
-
     </script>
 }
