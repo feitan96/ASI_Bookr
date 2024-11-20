@@ -6,30 +6,38 @@
 
 <h2>Analytics</h2>
 
-<div class="card mb-3">
-    <div class="card-header">
-        <h4>Most Used Room</h4>
+<div class="row mb-3">
+    <!-- Most Used Room Card -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4>Most Used Room</h4>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">@Model.MostUsedRoom?.RoomName</h5>
+                <p class="card-text">
+                    <strong>Booking Frequency:</strong> @Model.MostUsedRoom?.BookingFrequency<br>
+                    <strong>Total Usage Hours:</strong> @Model.MostUsedRoom?.TotalUsageHours.ToString("F2")<br>
+                    <strong>Peak Usage Hours:</strong> @Model.MostUsedRoom?.PeakUsageHours
+                </p>
+            </div>
+        </div>
     </div>
-    <div class="card-body">
-        <h5 class="card-title">@Model.MostUsedRoom?.RoomName</h5>
-        <p class="card-text">
-            <strong>Booking Frequency:</strong> @Model.MostUsedRoom?.BookingFrequency<br>
-            <strong>Total Usage Hours:</strong> @Model.MostUsedRoom?.TotalUsageHours.ToString("F2")<br>
-            <strong>Peak Usage Hours:</strong> @Model.MostUsedRoom?.PeakUsageHours
-        </p>
-    </div>
-</div>
 
-<div class="card mb-3">
-    <div class="card-header">
-        <h4>User Statistics</h4>
-    </div>
-    <div class="card-body">
-        <p>
-            <strong>Total Users:</strong> @Model.TotalUsers<br>
-            <strong>New Users (Last 3 Days):</strong> @Model.NewUsers<br>
-            <strong>Total Admins:</strong> @Model.TotalAdmins
-        </p>
+    <!-- User Statistics Card -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4>User Statistics</h4>
+            </div>
+            <div class="card-body">
+                <p>
+                    <strong>Total Users:</strong> @Model.TotalUsers<br>
+                    <strong>New Users (Last 3 Days):</strong> @Model.NewUsers<br>
+                    <strong>Total Admins:</strong> @Model.TotalAdmins
+                </p>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -80,6 +88,7 @@
         <div id="userTrendsChart"></div>
     </div>
 </div>
+
 
 @section Scripts {
     <script>
