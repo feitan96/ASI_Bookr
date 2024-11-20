@@ -21,23 +21,23 @@ namespace ASI.Basecode.WebApp.Controllers
             _bookingService = bookingService;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(DateTime? selectedDate)
         {
-            DateTime today = DateTime.Today;
+            DateTime currentDate = selectedDate ?? DateTime.Today;
 
-            // Fetch today's bookings
+            // Fetch bookings for the selected date
             var bookings = _bookingService.GetBookings()
-                .Where(b => b.BookingStartDate.Date == today && b.Status == "Approved")
+                .Where(b => b.BookingStartDate.Date == currentDate && b.Status == "Approved")
                 .ToList();
 
             // Group bookings by room
             var roomUsageStats = bookings
-            .GroupBy(b => b.RoomId)
-            .Select(group => new RoomUsageStatisticsViewModel
-            {
-                RoomName = group.First().Room.Name, // Fetch Room Name from the first booking in the group
-                BookingFrequency = group.Count(),
-            TotalUsageHours = group.Sum(b => (b.CheckOutTime - b.CheckInTime).TotalHours)
+                .GroupBy(b => b.RoomId)
+                .Select(group => new RoomUsageStatisticsViewModel
+                {
+                    RoomName = group.First().Room.Name, // Fetch Room Name from the first booking in the group
+                    BookingFrequency = group.Count(),
+                    TotalUsageHours = group.Sum(b => (b.CheckOutTime - b.CheckInTime).TotalHours)
                 })
                 .ToList();
 
@@ -45,10 +45,11 @@ namespace ASI.Basecode.WebApp.Controllers
             {
                 TodayBookings = bookings,
                 RoomUsageStatistics = roomUsageStats,
-                CurrentDate = today
+                CurrentDate = currentDate
             };
 
             return View(viewModel);
         }
+
     }
 }

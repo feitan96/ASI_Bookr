@@ -77,9 +77,6 @@ namespace ASI.Basecode.Services.Services
             }
 
             return bookingsModel;
-            //return _repository.GetBookings()
-            //      .Select(booking => _mapper.Map<BookingViewModel>(booking))
-            //      .ToList();
         }
 
 
