@@ -37,7 +37,7 @@ namespace ASI.Basecode.Services.Services
             return user != null ? LoginResult.Success : LoginResult.Failed;
         }
         
-
+        //unused
         public PagedResult<UserViewModel> GetAllUsers(int pageNumber, int pageSize)
         {
             var users = _repository.GetUsers()
@@ -186,6 +186,7 @@ namespace ASI.Basecode.Services.Services
                 Email = s.Email,
                 Role = s.Role,
                 PhoneNumber = s.PhoneNumber,
+                CreatedDate = s.CreatedDate,
             }).ToList();
 
             return users;

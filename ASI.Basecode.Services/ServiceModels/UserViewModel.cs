@@ -33,6 +33,9 @@ namespace ASI.Basecode.Services.ServiceModels
         [Compare("Password", ErrorMessage = "Password and Confirmation Password must match.")]
         public string ConfirmPassword { get; set; }
 
+        public DateTime? CreatedDate { get; set; }
+
+
     }
 
     public class PagedResult<T>

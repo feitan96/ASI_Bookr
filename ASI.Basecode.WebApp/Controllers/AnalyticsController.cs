@@ -1,5 +1,6 @@
 ﻿using ASI.Basecode.Services.Interfaces;
 using ASI.Basecode.Services.ServiceModels;
+using ASI.Basecode.Services.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Globalization;
@@ -10,10 +11,12 @@ namespace ASI.Basecode.WebApp.Controllers
     public class AnalyticsController : Controller
     {
         private readonly IBookingService _bookingService;
+        private readonly IUserService _userService;
 
-        public AnalyticsController(IBookingService bookingService)
+        public AnalyticsController(IBookingService bookingService, IUserService userService)
         {
             _bookingService = bookingService;
+            _userService = userService;
         }
 
         public IActionResult Index()
@@ -73,10 +76,33 @@ namespace ASI.Basecode.WebApp.Controllers
                 };
             }
 
+            var users = _userService.GetAllUser();
+            var recentUsers = users.Where(u => u.CreatedDate.HasValue && u.CreatedDate.Value >= DateTime.UtcNow.AddDays(-3)).ToList();
+            var totalUsers = users.Count(u => u.Role == "User");
+            var totalAdmins = users.Count(u => u.Role == "Admin");
+
+            // Group data by date for Highcharts
+            var userTrends = users
+    .Where(u => u.CreatedDate.HasValue)
+    .GroupBy(u => u.CreatedDate.Value.Date)
+    .OrderBy(g => g.Key)
+    .Select(g => new UserTrend
+    {
+        Date = g.Key.ToString("yyyy-MM-dd"),
+        UserCount = g.Count(u => u.Role == "User"),
+        AdminCount = g.Count(u => u.Role == "Admin")
+    })
+    .ToList();
+
+
             var viewModel = new AnalyticsViewModel
             {
                 WeeklyRoomUsage = weeklyRoomUsage,
-                MostUsedRoom = mostUsedRoom
+                MostUsedRoom = mostUsedRoom,
+                TotalUsers = totalUsers,
+                NewUsers = recentUsers.Count,
+                TotalAdmins = totalAdmins,
+                UserTrends = userTrends
             };
 
             return View(viewModel);

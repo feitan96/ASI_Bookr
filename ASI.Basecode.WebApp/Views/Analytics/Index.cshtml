@@ -11,11 +11,24 @@
         <h4>Most Used Room</h4>
     </div>
     <div class="card-body">
-        <h5 class="card-title">@Model.MostUsedRoom?.RoomName ?? "No data available"</h5>
+        <h5 class="card-title">@Model.MostUsedRoom?.RoomName</h5>
         <p class="card-text">
-            <strong>Booking Frequency:</strong> @Model.MostUsedRoom?.BookingFrequency ?? 0<br>
-            <strong>Total Usage Hours:</strong> @Model.MostUsedRoom?.TotalUsageHours.ToString("F2") ?? "0.00"<br>
-            <strong>Peak Usage Hours:</strong> @Model.MostUsedRoom?.PeakUsageHours ?? "N/A"
+            <strong>Booking Frequency:</strong> @Model.MostUsedRoom?.BookingFrequency<br>
+            <strong>Total Usage Hours:</strong> @Model.MostUsedRoom?.TotalUsageHours.ToString("F2")<br>
+            <strong>Peak Usage Hours:</strong> @Model.MostUsedRoom?.PeakUsageHours
+        </p>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header">
+        <h4>User Statistics</h4>
+    </div>
+    <div class="card-body">
+        <p>
+            <strong>Total Users:</strong> @Model.TotalUsers<br>
+            <strong>New Users (Last 3 Days):</strong> @Model.NewUsers<br>
+            <strong>Total Admins:</strong> @Model.TotalAdmins
         </p>
     </div>
 </div>
@@ -27,6 +40,14 @@
         <div id="roomUsageChart"></div>
     </div>
 </div>
+
+<div class="row">
+    <div class="col-md-12">
+        <h3>User Trends Over Time</h3>
+        <div id="userTrendsChart"></div>
+    </div>
+</div>
+
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -56,5 +77,34 @@
          })
          ))
             });
+        Highcharts.chart('userTrendsChart', {
+            chart: {
+                type: 'area'
+            },
+            title: {
+                text: 'User Trends Over Time'
+            },
+            xAxis: {
+                categories: @Html.Raw(Json.Serialize(Model.UserTrends.Select(t => t.Date))),
+                title: {
+                    text: 'Dates'
+                }
+            },
+            yAxis: {
+                title: {
+                    text: 'Number of Users'
+                }
+            },
+            series: [
+                {
+                    name: 'Users',
+                    data: @Html.Raw(Json.Serialize(Model.UserTrends.Select(t => t.UserCount)))
+                    },
+                {
+                    name: 'Admins',
+                    data: @Html.Raw(Json.Serialize(Model.UserTrends.Select(t => t.AdminCount)))
+                    }
+            ]
+        });
     });
 </script>
