@@ -39,9 +39,7 @@
                     @* <button onclick="openModal('@Url.Action("Delete", "Booking", new { bookingId = booking.BookingId })', 'crudModal1')" class="btn btn-danger btn-sm">Delete</button> *@
                 </td>
                 <td>
-                    <button onclick="openModal('@Url.Action("View", "Booking", new { bookingId = booking.BookingId })', 'crudModal1')" class="btn btn-info btn-sm pr-0" style="background-color: transparent; border:none;">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M8 256a56 56 0 1 1 112 0A56 56 0 1 1 8 256zm160 0a56 56 0 1 1 112 0 56 56 0 1 1 -112 0zm216-56a56 56 0 1 1 0 112 56 56 0 1 1 0-112z" /></svg>
-                    </button>
+                        <svg onclick="openModal('@Url.Action("View", "Booking", new { bookingId = booking.BookingId })', 'crudModal1')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M8 256a56 56 0 1 1 112 0A56 56 0 1 1 8 256zm160 0a56 56 0 1 1 112 0 56 56 0 1 1 -112 0zm216-56a56 56 0 1 1 0 112 56 56 0 1 1 0-112z" /></svg>
                 </td>
 
             </tr>

@@ -4,7 +4,7 @@
     ViewBag.Title = "Dashboard";
 }
 
-<h2>Dashboard</h2>
+<h3>Dashboard</h3>
 
 <form asp-controller="Dashboard" asp-action="Index" method="get" class="mb-3">
     <div class="form-group">
@@ -19,7 +19,7 @@
 <div class="row">
     <!-- Today's Bookings Table -->
     <div class="col-md-6">
-        <h3>Bookings on @Model.CurrentDate.ToString("MMMM dd, yyyy")</h3>
+        <h5>Bookings on @Model.CurrentDate.ToString("MMMM dd, yyyy")</h5>
         @if (Model.TodayBookings.Any())
         {
             <table class="table table-bordered table-striped">
@@ -54,7 +54,7 @@
 
     <!-- Room Usage Statistics Table -->
     <div class="col-md-6">
-        <h3>Room Usage Statistics</h3>
+        <h5>Room Usage Statistics</h5>
         @if (Model.RoomUsageStatistics.Any())
         {
             <table class="table table-bordered table-striped">
