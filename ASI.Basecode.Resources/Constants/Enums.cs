@@ -62,5 +62,13 @@
             Cancelled
         }
 
+        public enum TimeFrame
+        {
+            Daily,
+            Weekly,
+            Monthly
+        }
+
+
     }
 }

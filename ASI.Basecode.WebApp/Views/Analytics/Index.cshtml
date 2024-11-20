@@ -33,6 +33,39 @@
     </div>
 </div>
 
+<div class="mb-3">
+    <label for="timeFrameSelect" class="form-label">Time Frame:</label>
+    <select id="timeFrameSelect" class="form-select" style="width: auto;">
+        @{
+            var timeFrames = new[]
+            {
+        new { Value = "Daily", Text = "Daily" },
+        new { Value = "Weekly", Text = "Weekly" },
+        new { Value = "Monthly", Text = "Monthly" }
+        };
+
+            foreach (var tf in timeFrames)
+            {
+                if (Model.SelectedTimeFrame.ToString() == tf.Value)
+                {
+                    <option value="@tf.Value" selected>@tf.Text</option>
+                }
+                else
+                {
+                    <option value="@tf.Value">@tf.Text</option>
+                }
+            }
+        }
+    </select>
+</div>
+
+<div class="mb-3">
+    <div class="btn-group">
+        <button id="exportBtn" class="btn btn-primary">
+            <i class="fas fa-file-excel"></i> Export to Excel
+        </button>
+    </div>
+</div>
 
 <div class="row">
     <div class="col-md-12">
@@ -48,63 +81,83 @@
     </div>
 </div>
 
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        Highcharts.chart('roomUsageChart', {
-            chart: {
-                type: 'area'
-            },
-            title: {
-                text: 'Weekly Room Usage (Total Hours)'
-            },
-            xAxis: {
-                categories: @Html.Raw(Json.Serialize(Model.WeeklyRoomUsage.FirstOrDefault()?.Weeks ?? new List<string>())),
-                title: {
-                    text: 'Weeks'
-                }
-            },
-            yAxis: {
-                title: {
-                    text: 'Total Usage Hours'
-                }
-            },
-            series: @Html.Raw(Json.Serialize(
-         Model.WeeklyRoomUsage.Select(room => new
-         {
-             name = room.RoomName,
-             data = room.WeeklyBookingFrequency
-         })
-         ))
-            });
-        Highcharts.chart('userTrendsChart', {
-            chart: {
-                type: 'area'
-            },
-            title: {
-                text: 'User Trends Over Time'
-            },
-            xAxis: {
-                categories: @Html.Raw(Json.Serialize(Model.UserTrends.Select(t => t.Date))),
-                title: {
-                    text: 'Dates'
-                }
-            },
-            yAxis: {
-                title: {
-                    text: 'Number of Users'
-                }
-            },
-            series: [
-                {
-                    name: 'Users',
-                    data: @Html.Raw(Json.Serialize(Model.UserTrends.Select(t => t.UserCount)))
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Initialize the room usage chart
+            function initRoomUsageChart(timeFrame) {
+                Highcharts.chart('roomUsageChart', {
+                    chart: {
+                        type: 'area'
                     },
-                {
-                    name: 'Admins',
-                    data: @Html.Raw(Json.Serialize(Model.UserTrends.Select(t => t.AdminCount)))
+                    title: {
+                        text: timeFrame + ' Room Usage (Total Hours)'
+                    },
+                    xAxis: {
+                        categories: @Html.Raw(Json.Serialize(Model.RoomUsage.FirstOrDefault()?.TimeLabels ?? new List<string>())),
+                        title: {
+                            text: timeFrame
+                        }
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'Total Usage Hours'
+                        }
+                    },
+                    series: @Html.Raw(Json.Serialize(
+             Model.RoomUsage.Select(room => new
+             {
+                 name = room.RoomName,
+                 data = room.UsageFrequency
+             })
+             ))
+                        });
+            }
+
+            document.getElementById('exportBtn').addEventListener('click', function () {
+                var selectedTimeFrame = document.getElementById('timeFrameSelect').value;
+                window.location.href = '/Analytics/ExportToExcel?timeFrame=' + selectedTimeFrame;
+            });
+
+            // Initialize chart with current time frame
+            initRoomUsageChart('@Model.SelectedTimeFrame.ToString()');
+
+            // Handle time frame changes
+            document.getElementById('timeFrameSelect').addEventListener('change', function () {
+                var selectedTimeFrame = this.value;
+                window.location.href = '/Analytics/Index?timeFrame=' + selectedTimeFrame;
+            });
+
+            // User Trends Chart
+            Highcharts.chart('userTrendsChart', {
+                chart: {
+                    type: 'area'
+                },
+                title: {
+                    text: 'User Trends Over Time'
+                },
+                xAxis: {
+                    categories: @Html.Raw(Json.Serialize(Model.UserTrends.Select(t => t.Date))),
+                    title: {
+                        text: 'Dates'
                     }
-            ]
+                },
+                yAxis: {
+                    title: {
+                        text: 'Number of Users'
+                    }
+                },
+                series: [
+                    {
+                        name: 'Users',
+                        data: @Html.Raw(Json.Serialize(Model.UserTrends.Select(t => t.UserCount)))
+                            },
+                    {
+                        name: 'Admins',
+                        data: @Html.Raw(Json.Serialize(Model.UserTrends.Select(t => t.AdminCount)))
+                            }
+                ]
+            });
         });
-    });
-</script>
+    </script>
+}
