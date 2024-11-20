@@ -9,7 +9,7 @@ namespace ASI.Basecode.Services.Interfaces
 {
     public interface IImageService
     {
-#nullable enable
+        #nullable enable
         //CREATE
         int AddImage(ImageViewModel model);
 
@@ -27,10 +27,6 @@ namespace ASI.Basecode.Services.Interfaces
         void DeleteImageByRoomId(int roomId); //either on or more image deletion
 
         //OTHERS
-  
-
-
-
 
     }
 }

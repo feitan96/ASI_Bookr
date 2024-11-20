@@ -20,7 +20,7 @@ namespace ASI.Basecode.Data.Repositories
         public IQueryable<Booking> GetBookings()
         {
             var bookings = this.GetDbSet<Booking>().Include(booking => booking.Room).ThenInclude(room => room.RoomAmenities).ThenInclude(roomAmenity => roomAmenity.Amenity)
-                .Include(booking => booking.User);
+                .Include(booking => booking.User).Include(booking => booking.RecurringBookings);
 
             return bookings;
         }

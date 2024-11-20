@@ -18,11 +18,18 @@
 <div class="modal-body">
     <form id="disapproveBookingForm" asp-action="DisapproveBooking" method="post">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="Title" />
         <input type="hidden" asp-for="BookingId" />
         <input type="hidden" asp-for="RoomId" />
         <input type="hidden" asp-for="UserId" />
-        <input type="hidden" asp-for="BookingCheckInDateTime" />
-        <input type="hidden" asp-for="BookingCheckOutDateTime" />
+        <input type="hidden" asp-for="BookingStartDate" />
+        <input type="hidden" asp-for="BookingEndDate" />
+        <input type="hidden" asp-for="CheckInTimeString" />
+        <input type="hidden" asp-for="CheckOutTimeString" />
+        <input type="hidden" asp-for="CreatedDate" />
+        <input type="hidden" asp-for="ApproveDisapproveBy" />
+        <input type="hidden" asp-for="IsRecurring" />
+        <input type="hidden" asp-for="SelectedDays" />
 
         <!-- Submit Button -->
         <div class="form-group">

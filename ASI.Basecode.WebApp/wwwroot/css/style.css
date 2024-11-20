@@ -392,3 +392,28 @@ header {
     .chosen-container .chosen-results {
         padding: 10px 0; /* Adjust dropdown list padding */
     }
+
+
+/* For selecting days from recurring bookings: START */
+.day-selector {
+    display: flex;
+    gap: 5px;
+}
+
+.day-option {
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #f0f0f0;
+    color: #333;
+    user-select: none;
+    transition: background-color 0.3s;
+}
+
+/*    .day-option.selected {
+        background-color: #4caf50;
+        color: white;
+    }*/
+
+/* For selecting days from recurring bookings: END */

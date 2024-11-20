@@ -271,8 +271,8 @@ namespace ASI.Basecode.WebApp.Controllers
             {
                 // Filter by date range if both startDateTime and endDateTime are provided
                 bookings = bookings.Where(b =>
-                        b.BookingCheckInDateTime < end &&
-                        b.BookingCheckOutDateTime > start).ToList();
+                        b.BookingStartDate < end &&
+                        b.BookingEndDate > start).ToList();
             }
                
 
@@ -296,7 +296,7 @@ namespace ASI.Basecode.WebApp.Controllers
                 _bookingservice.AddBooking(model);
 
 
-                return RedirectToAction("Index"); ;
+                return RedirectToAction("Index");
             }
             catch (ArgumentNullException ex)
             {
@@ -343,6 +343,8 @@ namespace ASI.Basecode.WebApp.Controllers
         {
             try
             {
+                int adminId = int.Parse(Id);
+                model.ApproveDisapproveBy = adminId;
                 model.Status = "Approved";
                 _bookingservice.UpdateBookingInfo(model, int.Parse(Id));
 

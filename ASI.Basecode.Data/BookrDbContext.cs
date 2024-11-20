@@ -65,7 +65,9 @@ namespace ASI.Basecode.Data
 
                 entity.Property(e => e.Status).HasMaxLength(50);
 
-                entity.Property(e => e.Title).HasMaxLength(100);
+                entity.Property(e => e.Title)
+                    .IsRequired()
+                    .HasMaxLength(200);
 
                 entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
 
@@ -172,7 +174,7 @@ namespace ASI.Basecode.Data
                     .IsRequired()
                     .HasDefaultValueSql("((1))");
 
-                entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+                entity.Property(e => e.CreatedDate).HasColumnType("date");
 
                 entity.Property(e => e.DefaultBookDuration).HasDefaultValueSql("((3))");
 
@@ -194,13 +196,17 @@ namespace ASI.Basecode.Data
                     .IsRequired()
                     .HasMaxLength(250);
 
+                entity.Property(e => e.PasswordResetToken).HasMaxLength(50);
+
                 entity.Property(e => e.PhoneNumber).HasMaxLength(250);
+
+                entity.Property(e => e.ResetTokenExpiry).HasColumnType("datetime");
 
                 entity.Property(e => e.Role)
                     .IsRequired()
                     .HasMaxLength(50);
 
-                entity.Property(e => e.UpdatedDate).HasColumnType("datetime");
+                entity.Property(e => e.UpdatedDate).HasColumnType("date");
 
                 entity.Property(e => e.UserId)
                     .IsRequired()

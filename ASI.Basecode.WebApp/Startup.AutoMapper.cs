@@ -3,6 +3,8 @@ using ASI.Basecode.Data.Models;
 using ASI.Basecode.Services.ServiceModels;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Linq;
+using System.Globalization;
 
 namespace ASI.Basecode.WebApp
 {
@@ -45,8 +47,23 @@ namespace ASI.Basecode.WebApp
                 CreateMap<RoomAmenityViewModel, RoomAmenity>();
                 CreateMap<AmenityViewModel, Amenity>();
                 CreateMap<ImageViewModel, Image>();
-                CreateMap<BookingViewModel, Booking>();
-                CreateMap<Booking, BookingViewModel>();
+                CreateMap<BookingViewModel, Booking>()
+                    .ForMember(dest => dest.CheckInTime,
+                opt => opt.MapFrom(src =>
+                    BookingViewModel.ParseTimeSpan(src.CheckInTimeString)
+                    ))
+            .ForMember(dest => dest.CheckOutTime,
+                opt => opt.MapFrom(src =>
+                    BookingViewModel.ParseTimeSpan(src.CheckOutTimeString)
+                    ));
+                CreateMap<Booking, BookingViewModel>()
+                    .ForMember(dest => dest.SelectedDays, opt => opt.MapFrom(src => string.Join(",", src.RecurringBookings.Select(x => x.Day))))
+                    .ForMember(dest => dest.CheckInTimeString,
+                        opt => opt.MapFrom(src => Booking.FormatTime(src.CheckInTime)))
+                    .ForMember(dest => dest.CheckOutTimeString,
+                        opt => opt.MapFrom(src => Booking.FormatTime(src.CheckOutTime)));
+                CreateMap<RecurringBookingViewModel, RecurringBooking>();
+                CreateMap<RecurringBooking, RecurringBookingViewModel>();
             }
         }
     }

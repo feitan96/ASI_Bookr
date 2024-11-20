@@ -41,6 +41,7 @@ namespace ASI.Basecode.WebApp
             this._services.AddScoped<IImageService, ImageService>();
             this._services.AddScoped<IBookingService, BookingService>();
             this._services.AddScoped<IProfileService, ProfileService>();
+            this._services.AddScoped<IRecurringBookingService, RecurringBookingService>();
 
             // Repositories
             this._services.AddScoped<IUserRepository, UserRepository>();
@@ -50,6 +51,8 @@ namespace ASI.Basecode.WebApp
             this._services.AddScoped<IAmenityRepository, AmenityRepository>();
             this._services.AddScoped<IImageRepository, ImageRepository>();
             this._services.AddScoped<IBookingRepository, BookingRepository>();
+            this._services.AddScoped<IRecurringBookingRepository, RecurringBookingRepository>();
+
             // Manager Class
             this._services.AddScoped<SignInManager>();
 

@@ -65,7 +65,7 @@
  
 <!-- Modal Layer 1-->
 <div id="crudModal1" class="modal fade" tabindex="-1" role="dialog" style="z-index: 1050;">
-    <div class="modal-dialog modal-dialog-scrollable" role="document">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-body">
                 <!-- Content will be loaded here -->
@@ -98,28 +98,139 @@
 
 @section Scripts {
     <script>
+
+
+    </script>
+
+    <script>
+        //----------- For selecting day options on recurring bookings: START -----------------------
+        //clear this variable once loading another modal (either create or edit.cshtml)
+        // Initialize selectedDays with pre-selected days from the server
+        const selectedDays = new Set();
+        //----------- For selecting day options on recurring bookings: END -----------------------
+
         $(".chosen-select").chosen({
             no_results_text: "Oops, amenity not found!"
         });
 
         $('#crudModal2').on('shown.bs.modal', function () {
+            // Add custom validation method for general conditional required fields
+            // $.validator.addMethod("conditionalRequired", function (value, element, params) {
+            //     const controlInput = $(params.controlInput);
+            //     const isRecurring = controlInput.val() === "true";
+
+            //     // If recurring is true, field is required
+            //     if (isRecurring) {
+            //         return value !== "" && value != null;
+            //     }
+
+            //     // If not recurring, field is not required
+            //     return true;
+            // }, "This field is required for recurring bookings.");
+
+            // // Add specific validation method for selected days
+            // $.validator.addMethod("requireDays", function (value, element, params) {
+            //     const controlInput = $(params.controlInput);
+            //     const isRecurring = controlInput.val() === "true";
+
+            //     // If recurring is true, check if any days are selected
+            //     if (isRecurring) {
+            //         return selectedDays.size > 0;  // Check the selectedDays Set
+            //     }
+
+            //     // If not recurring, field is not required
+            //     return true;
+            // }, "Please select at least one day for recurring bookings.");
+
+            // Your validation setup
+            $.validator.setDefaults({
+                ignore: [] //don't ignore hidden texts
+            });
+
+            $.validator.unobtrusive.parse('#crudModal2 .modal-body');
+
+            // $('#createBookingForm').validate({
+            //     rules: {
+            //         BookingEndDate: {
+            //             conditionalRequired: {
+            //                 controlInput: "#IsRecurring"
+            //             }
+            //         },
+            //         selectedDays: {  // Note: this should match the name of your hidden input
+            //             requireDays: {
+            //                 controlInput: "#IsRecurring"
+            //             }
+            //         }
+            //     },
+            //     messages: {
+            //         BookingEndDate: {
+            //             conditionalRequired: "Please provide an end date for recurring bookings."
+            //         },
+            //         selectedDays: {
+            //             requireDays: "Please select at least one day for recurring bookings."
+            //         }
+            //     },
+            //     submitHandler: function (form) {
+            //         form.submit();
+            //     }
+            // });
+
+            flatpickr('.booking-date-input', {
+                enableTime: false,
+                noCalendar: false,
+                dateFormat: 'Y-m-d',
+                minDate: 'today'
+            });
+
             // Initialize Booking Date Picker
-            $('#bookingDate').flatpickr({
+            $('#BookingStartDate').flatpickr({
                 dateFormat: 'Y-m-d',
                 minDate: 'today',
                 onChange: function (selectedDates, dateStr, instance) {
                     // Enable Check-in Time input only if booking date is selected
                     if (dateStr) {
-                        $('#checkInTime').prop('disabled', false);
+                        $('#CheckInTime').prop('disabled', false);
                     } else {
-                        $('#checkInTime').prop('disabled', true).val(''); // Disable and clear Check-in Time input
-                        $('#checkOutTime').prop('disabled', true).val(''); // Also disable and clear Check-out Time input
+                        $('#CheckInTime').prop('disabled', true).val(''); // Disable and clear Check-in Time input
+                        $('#CheckOutTime').prop('disabled', true).val(''); // Also disable and clear Check-out Time input
+                    }
+
+                    // If Booking Start Date is changed, update minDate for Booking End Date
+                    if (selectedDates.length > 0) {
+                        var startDate = selectedDates[0]; // The selected start date
+                        console.log("Start Date is selected...");
+
+                        // Update minDate for Booking End Date dynamically without reinitializing flatpickr
+                        $('#BookingEndDate').flatpickr().set('minDate', new Date(startDate.getTime())); // One day after start date
+                        if($('#IsRecurring').val() === "false"){ //If Non-recurring automatically update BookingEndDate as the same as the BookingStartDate
+                            console.log("Booking Set to Non-recurring");
+                            
+                    $('#BookingEndDate').val($('#BookingStartDate').val()); //If non-recurring set bookingEndDate value equal to bookingStartDate
+                    $('#selectedDays').val('Dummy'); //Add this value, to evade the unobtrusive validation, remove  during handling of submission
+                        }
                     }
                 }
             });
 
             // Initialize Check-in Time Picker
-            $('#checkInTime').flatpickr({
+            let checkOutPicker = $('#CheckOutTime').flatpickr({
+                enableTime: true,
+                noCalendar: true,
+                dateFormat: "h:i K",
+                minTime: "07:00",
+                maxTime: "20:00",
+                minuteIncrement: 30,
+                time_24hr: false,
+                onOpen: function (selectedDates, dateStr, instance) {
+                    if (!$('#CheckInTime').val()) {
+                        instance.close();
+                    }
+                }
+            });
+
+
+            // Initialize Check-in Time Picker
+            $('#CheckInTime').flatpickr({
                 enableTime: true,
                 noCalendar: true,
                 dateFormat: 'h:i K',
@@ -129,36 +240,125 @@
                 time_24hr: false,
                 onOpen: function (selectedDates, dateStr, instance) {
                     // Prevent opening the Check-in Time picker if booking date is not selected
-                    if (!$('#bookingDate').val()) {
+                    if (!$('#BookingStartDate').val()) {
                         instance.close();
                     }
                 },
                 onChange: function (selectedDates, dateStr, instance) {
                     // Enable Check-out Time input only if Check-in Time is selected
                     if (dateStr) {
-                        $('#checkOutTime').prop('disabled', false);
+                        $('#CheckOutTime').prop('disabled', false);
+
+                        // Parse the check-in time
+                        let checkInTime = dateStr;
+                        let [hours, minutes] = checkInTime.match(/(\d+):(\d+)/).slice(1);
+                        let period = checkInTime.includes('PM') ? 'PM' : 'AM';
+
+                        // Convert to 24-hour format if PM
+                        if (period === 'PM' && hours !== '12') {
+                            hours = parseInt(hours) + 12;
+                        }
+                        if (period === 'AM' && hours === '12') {
+                            hours = '00';
+                        }
+
+                        // Add 30 minutes for minimum check-out time
+                        minutes = parseInt(minutes) + 30;
+                        if (minutes >= 60) {
+                            hours = parseInt(hours) + 1;
+                            minutes = minutes - 60;
+                        }
+
+                        // Format the minTime
+                        let minTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+
+                        // Update the Check-out Time picker
+                        checkOutPicker.set('minTime', minTime);
                     } else {
-                        $('#checkOutTime').prop('disabled', true).val(''); // Disable and clear Check-out Time input
+                        $('#CheckOutTime').prop('disabled', true).val(''); // Disable and clear Check-out Time input
                     }
                 }
             });
 
-            // Initialize Check-out Time Picker
-            $('#checkOutTime').flatpickr({
-                enableTime: true,
-                noCalendar: true,
-                dateFormat: 'h:i K',
-                minTime: '07:00',
-                maxTime: '20:00',
-                minuteIncrement: 30,
-                time_24hr: false,
-                onOpen: function (selectedDates, dateStr, instance) {
-                    // Prevent opening the Check-out Time picker if Check-in Time is not selected
-                    if (!$('#checkInTime').val()) {
-                        instance.close();
-                    }
-                }
+            // // Initialize Check-out Time Picker
+            // $('#CheckOutTime').flatpickr({
+            //     enableTime: true,
+            //     noCalendar: true,
+            //     dateFormat: 'h:i K',
+            //     minTime: '07:00',
+            //     maxTime: '20:00',
+            //     minuteIncrement: 30,
+            //     time_24hr: false,
+            //     onOpen: function (selectedDates, dateStr, instance) {
+            //         // Prevent opening the Check-out Time picker if Check-in Time is not selected
+            //         if (!$('#CheckInTime').val()) {
+            //             instance.close();
+            //         }
+            //     }
+            // });
+
+            //----------For Recurring Booking hide/show form: START ------------------
+            // Toggle day selection
+            $('.day-option').on('click', function () {
+                $(this).toggleClass('active btn-primary').toggleClass('btn-outline-primary');
             });
+
+
+            $('#IsRecurring').on('change', function () {
+                console.log("Recurring Booking Set");
+                const isRecurring = $(this).val() === "true";
+                const recurringForm = $('.recurring-booking-form');
+
+                if (isRecurring) {
+                    recurringForm.prop('hidden', false);  // Remove hidden attribute
+                    $('#BookingEndDate').flatpickr().set('minDate', new Date($('#BookingStartDate').val()))
+                } else {
+                    recurringForm.prop('hidden', true);   // Add hidden attribute
+                    // Clear the Booking End Date input
+                    // $('#BookingEndDate').val('');         // Using ID selector for better performance
+                    $('#BookingEndDate').val($('#BookingStartDate').val()); //If non-recurring set bookingEndDate value equal to bookingStartDate
+                    $('#selectedDays').val('Dummy'); //Add this value, to evade the unobtrusive validation, remove  during handling of submission
+                    // Clear the day selections
+                    $('.day-option').removeClass('selected');
+                }
+
+                // Revalidate fields to ensure dynamic rules take effect
+                // $('#BookingEndDate, #SelectedDays').valid();
+            });
+
+            //----------For initially loading the edit form: START ------------------
+            // Initialize the selectedDays set based on buttons with the 'selected' class
+            document.querySelectorAll('.day-option.selected').forEach((day) => {
+                const dayName = day.getAttribute('data-day');
+                selectedDays.add(dayName);
+            });
+
+            // Update the hidden input value on page load
+            $('#selectedDays').val([...selectedDays].join(','));
+            //----------For initially loading the edit form: END ------------------
+
+            document.querySelectorAll('.day-option').forEach((day) => {
+                day.addEventListener('click', function () {
+                    const dayName = day.getAttribute('data-day');
+
+                    // Toggle the selected class and update the selectedDays set
+                    if (selectedDays.has(dayName)) {
+                        selectedDays.delete(dayName);
+                        day.classList.remove('selected');
+                    } else {
+                        selectedDays.add(dayName);
+                        day.classList.add('selected');
+                    }
+
+                    console.log(Array.from(selectedDays)); // Debug: Shows the selected days
+
+                    // Update the hidden input value
+                    $('#selectedDays').val([...selectedDays].join(','));
+                });
+            });
+
+            //----------For Recurring Booking hide/show form: END ------------------
+
         });
 
 
@@ -191,6 +391,29 @@
                 .fail(function () {
                     // Show error notification if the AJAX request fails
                     toastr.error('Failed to load content. Please try again.', 'Error');
+
+                });
+        }
+
+        function selectSuggestedRoom(url) {
+            toastr.info('Booking Room...', 'Loading', { timeOut: 0, extendedTimeOut: 0, closeButton: true });
+
+            $.post(url)
+                .done(function (response) {
+                    // Handle success
+                    if (response.success) {
+                        toastr.success('Room booked successfully!', 'Success', { timeOut: 3000, closeButton: true });
+                        // You can perform further actions, like redirecting or updating the UI
+                    } else {
+                        toastr.error('Failed to book the room. Please try again.', 'Error', { timeOut: 0, extendedTimeOut: 0, closeButton: true });
+                        console.log("Error: " + response.message);  // Log error message from the response (if any)
+                    }
+                    closeModal('crudModal1')
+                })
+                .fail(function (xhr, status, error) {
+                    // Handle failure
+                    toastr.error('An error occurred while processing the booking request. Please try again.', 'Error', { timeOut: 0, extendedTimeOut: 0, closeButton: true });
+                    console.error('Error:', status, error);  // Log the error details for debugging
                 });
         }
 
@@ -227,18 +450,42 @@
         //------------------- Modal Handling: END ----------------------------
 
         $(document).on('submit', '#createBookingForm', function (e) {
+
+            console.log("Submitting Form");
             e.preventDefault();
 
-            const bookingDate = $('#bookingDate').val();
-            const checkInTime = $('#checkInTime').val();
-            const checkOutTime = $('#checkOutTime').val();
+            // Add spinner and disable the form
+            const $form = $(this);
+            const $submitButton = $form.find('input[type="submit"]');
+            const $inputs = $form.find('input, select, textarea');  // All form inputs, selects, and textareas
 
-            const startDateTime = `${bookingDate} ${checkInTime}`;
-            const endDateTime = `${bookingDate} ${checkOutTime}`;
 
+            //$inputs.prop('disabled', true);
+            $submitButton.prop('disabled', true)
+                .val('Submitting...')
+                .addClass('disabled'); // Optional: Add a disabled state class
+
+
+            // Check if the booking is not recurring
+            const isRecurring = $('#IsRecurring').val() === 'false';
+
+            // If it's not recurring, set the BookingEndDate to be the same as BookingStartDate
+            // and clear selectedDays
+            if (isRecurring) {
+                $('#BookingEndDate').val($('#BookingStartDate').val());
+                $('#selectedDays').val(''); // Clear any dummy text or values
+                selectedDays.clear(); // Clear the selectedDays Set
+            }
             const formData = new FormData(this);
-            formData.append('StartDateTime', startDateTime);
-            formData.append('EndDateTime', endDateTime);
+
+            // Serialize FormData into a plain object
+            const formDataObject = {};
+            formData.forEach((value, key) => {
+                formDataObject[key] = value;
+            });
+
+            // Convert the plain object to a JSON string
+            const formDataJson = JSON.stringify(formDataObject);
 
             $.ajax({
                 type: 'POST',
@@ -246,13 +493,43 @@
                 data: formData,
                 processData: false,
                 contentType: false,
-                success: function () {
-                    $('#crudModal2').modal('hide');
-                    location.reload();
+                success: function (response) {
+                    if (response.success) {
+                        // Successful booking
+                        toastr.success('Room booked successfully!', 'Success', { timeOut: 3000, closeButton: true });
+                        closeModal('crudModal2');
+                        closeModal('crudModal1');
+                        location.reload();
+                    } else {
+                        // Booking failed due to conflicts
+                        toastr.warning('Failed to process your booking request. A conflict occurred', 'Warning', { timeOut: 0, extendedTimeOut: 0, closeButton: true });
+                        console.log("Conflict Booking Occured");
+
+                        if (response.conflictBookingIds && response.conflictBookingIds.length > 0) { //Show conflicts and suggestions
+                            closeModal('crudModal2');
+                            closeModal('crudModal1');
+                            openModal('@Url.Action("ShowConflictsAndSuggestions", "UserRoom")' +
+                                '?conflictBookingIds=' + encodeURIComponent(JSON.stringify(response.conflictBookingIds)) +
+                                '&roomSuggestionIds=' + encodeURIComponent(JSON.stringify(response.roomSuggestionIds)) +
+                                '&bookingData=' + encodeURIComponent(formDataJson),
+                                'crudModal1');
+                        } else {
+                            alert('Failed to book the room for an unknown reason.');
+                        }
+                    }
                 },
-                error: function () {
-                    alert('Failed to book the room.');
+                error: function (xhr, status, error) {
+                    // This will catch network errors or server errors that prevent a response
+                    toastr.error('An unexpected error occurred. Please try again.', 'Error', { timeOut: 0, extendedTimeOut: 0, closeButton: true });
+                    console.error('Error:', status, error);
+                },
+                complete: function () {
+                    $submitButton.prop('disabled', false)
+                        .val('Save')
+                        .removeClass('disabled');
+                    $inputs.prop('disabled', false);
                 }
+
             });
 
         });

@@ -17,6 +17,7 @@ namespace ASI.Basecode.Services.Interfaces
 
         //READ
         List<BookingViewModel> GetBookings();
+        List<BookingViewModel> GetBookingsByIds(List<int> bookingIds);
         BookingViewModel? GetBooking(int Id);
 
         //UPDATE
@@ -25,5 +26,9 @@ namespace ASI.Basecode.Services.Interfaces
         //DELETE
         //void SoftDeleteBooking(int Id);
         void HardDeleteBooking(int Id);
+
+        //OTHERS
+        List<BookingViewModel> GetConflictBookings(BookingViewModel model, int? roomId);
+        List<RoomViewModel> GetAvailableRoomsForBooking(BookingViewModel model);
     }
 }

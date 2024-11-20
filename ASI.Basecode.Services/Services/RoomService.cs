@@ -107,6 +107,13 @@ namespace ASI.Basecode.Services.Services
             return rooms;
         }
 
+        public List<RoomViewModel> GetRoomsByIds(List<int> roomIds)
+        {
+            var rooms = GetRooms().Where(room => roomIds.Contains(room.RoomId)).ToList();
+            return rooms;
+        }
+
+
         // Finds and returns a room by its ID. If no room is found, returns null.
         public RoomViewModel? GetRoomById(int roomId)
         {

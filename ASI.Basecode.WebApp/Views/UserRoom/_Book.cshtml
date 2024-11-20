@@ -17,27 +17,71 @@
         <input type="hidden" asp-for="RoomId" id="RoomId" value=@roomId/>
         <input type="hidden" asp-for="Status" id="Status" value="Pending"/>
 
-        <!-- Booking Date Picker (Col-2) -->
+        <!-- Meeting Title -->
         <div class="form-group">
-            <label class="control-label">Select Date</label>
-            <input type="text" id="bookingDate" class="form-control booking-date-input" placeholder="Booking Date" />
+            <label asp-for="Title" class="control-label">Meeting Title</label>
+            <input asp-for="Title" class="form-control" type="text" placeholder="Title" />
+            <span asp-validation-for="Title" class="text-danger"></span>
         </div>
 
-        <!-- Check-in Time Picker (Col-2) -->
+        <!-- Booking Check In Date and Time -->
         <div class="form-group">
-            <label class="control-label">Select Check In Time</label>
-            <input type="text" id="checkInTime" class="form-control booking-time-input" placeholder="Check-in Time" />
+            <label asp-for="BookingStartDate" class="control-label">Booking Start Date</label>
+            <input asp-for="BookingStartDate" id="BookingStartDate" class="form-control booking-date-input" type="text" placeholder="Start Date" />
+            <span asp-validation-for="BookingStartDate" class="text-danger"></span>
         </div>
 
-        <!-- Check-out Time Picker (Col-2) -->
         <div class="form-group">
-            <label class="control-label">Select Check Out Time</label>
-            <input type="text" id="checkOutTime" class="form-control booking-time-input" placeholder="Check-out Time" />
+            <label asp-for="CheckInTimeString" class="control-label">Check In Time</label>
+            <input asp-for="CheckInTimeString" id="CheckInTime" class="form-control booking-time-input" type="text" placeholder="Check In Time" />
+            <span asp-validation-for="CheckInTimeString" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="CheckOutTimeString" class="control-label">Check Out Time</label>
+            <input asp-for="CheckOutTimeString" id="CheckOutTime" class="form-control booking-time-input" type="text" placeholder="Check Out Time" />
+            <span asp-validation-for="CheckOutTimeString" class="text-danger"></span>
+        </div>
+
+
+        <!-- Is Recurring -->
+        <div class="form-group">
+            <label asp-for="IsRecurring" class="control-label">Is Recurring?</label>
+            <select asp-for="IsRecurring" id="IsRecurring" class="form-control">
+                <option value="false">No</option>
+                <option value="true">Yes</option>
+            </select>
+            <span asp-validation-for="IsRecurring" class="text-danger"></span>
+        </div>
+
+        <!-- Contents here for choosing non-recurring or recurring booking -->
+        <div class="recurring-booking-form pb-3" hidden="true">
+            <!-- Booking Check Out Date and Time -->
+            <div class="form-group">
+                <label asp-for="BookingEndDate" class="control-label">Recurring End Date</label>
+                <input asp-for="BookingEndDate" class="form-control booking-date-input" type="text" placeholder="End Date" />
+                <span asp-validation-for="BookingEndDate" class="text-danger"></span>
+            </div>
+
+            <!-- Hidden input for selected days -->
+            <input type="hidden" asp-for="SelectedDays" id="selectedDays" name="SelectedDays"/>
+
+            <label id="DaySelections" class="control-label">Select Days</label>
+            <div class="day-selector d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-outline-primary day-option" data-day="Monday">Mon</button>
+                <button type="button" class="btn btn-outline-primary day-option" data-day="Tuesday">Tue</button>
+                <button type="button" class="btn btn-outline-primary day-option" data-day="Wednesday">Wed</button>
+                <button type="button" class="btn btn-outline-primary day-option" data-day="Thursday">Thu</button>
+                <button type="button" class="btn btn-outline-primary day-option" data-day="Friday">Fri</button>
+                <button type="button" class="btn btn-outline-primary day-option" data-day="Saturday">Sat</button>
+            </div>
+            <span asp-validation-for="SelectedDays" class="text-danger"></span>
+
         </div>
 
         <!-- Submit Button -->
         <div class="form-group">
-            <input type="submit" value="Save" class="btn btn-primary" />
+            <input id="createBooking"type="submit" value="Save" class="btn btn-primary" />
         </div>
     </form>
 </div>

@@ -94,6 +94,14 @@
 
 @section Scripts {
     <script defer>
+        
+        //----------- For selecting day options on recurring bookings: START -----------------------
+        //clear this variable once loading another modal (either create or edit.cshtml)
+        // Initialize selectedDays with pre-selected days from the server
+        const selectedDays = new Set();
+        //----------- For selecting day options on recurring bookings: END -----------------------
+
+
         // Initialize Booking Date Picker
         $('#bookingDate').flatpickr({
             dateFormat: 'Y-m-d',
@@ -169,7 +177,7 @@
                 var imageUrl = '@Url.Content("~/uploads/rooms/")' + image.guid;  // Combine the base URL with the image Guid inline
 
                     carouselHtml += `
-                <div class="carousel-item ${index === 0 ? 'active' : ''} text-center">
+                <div class="carousel-item ${index === 0 ? 'active' : ''} text-left">
                     <div class="d-flex justify-content-center">
                                 <img src="${imageUrl}" class="object-fit-cover rounded" alt="Room Image"
                              style="width: 200px; height: 200px;" />
@@ -195,22 +203,95 @@
         }
 
         $('#crudModal1').on('shown.bs.modal', function () {
+            $.validator.unobtrusive.parse('#crudModal1 .modal-body');
+            // Destroy existing flatpickr instances for booking-time-input
             $('.booking-time-input').each(function () {
                 if (this._flatpickr) {
                     this._flatpickr.destroy();
                 }
             });
 
+            // Initialize flatpickr for time inputs
             flatpickr('.booking-time-input', {
                 enableTime: true,
-                noCalendar: false,
-                dateFormat: 'Y-m-d h:i K',
-                minDate: 'today',
+                noCalendar: true,
+                dateFormat: 'h:i K',
                 minTime: '07:00',
                 maxTime: '20:00',
                 minuteIncrement: 30,
                 time_24hr: false
             });
+
+            // Destroy existing flatpickr instances for booking-date-input
+            $('.booking-date-input').each(function () {
+                if (this._flatpickr) {
+                    this._flatpickr.destroy();
+                }
+            });
+
+            // Initialize flatpickr for date inputs
+            flatpickr('.booking-date-input', {
+                enableTime: false,
+                noCalendar: false,
+                dateFormat: 'Y-m-d',
+                minDate: 'today'
+            });
+
+            //----------For Recurring Booking hide/show form: START ------------------
+            // Toggle day selection
+            $('.day-option').on('click', function () {
+                $(this).toggleClass('active btn-primary').toggleClass('btn-outline-primary');
+            });
+
+
+            $('#IsRecurring').on('change', function () {
+                console.log("Recurring Booking Set");
+                const isRecurring = $(this).val() === "true";
+                const recurringForm = $('.recurring-booking-form');
+
+                if (isRecurring) {
+                    recurringForm.prop('hidden', false);  // Remove hidden attribute
+                } else {
+                    recurringForm.prop('hidden', true);   // Add hidden attribute
+                    // Clear the Booking End Date input
+                    $('#BookingEndDate').val('');         // Using ID selector for better performance
+                    // Clear the day selections
+                    $('.day-option').removeClass('selected');
+                }
+            });
+
+            //----------For initially loading the edit form: START ------------------
+            // Initialize the selectedDays set based on buttons with the 'selected' class
+            document.querySelectorAll('.day-option.selected').forEach((day) => {
+                const dayName = day.getAttribute('data-day');
+                selectedDays.add(dayName);
+            });
+
+            // Update the hidden input value on page load
+            $('#selectedDays').val([...selectedDays].join(','));
+            //----------For initially loading the edit form: END ------------------
+
+            document.querySelectorAll('.day-option').forEach((day) => {
+                day.addEventListener('click', function () {
+                    const dayName = day.getAttribute('data-day');
+
+                    // Toggle the selected class and update the selectedDays set
+                    if (selectedDays.has(dayName)) {
+                        selectedDays.delete(dayName);
+                        day.classList.remove('selected');
+                    } else {
+                        selectedDays.add(dayName);
+                        day.classList.add('selected');
+                    }
+
+                    console.log(Array.from(selectedDays)); // Debug: Shows the selected days
+
+                    // Update the hidden input value
+                    $('#selectedDays').val([...selectedDays].join(','));
+                });
+            });
+
+            //----------For Recurring Booking hide/show form: END ------------------
         });
 
         //To make the chosen multi-selection dropdown works once crudModal2 is triggered/opened
@@ -468,8 +549,8 @@
             const startDateTime = `${bookingDate} ${checkInTime}`;
             const endDateTime = `${bookingDate} ${checkOutTime}`;
 
-            console.log(startDateTime);
-            console.log(endDateTime);
+            // console.log(startDateTime);
+            // console.log(endDateTime);
 
             const params = {
                 searchText: searchText,
@@ -686,8 +767,8 @@
                 });
             }
 
-
             //----------For Room Searching and Filtering Selection Modal (crudModal2) (_RoomSelection.cshtml): END ------------------
+        
         });
     </script>
 }

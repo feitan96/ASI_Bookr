@@ -18,15 +18,22 @@
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <input type="hidden" asp-for="BookingId" />
 
-        <!-- Room Selection Button -->
+        <!-- Meeting Title -->
+        <div class="form-group">
+            <label asp-for="Title" class="control-label">Meeting Title</label>
+            <input asp-for="Title" class="form-control" type="text" placeholder="Title" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+
+        <!-- Room Selection -->
         <div class="form-group">
             <label class="control-label">Select Room</label>
             <button type="button" id="selectRoomBtn" class="btn btn-outline-primary form-control" onclick="openModal('@Url.Action("RoomSelection", "Booking")', 'crudModal2')">
                 Select a Room
             </button>
-            <input type="hidden" asp-for="RoomId" id="RoomId"/>
+            <input type="hidden" asp-for="RoomId" id="RoomId" />
             <div id="roomSelectionContainer" class="roomSelectionContainer">
-                <!-- Room Selection Content (Updates if room is selected) -->
+                <!-- Room Selection Content -->
             </div>
             <span asp-validation-for="RoomId" class="text-danger"></span>
         </div>
@@ -34,40 +41,75 @@
         <!-- User Selection -->
         <div class="form-group">
             <label class="control-label">Select User</label>
-            <button type="button" id="selectRoomBtn" class="btn btn-outline-primary form-control" onclick="openModal('@Url.Action("UserSelection", "Booking")', 'crudModal2')">
+            <button type="button" id="selectUserBtn" class="btn btn-outline-primary form-control" onclick="openModal('@Url.Action("UserSelection", "Booking")', 'crudModal2')">
                 Select User
             </button>
-            <input type="hidden" asp-for="UserId" id="UserId"/>
-            <input type="hidden" id="UserFullName"/>
+            <input type="hidden" asp-for="UserId" id="UserId" />
             <div id="userSelectionContainer" class="userSelectionContainer">
-                <!-- User Selection Content (Updates if user is selected) -->
+                <!-- User Selection Content -->
             </div>
             <span asp-validation-for="UserId" class="text-danger"></span>
         </div>
 
-        <!-- Booking Check In Date and Time -->
+        <!-- Booking Dates and Times -->
         <div class="form-group">
-            <label asp-for="BookingCheckInDateTime" class="control-label">Booking Check In Date and Time</label>
-            <input asp-for="BookingCheckInDateTime" class="form-control booking-time-input" type="text" placeholder="Start Date and Time" />
-            <span asp-validation-for="BookingCheckInDateTime" class="text-danger"></span>
+            <label asp-for="BookingStartDate" class="control-label">Booking Start Date</label>
+            <input asp-for="BookingStartDate" class="form-control booking-date-input" type="text" placeholder="Start Date" />
+            <span asp-validation-for="BookingStartDate" class="text-danger"></span>
         </div>
 
-        <!-- Booking Check In Date and Time -->
         <div class="form-group">
-            <label asp-for="BookingCheckOutDateTime" class="control-label">Booking Check Out Date and Time</label>
-            <input asp-for="BookingCheckOutDateTime" class="form-control booking-time-input" type="text" placeholder="End Date and Time" />
-            <span asp-validation-for="BookingCheckOutDateTime" class="text-danger"></span>
+            <label asp-for="CheckInTimeString" class="control-label">Check In Time</label>
+            <input asp-for="CheckInTimeString" class="form-control booking-time-input" type="text" placeholder="Check In Time" />
+            <span asp-validation-for="CheckInTimeString" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="CheckOutTimeString" class="control-label">Check Out Time</label>
+            <input asp-for="CheckOutTimeString" class="form-control booking-time-input" type="text" placeholder="Check Out Time" />
+            <span asp-validation-for="CheckOutTimeString" class="text-danger"></span>
+        </div>
+
+        <!-- Is Recurring -->
+        <div class="form-group">
+            <label asp-for="IsRecurring" class="control-label">Is Recurring?</label>
+            <select asp-for="IsRecurring" id="IsRecurring" class="form-control">
+                <option value="false">No</option>
+                <option value="true">Yes</option>
+            </select>
+            <span asp-validation-for="IsRecurring" class="text-danger"></span>
+        </div>
+
+        <!-- Recurring Details -->
+        <div class="recurring-booking-form" @(Model.IsRecurring ? "" : "hidden")>
+            <div class="form-group">
+                <label asp-for="BookingEndDate" class="control-label">Recurring End Date</label>
+                <input asp-for="BookingEndDate" class="form-control booking-date-input" type="text" placeholder="End Date" />
+                <span asp-validation-for="BookingEndDate" class="text-danger"></span>
+            </div>
+
+            <!-- Hidden input for selected days -->
+            <input type="hidden" asp-for="SelectedDays" id="selectedDays" name="SelectedDays" />
+
+            <label id="DaySelections" class="control-label">Select Days</label>
+            <div class="day-selector d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-outline-primary day-option @(Model.SelectedDaysList.Contains("Monday") ? "selected active btn-primary" : "")" data-day="Monday">Mon</button>
+                <button type="button" class="btn btn-outline-primary day-option @(Model.SelectedDaysList.Contains("Tuesday") ? "selected active btn-primary" : "")" data-day="Tuesday">Tue</button>
+                <button type="button" class="btn btn-outline-primary day-option @(Model.SelectedDaysList.Contains("Wednesday") ? "selected active btn-primary" : "")" data-day="Wednesday">Wed</button>
+                <button type="button" class="btn btn-outline-primary day-option @(Model.SelectedDaysList.Contains("Thursday") ? "selected active btn-primary" : "")" data-day="Thursday">Thu</button>
+                <button type="button" class="btn btn-outline-primary day-option @(Model.SelectedDaysList.Contains("Friday") ? "selected active btn-primary" : "")" data-day="Friday">Fri</button>
+                <button type="button" class="btn btn-outline-primary day-option @(Model.SelectedDaysList.Contains("Saturday") ? "selected active btn-primary" : "")" data-day="Saturday">Sat</button>
+            </div>
         </div>
 
         <!-- Status -->
         <div class="form-group">
             <label asp-for="Status" class="control-label">Status</label>
             <select asp-for="Status" class="form-control">
-                <option value="">Select Status</option>
                 <option value="Pending">Pending</option>
-                <option value="Approved">Approve</option>
-                <option value="Disapproved">Disapprove</option>
-                <option value="Cancelled">Cancel</option>
+                <option value="Approved">Approved</option>
+                <option value="Disapproved">Disapproved</option>
+                <option value="Cancelled">Cancelled</option>
             </select>
             <span asp-validation-for="Status" class="text-danger"></span>
         </div>
