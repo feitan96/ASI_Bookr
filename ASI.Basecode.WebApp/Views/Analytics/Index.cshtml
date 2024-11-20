@@ -6,6 +6,21 @@
 
 <h2>Analytics</h2>
 
+<div class="card mb-3">
+    <div class="card-header">
+        <h4>Most Used Room</h4>
+    </div>
+    <div class="card-body">
+        <h5 class="card-title">@Model.MostUsedRoom?.RoomName ?? "No data available"</h5>
+        <p class="card-text">
+            <strong>Booking Frequency:</strong> @Model.MostUsedRoom?.BookingFrequency ?? 0<br>
+            <strong>Total Usage Hours:</strong> @Model.MostUsedRoom?.TotalUsageHours.ToString("F2") ?? "0.00"<br>
+            <strong>Peak Usage Hours:</strong> @Model.MostUsedRoom?.PeakUsageHours ?? "N/A"
+        </p>
+    </div>
+</div>
+
+
 <div class="row">
     <div class="col-md-12">
         <h3>Room Usage Over Time</h3>

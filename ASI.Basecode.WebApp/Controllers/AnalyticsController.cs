@@ -43,13 +43,45 @@ namespace ASI.Basecode.WebApp.Controllers
                     Weeks = weeks.Select(w => w.ToString("MMM dd")).ToList()
                 }).ToList();
 
+            // Compute most used room
+            var mostUsedRoomGroup = bookings
+    .GroupBy(b => b.Room)
+    .OrderByDescending(group => group.Count())
+    .FirstOrDefault();
+
+            var mostUsedRoom = new MostUsedRoomViewModel();
+            if (mostUsedRoomGroup != null)
+            {
+                var room = mostUsedRoomGroup.Key;
+                var roomBookings = mostUsedRoomGroup.ToList();
+
+                // Safely group by time slots (handle default TimeSpan values)
+                var timeSlots = roomBookings
+                    .Where(b => b.CheckInTime != TimeSpan.Zero && b.CheckOutTime != TimeSpan.Zero)
+                    .GroupBy(b => $"{b.CheckInTime:hh\\:mm} - {b.CheckOutTime:hh\\:mm}")
+                    .OrderByDescending(g => g.Count())
+                    .FirstOrDefault();
+
+                mostUsedRoom = new MostUsedRoomViewModel
+                {
+                    RoomName = room.Name,
+                    BookingFrequency = roomBookings.Count,
+                    TotalUsageHours = roomBookings
+                        .Where(b => b.CheckInTime != TimeSpan.Zero && b.CheckOutTime != TimeSpan.Zero)
+                        .Sum(b => (b.CheckOutTime - b.CheckInTime).TotalHours),
+                    PeakUsageHours = timeSlots?.Key ?? "N/A"
+                };
+            }
+
             var viewModel = new AnalyticsViewModel
             {
-                WeeklyRoomUsage = weeklyRoomUsage
+                WeeklyRoomUsage = weeklyRoomUsage,
+                MostUsedRoom = mostUsedRoom
             };
 
             return View(viewModel);
         }
+
 
 
     }
