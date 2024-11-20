@@ -282,5 +282,18 @@
                 }
             });
         });
+
+        function initializeChosen() {
+            $(".chosen-select").chosen({
+                no_results_text: "Oops, amenity not found!",
+                width: "100%" // Optional: Ensures the select box fits well within the modal
+            });
+        }
+
+        // Call this function after the modal content is loaded
+        $(document).on('shown.bs.modal', '#crudModal', function () {
+            initializeChosen();
+        });
+
     </script>
 }
