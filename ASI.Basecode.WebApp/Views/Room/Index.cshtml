@@ -68,16 +68,9 @@
 
 <!-- Room Views -->
 <div id="roomListView" class="room-view">
-    <!-- Room Table -->
     <table class="table table-striped">
         <thead>
             <tr>
-                @*<th>@Html.DisplayNameFor(model => model.Items.FirstOrDefault().Name)</th>
-                <th>@Html.DisplayNameFor(model => model.Items.FirstOrDefault().Description)</th>
-                <th>@Html.DisplayNameFor(model => model.Items.FirstOrDefault().Type)</th>
-                <th>@Html.DisplayNameFor(model => model.Items.FirstOrDefault().Capacity)</th>
-                <th>@Html.DisplayNameFor(model => model.Items.FirstOrDefault().Location)</th>
-                <th>Amenities</th>*@
                 <th>@Html.DisplayNameFor(model => model.Name)</th>
                 <th>@Html.DisplayNameFor(model => model.Description)</th>
                 <th>@Html.DisplayNameFor(model => model.Type)</th>
@@ -87,7 +80,7 @@
                 <th></th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="roomTableBody">
             @foreach (var room in Model)
             {
                 <tr>
@@ -255,6 +248,43 @@
             });
         }
 
+        $(document).ready(function () {
+            $("#searchRoomName, #typeFilter, #locationFilter, #capacityFilter, #amenitiesFilter").on("change keyup", function () {
+                const filters = {
+                    searchRoomName: $("#searchRoomName").val(),
+                    type: $("#typeFilter").val(),
+                    location: $("#locationFilter").val(),
+                    capacity: $("#capacityFilter").val(),
+                    amenities: $("#amenitiesFilter").val()
+                };
+
+                $.ajax({
+                    url: "/Room/Search",
+                    type: "GET",
+                    data: filters,
+                    success: function (response) {
+                        $("#roomTableBody").html(response); // Update only the table body
+                    },
+                    error: function () {
+                        alert("An error occurred while filtering rooms.");
+                    }
+                });
+            });
+
+            // Clear filters button
+            $("#clearFiltersButton").on("click", function () {
+                $("#searchRoomName").val("");
+                $("#typeFilter").val("");
+                $("#locationFilter").val("");
+                $("#capacityFilter").val("");
+                $("#amenitiesFilter").val([]).trigger("chosen:updated");
+
+                // Trigger change event to reload all rooms
+                $("#searchRoomName").trigger("keyup");
+            });
+        });
+
+
         function clearFilters() {
             // Clear all filter inputs
             $('#searchRoomName').val('');
@@ -275,5 +305,18 @@
                 }
             });
         }
+
+        function initializeChosen() {
+            $(".chosen-select").chosen({
+                no_results_text: "Oops, amenity not found!",
+                width: "100%" // Optional: Ensures the select box fits well within the modal
+            });
+        }
+
+        // Call this function after the modal content is loaded
+        $(document).on('shown.bs.modal', '#crudModal', function () {
+            initializeChosen();
+        });
+
     </script>
 }
