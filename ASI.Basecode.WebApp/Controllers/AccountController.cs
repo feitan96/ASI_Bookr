@@ -26,6 +26,7 @@ namespace ASI.Basecode.WebApp.Controllers
         private readonly TokenProviderOptionsFactory _tokenProviderOptionsFactory;
         private readonly IConfiguration _appConfiguration;
         private readonly IUserService _userService;
+        private readonly IEmailService _emailService;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountController"/> class.
@@ -46,6 +47,7 @@ namespace ASI.Basecode.WebApp.Controllers
                             IConfiguration configuration,
                             IMapper mapper,
                             IUserService userService,
+                            IEmailService emailService,
                             TokenValidationParametersFactory tokenValidationParametersFactory,
                             TokenProviderOptionsFactory tokenProviderOptionsFactory) : base(httpContextAccessor, loggerFactory, configuration, mapper)
         {
@@ -55,6 +57,7 @@ namespace ASI.Basecode.WebApp.Controllers
             this._tokenValidationParametersFactory = tokenValidationParametersFactory;
             this._appConfiguration = configuration;
             this._userService = userService;
+            this._emailService = emailService;
         }
 
         /// <summary>
@@ -111,33 +114,6 @@ namespace ASI.Basecode.WebApp.Controllers
             return View();
         }
 
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult Register()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        [AllowAnonymous]
-        public IActionResult Register(UserViewModel model)
-        {
-            try
-            {
-                _userService.AddUser(model, int.Parse(Id));
-                return RedirectToAction("Login", "Account");
-            }
-            catch(InvalidDataException ex)
-            {
-                TempData["ErrorMessage"] = ex.Message;
-            }
-            catch(Exception ex)
-            {
-                TempData["ErrorMessage"] = Resources.Messages.Errors.ServerError;
-            }
-            return View();
-        }
-
         /// <summary>
         /// Sign Out current account and return login view.
         /// </summary>
@@ -146,6 +122,69 @@ namespace ASI.Basecode.WebApp.Controllers
         public async Task<IActionResult> SignOutUser()
         {
             await this._signInManager.SignOutAsync();
+            return RedirectToAction("Login", "Account");
+        }
+
+        /// <summary>
+        /// Redirect to Forgot Password Page.
+        /// </summary>
+        /// <returns>Created response view</returns>
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// Redirect to Reset Password Page.
+        /// </summary>
+        /// <returns>Created response view</returns>
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ResetPassword(string token)
+        {
+            var tokenResult = _userService.IsTokenValid(token);
+            if (tokenResult == ChangePassToken.Invalid)
+            {
+                TempData["ErrorMessage"] = "Token expired or invalid";
+                return RedirectToAction("Login", "Account");
+            }
+
+            var model = new ResetPasswordModel { Token = token };
+            return View(model);
+        }
+
+        /// <summary>
+        /// Send Request link for Changing Password.
+        /// </summary>
+        /// <returns>Created response view</returns>
+        [HttpPost]
+        [AllowAnonymous]
+        public IActionResult RequestPasswordReset(string email)
+        {
+            var token = _userService.GeneratePasswordResetToken(email);
+            if (string.IsNullOrEmpty(token))
+            {
+                TempData["ErrorMessage"] = "Email not found. Please check the email address.";
+                return RedirectToAction("ForgotPassword", "Account");
+            }
+            _emailService.SendPasswordResetEmail(email, token);
+            TempData["SuccessMessage"] = "Password reset link has been sent to your email address.";
+            return RedirectToAction("ForgotPassword", "Account");
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public IActionResult ResetPassword(ResetPasswordModel model)
+        {
+            var result = _userService.ResetPassword(model);
+            if (result == Status.Error)
+            {
+                TempData["ErrorMessage"] = "Failed to reset password.";
+                return View(model);
+            }
+            TempData["SuccessMessage"] = "Password reset successful.";
             return RedirectToAction("Login", "Account");
         }
     }

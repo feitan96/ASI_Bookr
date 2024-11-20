@@ -14,6 +14,8 @@
     <dl class="row">
         <dt class="col-sm-4 text-end">Room Name:</dt>
         <dd class="col-sm-8">@Html.DisplayFor(model => model.Room.Name)</dd>
+        <!-- Room Details -->
+        <input type="hidden" asp-for="RoomId" />
 
         <dt class="col-sm-4 text-end">Description:</dt>
         <dd class="col-sm-8">@Html.DisplayFor(model => model.Room.Description)</dd>
@@ -55,6 +57,8 @@
         <dt class="col-sm-4 text-end">End Date:</dt>
         <dd class="col-sm-8">@Html.DisplayFor(model => model.FormattedBookingEndDate)</dd>
 
+        <!-- User Details -->
+        <input type="hidden" asp-for="UserId" />
         <dt class="col-sm-4 text-end">Status:</dt>
         <dd class="col-sm-8">@Html.DisplayFor(model => model.Status)</dd>
 

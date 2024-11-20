@@ -108,16 +108,12 @@
 
         <div class="form-group">
             <label asp-for="RoomAmenitiesId" class="control-label">Select Amenities</label>
-            <div>
+            <select asp-for="RoomAmenitiesId" class="form-control chosen-select" multiple>
                 @foreach (var amenity in amenities)
                 {
-                    <input type="checkbox" name="RoomAmenitiesId" value="@amenity.AmenityId"
-                    @(Model.RoomAmenitiesId.Contains(amenity.AmenityId) ? "checked" : "") />
-                    <label>@amenity.AmenityName</label>
-
-                    <br />
+                    <option value="@amenity.AmenityId">@amenity.AmenityName</option>
                 }
-            </div>
+            </select>
             <span asp-validation-for="RoomAmenitiesId" class="text-danger"></span>
         </div>
 

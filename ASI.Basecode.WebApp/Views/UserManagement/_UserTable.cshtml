@@ -1,0 +1,31 @@
+﻿@model List<ASI.Basecode.Services.ServiceModels.UserViewModel>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Phone Number</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model.Where(u => u.Role != "Superadmin"))
+        {
+            <tr>
+                <td>@user.FirstName</td>
+                <td>@user.LastName</td>
+                <td>@user.Email</td>
+                <td>@user.Role</td>
+                <td>@user.PhoneNumber</td>
+                <td>
+                    <button onclick="openModal('@Url.Action("View", "UserManagement", new { Id = user.Id })')" class="btn btn-info btn-sm">View</button>
+                    <button onclick="openModal('@Url.Action("Edit", "UserManagement", new { Id = user.Id })')" class="btn btn-warning btn-sm">Edit</button>
+                    <button onclick="openModal('@Url.Action("Delete", "UserManagement", new { Id = user.Id })')" class="btn btn-danger btn-sm">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

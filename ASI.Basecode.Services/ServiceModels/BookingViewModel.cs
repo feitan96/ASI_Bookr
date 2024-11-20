@@ -42,6 +42,8 @@ namespace ASI.Basecode.Services.ServiceModels
         [Required(ErrorMessage = "Please select a check out time.")]
 
         public string CheckOutTimeString { get; set; }
+        public TimeSpan CheckInTime { get; set; }
+        public TimeSpan CheckOutTime { get; set; }
 
         // Helper method to parse the time
         public static TimeSpan ParseTimeSpan(string timeString)

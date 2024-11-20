@@ -147,7 +147,6 @@ namespace ASI.Basecode.WebApp.Controllers
         [HttpGet]
         public IActionResult Search(string roomName, string type, string location, int? capacity, [FromQuery(Name = "amenities[]")] List<int> amenities)
         {
-
             var rooms = _roomservice.GetRooms();
 
             // Step 1: Filter by Room Name

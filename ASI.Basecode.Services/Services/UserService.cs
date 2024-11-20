@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using static ASI.Basecode.Resources.Constants.Enums;
 
 namespace ASI.Basecode.Services.Services
@@ -35,7 +36,8 @@ namespace ASI.Basecode.Services.Services
 
             return user != null ? LoginResult.Success : LoginResult.Failed;
         }
-
+        
+        //unused
         public PagedResult<UserViewModel> GetAllUsers(int pageNumber, int pageSize)
         {
             var users = _repository.GetUsers()
@@ -80,15 +82,52 @@ namespace ASI.Basecode.Services.Services
             return user;
         }
 
+        #region Forgot Password
+        public string GeneratePasswordResetToken(string email)
+        {
+            var user = _repository.GetUsers().Where(x => x.Email.Equals(email)).FirstOrDefault();
+            if (user == null) return null;
+
+            var token = Guid.NewGuid().ToString();
+            user.PasswordResetToken = token;
+            user.ResetTokenExpiry = DateTime.Now.AddHours(1);
+            _repository.UpdateUser(user);
+
+            return token;
+        }
+
+        public Status ResetPassword(ResetPasswordModel model)
+        {
+            var user = _repository.GetUsers().FirstOrDefault(u => u.PasswordResetToken == model.Token && u.ResetTokenExpiry > DateTime.Now);
+            if (user == null) return Status.Error;
+
+            user.Password = PasswordManager.EncryptPassword(model.NewPassword);
+            user.PasswordResetToken = null;
+            user.ResetTokenExpiry = null;
+            _repository.UpdateUser(user);
+
+            return Status.Success;
+        }
+
+        public ChangePassToken IsTokenValid(string token)
+        {
+            var user = _repository.GetUsers().FirstOrDefault(u => u.PasswordResetToken == token && u.ResetTokenExpiry > DateTime.Now);
+            if (user == null) return ChangePassToken.Invalid;
+
+            return ChangePassToken.Valid;
+        }
+        #endregion
+
+        #region User CRUD
         public void AddUser(UserViewModel model, int userId)
         {
             if (_repository.UserExists(model.Email)) throw new InvalidDataException(Resources.Messages.Errors.UserExists);
-
+            if (!IsValidPassword(model.Password)) throw new InvalidDataException(Resources.Messages.Errors.PasswordError);
             var user = new User();
             _mapper.Map(model, user);
             user.Password = PasswordManager.EncryptPassword(model.Password);
-            user.CreatedDate = user.UpdatedDate = DateTime.Now;
-            user.CreatedBy = user.UpdatedBy = userId;
+            user.CreatedDate = DateTime.Now;
+            user.CreatedBy = userId;
             user.IsDeleted = user.IsDarkMode = false;
             user.AllowNotifications = true;
             user.DefaultBookDuration = 3;
@@ -106,17 +145,13 @@ namespace ASI.Basecode.Services.Services
                 if (_repository.UserExists(model.Email)) throw new InvalidDataException(Resources.Messages.Errors.UserExists);
             }
 
-            if (model.Role == "Admin" && user.Role != "Admin")
-            {
-                _adminRepository.AddAdmin(new Admin { UserId = user.Id });
-            }
-            else if (model.Role != "Admin" && user.Role == "Admin")
-            {
-                var admin = _adminRepository.GetAdmins().Where(x => x.UserId.Equals(user.Id)).FirstOrDefault();
-                if (admin != null) _adminRepository.RemoveAdmin(admin);
-            }
-            if(model.Password != user.Password) model.Password = PasswordManager.EncryptPassword(model.Password);
+            if (model.Password != user.Password) user.Password = PasswordManager.EncryptPassword(model.Password);
+
             _mapper.Map(model, user);
+
+            var password = PasswordManager.DecryptPassword(model.Password);
+            if (!IsValidPassword(password)) throw new InvalidDataException(Resources.Messages.Errors.PasswordError);
+
             user.UpdatedDate = DateTime.Now;
             user.UpdatedBy = userId;
 
@@ -139,9 +174,8 @@ namespace ASI.Basecode.Services.Services
                 _repository.DeleteUser(user);
             }
         }
+        #endregion
 
-
-        //mawagtang ni sya nga function nig mag pagination
         public List<UserViewModel> GetAllUser()
         {
             var users = _repository.GetUsers().Where(x => x.IsDeleted == false).Select(s => new UserViewModel
@@ -152,9 +186,42 @@ namespace ASI.Basecode.Services.Services
                 Email = s.Email,
                 Role = s.Role,
                 PhoneNumber = s.PhoneNumber,
+                CreatedDate = s.CreatedDate,
             }).ToList();
 
             return users;
+        }
+        public void UpdateUserRole(int userId, string newRole)
+        {
+            var user = _repository.GetUsers().FirstOrDefault(x => x.Id == userId);
+            if (user == null) throw new ArgumentException("User not found.");
+
+            // Update Admin repository if role is changing
+            if (newRole == "Admin" && user.Role != "Admin")
+            {
+                _adminRepository.AddAdmin(new Admin { UserId = user.Id });
+            }
+            else if (newRole != "Admin" && user.Role == "Admin")
+            {
+                var admin = _adminRepository.GetAdmins().FirstOrDefault(a => a.UserId == user.Id);
+                if (admin != null) _adminRepository.RemoveAdmin(admin);
+            }
+
+            // Update the role and save changes
+            user.Role = newRole;
+            user.UpdatedDate = DateTime.Now;
+            _repository.UpdateUser(user);
+        }
+        public static bool IsValidPassword(string password)
+        {
+            // Password must have at least:
+            // - One uppercase letter
+            // - One digit
+            // - One special character
+            // - Minimum of 8 characters
+            //var passwordPattern = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$";
+            var passwordPattern = @"^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$";
+            return Regex.IsMatch(password, passwordPattern);
         }
     }
 }

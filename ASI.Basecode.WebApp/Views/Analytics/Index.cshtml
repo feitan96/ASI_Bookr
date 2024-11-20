@@ -1,5 +1,172 @@
-﻿@{
-    ViewData["Title"] = "Analytics Page";
+﻿@model ASI.Basecode.Services.ServiceModels.AnalyticsViewModel
+
+@{
+    ViewBag.Title = "Analytics";
 }
 
-    <h1>Analytics</h1>
+<h2>Analytics</h2>
+
+<div class="row mb-3">
+    <!-- Most Used Room Card -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4>Most Used Room</h4>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">@Model.MostUsedRoom?.RoomName</h5>
+                <p class="card-text">
+                    <strong>Booking Frequency:</strong> @Model.MostUsedRoom?.BookingFrequency<br>
+                    <strong>Total Usage Hours:</strong> @Model.MostUsedRoom?.TotalUsageHours.ToString("F2")<br>
+                    <strong>Peak Usage Hours:</strong> @Model.MostUsedRoom?.PeakUsageHours
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Statistics Card -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4>User Statistics</h4>
+            </div>
+            <div class="card-body">
+                <p>
+                    <strong>Total Users:</strong> @Model.TotalUsers<br>
+                    <strong>New Users (Last 3 Days):</strong> @Model.NewUsers<br>
+                    <strong>Total Admins:</strong> @Model.TotalAdmins
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mb-3">
+    <label for="timeFrameSelect" class="form-label">Time Frame:</label>
+    <select id="timeFrameSelect" class="form-select" style="width: auto;">
+        @{
+            var timeFrames = new[]
+            {
+        new { Value = "Daily", Text = "Daily" },
+        new { Value = "Weekly", Text = "Weekly" },
+        new { Value = "Monthly", Text = "Monthly" }
+        };
+
+            foreach (var tf in timeFrames)
+            {
+                if (Model.SelectedTimeFrame.ToString() == tf.Value)
+                {
+                    <option value="@tf.Value" selected>@tf.Text</option>
+                }
+                else
+                {
+                    <option value="@tf.Value">@tf.Text</option>
+                }
+            }
+        }
+    </select>
+</div>
+
+<div class="mb-3">
+    <div class="btn-group">
+        <button id="exportBtn" class="btn btn-primary">
+            <i class="fas fa-file-excel"></i> Export to Excel
+        </button>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <h3>Room Usage Over Time</h3>
+        <div id="roomUsageChart"></div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <h3>User Trends Over Time</h3>
+        <div id="userTrendsChart"></div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Initialize the room usage chart
+            function initRoomUsageChart(timeFrame) {
+                Highcharts.chart('roomUsageChart', {
+                    chart: {
+                        type: 'area'
+                    },
+                    title: {
+                        text: timeFrame + ' Room Usage (Total Hours)'
+                    },
+                    xAxis: {
+                        categories: @Html.Raw(Json.Serialize(Model.RoomUsage.FirstOrDefault()?.TimeLabels ?? new List<string>())),
+                        title: {
+                            text: timeFrame
+                        }
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'Total Usage Hours'
+                        }
+                    },
+                    series: @Html.Raw(Json.Serialize(
+             Model.RoomUsage.Select(room => new
+             {
+                 name = room.RoomName,
+                 data = room.UsageFrequency
+             })
+             ))
+                        });
+            }
+
+            document.getElementById('exportBtn').addEventListener('click', function () {
+                var selectedTimeFrame = document.getElementById('timeFrameSelect').value;
+                window.location.href = '/Analytics/ExportToExcel?timeFrame=' + selectedTimeFrame;
+            });
+
+            // Initialize chart with current time frame
+            initRoomUsageChart('@Model.SelectedTimeFrame.ToString()');
+
+            // Handle time frame changes
+            document.getElementById('timeFrameSelect').addEventListener('change', function () {
+                var selectedTimeFrame = this.value;
+                window.location.href = '/Analytics/Index?timeFrame=' + selectedTimeFrame;
+            });
+
+            // User Trends Chart
+            Highcharts.chart('userTrendsChart', {
+                chart: {
+                    type: 'area'
+                },
+                title: {
+                    text: 'User Trends Over Time'
+                },
+                xAxis: {
+                    categories: @Html.Raw(Json.Serialize(Model.UserTrends.Select(t => t.Date))),
+                    title: {
+                        text: 'Dates'
+                    }
+                },
+                yAxis: {
+                    title: {
+                        text: 'Number of Users'
+                    }
+                },
+                series: [
+                    {
+                        name: 'Users',
+                        data: @Html.Raw(Json.Serialize(Model.UserTrends.Select(t => t.UserCount)))
+                            },
+                    {
+                        name: 'Admins',
+                        data: @Html.Raw(Json.Serialize(Model.UserTrends.Select(t => t.AdminCount)))
+                            }
+                ]
+            });
+        });
+    </script>
+}

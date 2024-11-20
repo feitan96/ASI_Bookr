@@ -8,12 +8,22 @@
 
   <ItemGroup>
     <None Remove="appsettings.json.rej" />
+    <None Remove="Views\Booking\background_homepage 1.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Views\Booking\background_homepage 1.png">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="11.0.1" />
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageReference Include="EPPlus" Version="6.2.19" />
     <PackageReference Include="FuzzySharp" Version="2.0.2" />
+    <PackageReference Include="highcharts.js" Version="7.1.2" />
     <PackageReference Include="LinqKit" Version="1.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.6" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.6" />
@@ -39,5 +49,16 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\uploads\rooms\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Views\Room\_RoomCard.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="Views\Shared\_LoadingSpinner.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 </Project>

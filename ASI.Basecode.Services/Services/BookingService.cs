@@ -24,14 +24,18 @@ namespace ASI.Basecode.Services.Services
 
         private readonly IServiceProvider _serviceProvider;
         private readonly IBookingRepository _repository;
+        private readonly IUserService _userservice;
+        private readonly IEmailService _emailservice;
         private readonly IRoomService _roomservice;
         private readonly IRecurringBookingService _recurringbookingservice;
         private readonly IMapper _mapper;
 
-        public BookingService(IServiceProvider serviceProvider, IBookingRepository repository, IRoomService roomService, IMapper mapper, IRecurringBookingService recurringBookingService)
+        public BookingService(IServiceProvider serviceProvider, IUserService userService, IEmailService emailService, IBookingRepository repository, IRoomService roomService, IMapper mapper, IRecurringBookingService recurringBookingService)
         {
             _mapper = mapper;
+            _userservice = userService;
             _roomservice = roomService;
+            _emailservice = emailService;
             _repository = repository;
             _recurringbookingservice = recurringBookingService;
             _serviceProvider = serviceProvider;
@@ -178,6 +182,46 @@ namespace ASI.Basecode.Services.Services
             catch (Exception)
             {
                 throw; //rethrow error
+            }
+        }
+
+        public void UpdateBookingStatus(BookingViewModel model, int userId, string status)
+        {
+            var booking = new Booking();
+            try
+            {
+                _mapper.Map(model, booking);
+                booking.User = null;
+                booking.Room = null;
+                booking.UpdatedDate = DateTime.Now;
+                booking.UpdatedBy = userId;
+                booking.Status = status;
+                booking.ApproveDisapproveBy = userId;
+
+                _repository.UpdateBookingInfo(booking);
+
+                // Get user email from the booking
+                var userDetails = _userservice.GetUser(model.UserId);
+                if (userDetails != null)
+                {
+                    // Prepare email content
+                    var subject = $"Bookr: Your LRAC Booking has been {status}";
+                    var body = $@"Your booking with details:
+Title: {model.Title}
+Room: {model.RoomName}
+Date: {model.BookingStartDate.ToString("MMMM dd, yyyy")}
+Check-in Time: {model.CheckInTime.ToString(@"hh\:mm")}
+Check-out Time: {model.CheckOutTime.ToString(@"hh\:mm")}
+
+Has been {status}. Thank you, Teknoy!";
+
+                    // Send email
+                    _emailservice.SendEmail(userDetails.Email, subject, body);
+                }
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
 

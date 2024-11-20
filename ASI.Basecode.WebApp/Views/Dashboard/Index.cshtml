@@ -1,5 +1,94 @@
-﻿@{
-    ViewData["Title"] = "Dashboard Page";
+﻿@model ASI.Basecode.Services.ServiceModels.DashboardViewModel
+
+@{
+    ViewBag.Title = "Dashboard";
 }
 
-<h1>Dashboard</h1>
+<h2>Dashboard</h2>
+
+<form asp-controller="Dashboard" asp-action="Index" method="get" class="mb-3">
+    <div class="form-group">
+        <label for="selectedDate">Select Date:</label>
+        <input type="date" id="selectedDate" name="selectedDate"
+               value="@Model.CurrentDate.ToString("yyyy-MM-dd")" class="form-control" />
+    </div>
+</form>
+
+<p>Selected Date: @Model.CurrentDate.ToString("MMMM dd, yyyy")</p>
+
+<div class="row">
+    <!-- Today's Bookings Table -->
+    <div class="col-md-6">
+        <h3>Bookings on @Model.CurrentDate.ToString("MMMM dd, yyyy")</h3>
+        @if (Model.TodayBookings.Any())
+        {
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th hidden>Booking ID</th>
+                        <th>Room Name</th>
+                        <th>User Name</th>
+                        <th>Check-In Time</th>
+                        <th>Check-Out Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var booking in Model.TodayBookings)
+                    {
+                        <tr>
+                            <td hidden>@booking.BookingId</td>
+                            <td>@booking.RoomName</td>
+                            <td>@booking.UserFullName</td>
+                            <td>@booking.CheckInTime</td>
+                            <td>@booking.CheckOutTime</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>No bookings for the selected date.</p>
+        }
+    </div>
+
+    <!-- Room Usage Statistics Table -->
+    <div class="col-md-6">
+        <h3>Room Usage Statistics</h3>
+        @if (Model.RoomUsageStatistics.Any())
+        {
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Room Name</th>
+                        <th>Booking Frequency</th>
+                        <th>Total Usage Hours</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var room in Model.RoomUsageStatistics)
+                    {
+                        <tr>
+                            <td>@room.RoomName</td>
+                            <td>@room.BookingFrequency</td>
+                            <td>@room.TotalUsageHours.ToString("F2")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>No room usage statistics for the selected date.</p>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Automatically submit the form when the date is changed
+        document.getElementById("selectedDate").addEventListener("change", function () {
+            this.form.submit();
+        });
+    </script>
+}
