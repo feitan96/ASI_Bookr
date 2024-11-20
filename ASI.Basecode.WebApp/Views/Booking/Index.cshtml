@@ -13,84 +13,95 @@
 //          _RoomListSelection.cshtml (crudModal3)
 // _Edit.cshtml (crudModal1) *@
 
-<h1>Booking Management</h1>
+<body style="background: -webkit-linear-gradient(180deg, #E9E9E9, #FFFFFF); background: linear-gradient(180deg, #E9E9E9, #FFFFFF);">
+    <h3>Booking Management</h3>
 
-<div class="form-row mb-3 align-items-end">
-    <!-- Search Textbox (Col-2) -->
-    <div class="col-md-2">
-        <input type="text" id="searchTextBox" class="form-control" placeholder="Search by ID/User First/Last Name" />
-    </div>
+    <div class="d-flex flex-row align-content-around">
+        <!-- Search Textbox -->
+        <div class="mr-1">
+            <input type="text" id="searchTextBox" class="form-control" placeholder="Search by ID/User First/Last Name" />
+        </div>
 
-    <!-- Search By Dropdown (Col-2) -->
-    <div class="col-md-2">
-        <select id="searchByFilter" class="form-control">
-            <option value="user">Search by User</option>
-            <option value="room">Search by Room</option>
-        </select>
-    </div>
+        <!-- Search By Dropdown-->
 
-    <!-- Booking Date Picker (Col-2) -->
-    <div class="col-md-2">
-       <input type="text" id="bookingDate" class="form-control" placeholder="Booking Date" />
-    </div>
+        <div class="mr-4">
+            <select id="searchByFilter" class="form-control pl-1">
+                <option value="user">Search by User</option>
+                <option value="room">Search by Room</option>
+            </select>
+        </div>
 
-    <!-- Check-in Time Picker (Col-2) -->
-    <div class="col-md-2">
-       <input type="text" id="checkInTime" class="form-control" placeholder="Check-in Time"/>
-    </div>
+        <!-- Booking Date Picker-->
+        <div class="d-flex flex-row align-content-around">
+            <div class="mr-1">
+                <input type="text" id="bookingDate" class="form-control" placeholder="Booking Date" />
+            </div>
 
-    <!-- Check-out Time Picker (Col-2) -->
-    <div class="col-md-2">
-       <input type="text" id="checkOutTime" class="form-control" placeholder="Check-out Time"/>
-    </div>
+            <!-- Check-in Time Picker -->
+            <div class="mr-1">
+                <input type="text" id="checkInTime" class="form-control" placeholder="Check-in Time" />
+            </div>
 
-    <!-- Clear Search/Filter (Col-1) -->
-    <div class="col-md-2">
-        <button id="clearSearchFilter" class="btn btn-primary btn-block">Clear Search/Filter</button>
-    </div>
-</div>
+            <!-- Check-out Time Picker-->
+            <div class="mr-1">
+                <input type="text" id="checkOutTime" class="form-control" placeholder="Check-out Time" />
+            </div>
 
-<p>
-    <button class="btn btn-primary mb-3" onclick="openModal('@Url.Action("Create", "Booking")', 'crudModal1')">Add New Bookings</button>
-</p>
-
-<!-- Booking Table -->
-<div id="bookingTable">
-    @Html.Partial("_BookingList", Model) <!-- Default to show all bookings -->
-</div>
-
-<!-- Modal Layer 1-->
-<div id="crudModal1" class="modal fade" tabindex="-1" role="dialog" style="z-index: 1050;">
-    <div class="modal-dialog modal-dialog-scrollable" role="document">
-        <div class="modal-content">
-            <div class="modal-body">
-                <!-- Content will be loaded here -->
+            <!-- Clear Search/Filter -->
+            <div class="mr-1">
+                <button id="clearSearchFilter" class="btn btn-primary btn-block" style="background-color: transparent; border: none;">
+                    <svg style="width: 20px; fill: var(--color1);" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M3.9 22.9C10.5 8.9 24.5 0 40 0L472 0c15.5 0 29.5 8.9 36.1 22.9s4.6 30.5-5.2 42.5L396.4 195.6C316.2 212.1 256 283 256 368c0 27.4 6.3 53.4 17.5 76.5c-1.6-.8-3.2-1.8-4.7-2.9l-64-48c-8.1-6-12.8-15.5-12.8-25.6l0-79.1L9 65.3C-.7 53.4-2.8 36.8 3.9 22.9zM432 224a144 144 0 1 1 0 288 144 144 0 1 1 0-288zm59.3 107.3c6.2-6.2 6.2-16.4 0-22.6s-16.4-6.2-22.6 0L432 345.4l-36.7-36.7c-6.2-6.2-16.4-6.2-22.6 0s-6.2 16.4 0 22.6L409.4 368l-36.7 36.7c-6.2 6.2-6.2 16.4 0 22.6s16.4 6.2 22.6 0L432 390.6l36.7 36.7c6.2 6.2 16.4 6.2 22.6 0s6.2-16.4 0-22.6L454.6 368l36.7-36.7z" /></svg>
+                </button>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Modal Layer 2-->
-<div id="crudModal2" class="modal fade" tabindex="-1" role="dialog" style="z-index: 1060;">
-    <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-body">
-                <!-- Content will be loaded here -->
+    <div class="mt-sm-4">
+        <button style="background-color: var(--color2); color:var(--color1); border:none;" class="btn btn-primary mb-2" onclick="openModal('@Url.Action("Create", "Booking")', 'crudModal1')">
+            <svg style="fill:var(--color1); width: 18px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM232 344l0-64-64 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l64 0 0-64c0-13.3 10.7-24 24-24s24 10.7 24 24l0 64 64 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-64 0 0 64c0 13.3-10.7 24-24 24s-24-10.7-24-24z" /></svg>
+            Add New Bookings
+        </button>
+    </div>
+
+    <!-- Booking Table -->
+    <div id="bookingTable">
+        @Html.Partial("_BookingList", Model) <!-- Default to show all bookings -->
+    </div>
+
+    <!-- Modal Layer 1-->
+    <div id="crudModal1" class="modal fade" tabindex="-1" role="dialog" style="z-index: 1050;">
+        <div class="modal-dialog modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <!-- Content will be loaded here -->
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Modal Layer 3-->
-<div id="crudModal3" class="modal fade" tabindex="-1" role="dialog" style="z-index: 1070;">
-    <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-body">
-                <!-- Content will be loaded here -->
+    <!-- Modal Layer 2-->
+    <div id="crudModal2" class="modal fade" tabindex="-1" role="dialog" style="z-index: 1060;">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <!-- Content will be loaded here -->
+                </div>
             </div>
         </div>
     </div>
-</div>
+
+    <!-- Modal Layer 3-->
+    <div id="crudModal3" class="modal fade" tabindex="-1" role="dialog" style="z-index: 1070;">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <!-- Content will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
 
 @section Scripts {
     <script defer>
@@ -314,7 +325,7 @@
         // Update the openModal function to call initializeRoomSelection with modalId
         function openModal(url, modalId) {
             // Show a "Please wait" notification using Toastr
-            toastr.info('Please wait...', 'Loading', { timeOut: 0, extendedTimeOut: 0, closeButton: true });
+            //toastr.info('Please wait...', 'Loading', { timeOut: 0, extendedTimeOut: 0, closeButton: true });
 
             // Start the AJAX request
             $.get(url)

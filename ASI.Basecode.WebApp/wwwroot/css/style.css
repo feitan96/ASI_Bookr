@@ -11,10 +11,10 @@
 }
 
 :root {
+    --color1: #610000; /* maroon */
+    --color2: #FEC601; /* yellow */
     --background-color: #f8f9fa;
-    --darkbackground-color: #000;
     --cit-yellow: #FEC601;
-    --background-color-login: #610000;
 }
 
 body {
@@ -392,3 +392,56 @@ header {
     .chosen-container .chosen-results {
         padding: 10px 0; /* Adjust dropdown list padding */
     }
+
+.table thead {
+    background-color: #f8f9fa;
+}
+
+    .table thead th {
+        background-color: var(--color1);
+        color: white;
+        border: none;
+    }
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #ffffff; /* White background for odd rows */
+}
+
+.table-striped tbody tr:nth-of-type(even) {
+    background-color: color-mix(in srgb, var(--color1) 12%, transparent);
+}
+
+.table {
+    border-radius: 10px; /* Adjust the radius value as needed */
+    overflow: hidden; /* This is important to ensure the rounded corners show */
+    border-collapse: separate; /* This is required for border-radius to work */
+    border-spacing: 0; /* Removes spacing between cells */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+    .table thead th {
+        border-right: 1px solid rgba(255, 255, 255, 0.5); /* Light white divider */
+    }
+
+        .table thead th:last-child,
+        .table thead th:nth-last-child(2) {
+            border-right: none;
+        }
+
+        .table thead th:first-child {
+            border-top-left-radius: 10px;
+        }
+
+        .table thead th:last-child {
+            border-top-right-radius: 10px;
+            border-right: none;
+        }
+
+    .table tbody tr:last-child td:first-child {
+        border-bottom-left-radius: 10px;
+    }
+
+    .table tbody tr:last-child td:last-child {
+        border-bottom-right-radius: 10px;
+    }
+

@@ -10,12 +10,7 @@
 <div>
     <dl class="row">
         <!-- Room Details -->
-        <dt class="col-sm-4">
-            Room Id
-        </dt>
-        <dd class="col-sm-8">
-            @Html.DisplayFor(model => model.RoomId)
-        </dd>
+        <input type="hidden" asp-for="RoomId" />
 
         <dt class="col-sm-4">
             Name
@@ -97,3 +92,4 @@
             @Html.DisplayFor(model => model.Status)
         </dd>
     </dl>
+</div>

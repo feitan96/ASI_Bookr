@@ -8,6 +8,14 @@
 
   <ItemGroup>
     <None Remove="appsettings.json.rej" />
+    <None Remove="Views\Booking\background_homepage 1.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Views\Booking\background_homepage 1.png">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

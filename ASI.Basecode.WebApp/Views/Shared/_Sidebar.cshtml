@@ -1,42 +1,93 @@
 ﻿@using Microsoft.AspNetCore.Http
 @inject IHttpContextAccessor HttpContextAccessor
 
-<div class="sidebar-container" style="width: 250px; position: fixed; height: 100vh;  border-top-right-radius: 10px; border-bottom-right-radius: 10px; background-color: white; box-shadow: 2px 0 5px rgba(0,0,0,0.1);">
-    <div class="sidebar-header" style="padding: 20px; display: flex; align-items: center;">
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+}
+
+<div class="sidebar-container d-flex flex-column justify-content-around" style="width: 250px; position: fixed; height: 100vh;  border-top-right-radius: 10px; border-bottom-right-radius: 10px; background: -webkit-linear-gradient(90deg, #1C0000 0%, #310000 25%, #4F0000 60%, #820000 83%); box-shadow: 2px 0 5px rgba(0,0,0,0.1);">
+    <div class="sidebar-header d-flex align-content-center justify-content-center pr-4">
         <a asp-action="Index" asp-controller="Dashboard" style="display: flex; align-items: center; text-decoration: none;">
-            <img src="~/img/bookr_logo_maroon.png" alt="Logo" style="margin-right: 10px;">
-            <span style="color: #820000; font-size: 24px; font-family: Inter; font-weight: 800;">Bookr</span>
+            <img src="~/img/bookr_logo_maroon.png";" alt="Logo">
+            <span class="d-flex align-content-center mt-3 ml-1" style="color: white; font-size: 24px; font-family: Inter; font-weight: 800;">Bookr</span>
         </a>
     </div>
-    <hr style="border-color: #D9D9D9; margin: 0;">
-    <nav class="sidebar-nav" style="padding: 20px; display: flex; flex-direction: column; gap: 15px;">
-        <a asp-action="Index" asp-controller="Dashboard" class="sidebar-link">Dashboard</a>
-        <a asp-action="Index" asp-controller="Booking" class="sidebar-link">Bookings</a>
-        <a asp-action="Index" asp-controller="Room" class="sidebar-link">Rooms</a>
-        <a asp-action="Index" asp-controller="Amenity" class="sidebar-link">Amenities</a>
-        <a asp-action="Index" asp-controller="UserManagement" class="sidebar-link">Users</a>
-        <a asp-action="Index" asp-controller="Analytics" class="sidebar-link">Analytics</a>
-        <a asp-action="Index" asp-controller="Profile" class="sidebar-link">Settings</a>
+    <hr style="border-color: #D9D9D9; margin:-10px;">
+    <nav class="sidebar-nav" style="display: flex; flex-direction: column; gap: 15px; align-content: space-evenly;">
+        <div class="link-bg pl-3 @(currentController == "Dashboard" ? "active" : "")"
+             onclick="window.location='@Url.Action("Index", "Dashboard")'">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M0 32v128h128V32H0zm120 120H8V40h112v112zm40-120v128h128V32H160zm120 120H168V40h112v112zm40-120v128h128V32H320zm120 120H328V40h112v112zM0 192v128h128V192H0zm120 120H8V200h112v112zm40-120v128h128V192H160zm120 120H168V200h112v112zm40-120v128h128V192H320zm120 120H328V200h112v112zM0 352v128h128V352H0zm120 120H8V360h112v112zm40-120v128h128V352H160zm120 120H168V360h112v112zm40-120v128h128V352H320z" /></svg>
+            Dashboard
+        </div>
+        <div class="link-bg pl-3 @(currentController == "Booking" ? "active" : "")" onclick="window.location='@Url.Action("Index", "Booking")'">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M0 96C0 43 43 0 96 0l96 0 0 190.7c0 13.4 15.5 20.9 26 12.5L272 160l54 43.2c10.5 8.4 26 .9 26-12.5L352 0l32 0 32 0c17.7 0 32 14.3 32 32l0 320c0 17.7-14.3 32-32 32l0 64c17.7 0 32 14.3 32 32s-14.3 32-32 32l-32 0L96 512c-53 0-96-43-96-96L0 96zM64 416c0 17.7 14.3 32 32 32l256 0 0-64L96 384c-17.7 0-32 14.3-32 32z" /></svg>
+            Bookings
+        </div>
+        <div class="link-bg pl-3 @(currentController == "Room" ? "active" : "")" onclick="window.location='@Url.Action("Index", "Room")'">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M543.8 287.6c17 0 32-14 32-32.1c1-9-3-17-11-24L512 185l0-121c0-17.7-14.3-32-32-32l-32 0c-17.7 0-32 14.3-32 32l0 36.7L309.5 7c-6-5-14-7-21-7s-15 1-22 8L10 231.5c-7 7-10 15-10 24c0 18 14 32.1 32 32.1l32 0 0 69.7c-.1 .9-.1 1.8-.1 2.8l0 112c0 22.1 17.9 40 40 40l16 0c1.2 0 2.4-.1 3.6-.2c1.5 .1 3 .2 4.5 .2l31.9 0 24 0c22.1 0 40-17.9 40-40l0-24 0-64c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 64 0 24c0 22.1 17.9 40 40 40l24 0 32.5 0c1.4 0 2.8 0 4.2-.1c1.1 .1 2.2 .1 3.3 .1l16 0c22.1 0 40-17.9 40-40l0-16.2c.3-2.6 .5-5.3 .5-8.1l-.7-160.2 32 0z" /></svg>
+            Rooms
+        </div>
+        <div class="link-bg pl-3 @(currentController == "Amenity" ? "active" : "")" onclick="window.location='@Url.Action("Index", "Amenity")'">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path d="M54.2 202.9C123.2 136.7 216.8 96 320 96s196.8 40.7 265.8 106.9c12.8 12.2 33 11.8 45.2-.9s11.8-33-.9-45.2C549.7 79.5 440.4 32 320 32S90.3 79.5 9.8 156.7C-2.9 169-3.3 189.2 8.9 202s32.5 13.2 45.2 .9zM320 256c56.8 0 108.6 21.1 148.2 56c13.3 11.7 33.5 10.4 45.2-2.8s10.4-33.5-2.8-45.2C459.8 219.2 393 192 320 192s-139.8 27.2-190.5 72c-13.3 11.7-14.5 31.9-2.8 45.2s31.9 14.5 45.2 2.8c39.5-34.9 91.3-56 148.2-56zm64 160a64 64 0 1 0 -128 0 64 64 0 1 0 128 0z" /></svg>
+            Amenities
+        </div>
+        <div class="link-bg pl-3 @(currentController == "UserManagement" ? "active" : "")" onclick="window.location='@Url.Action("Index", "UserManagement")'">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path d="M144 0a80 80 0 1 1 0 160A80 80 0 1 1 144 0zM512 0a80 80 0 1 1 0 160A80 80 0 1 1 512 0zM0 298.7C0 239.8 47.8 192 106.7 192l42.7 0c15.9 0 31 3.5 44.6 9.7c-1.3 7.2-1.9 14.7-1.9 22.3c0 38.2 16.8 72.5 43.3 96c-.2 0-.4 0-.7 0L21.3 320C9.6 320 0 310.4 0 298.7zM405.3 320c-.2 0-.4 0-.7 0c26.6-23.5 43.3-57.8 43.3-96c0-7.6-.7-15-1.9-22.3c13.6-6.3 28.7-9.7 44.6-9.7l42.7 0C592.2 192 640 239.8 640 298.7c0 11.8-9.6 21.3-21.3 21.3l-213.3 0zM224 224a96 96 0 1 1 192 0 96 96 0 1 1 -192 0zM128 485.3C128 411.7 187.7 352 261.3 352l117.3 0C452.3 352 512 411.7 512 485.3c0 14.7-11.9 26.7-26.7 26.7l-330.7 0c-14.7 0-26.7-11.9-26.7-26.7z" /></svg>
+            Users
+        </div>
+        <div class="link-bg pl-3 @(currentController == "Analytics" ? "active" : "")" onclick="window.location='@Url.Action("Index", "Analytics")'">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M64 64c0-17.7-14.3-32-32-32S0 46.3 0 64L0 400c0 44.2 35.8 80 80 80l400 0c17.7 0 32-14.3 32-32s-14.3-32-32-32L80 416c-8.8 0-16-7.2-16-16L64 64zm406.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L320 210.7l-57.4-57.4c-12.5-12.5-32.8-12.5-45.3 0l-112 112c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L240 221.3l57.4 57.4c12.5 12.5 32.8 12.5 45.3 0l128-128z" /></svg>
+            Analytics
+        </div>
+        <div class="link-bg pl-3 @(currentController == "Profile" ? "active" : "")" onclick="window.location='@Url.Action("Index", "Profile")'">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M495.9 166.6c3.2 8.7 .5 18.4-6.4 24.6l-43.3 39.4c1.1 8.3 1.7 16.8 1.7 25.4s-.6 17.1-1.7 25.4l43.3 39.4c6.9 6.2 9.6 15.9 6.4 24.6c-4.4 11.9-9.7 23.3-15.8 34.3l-4.7 8.1c-6.6 11-14 21.4-22.1 31.2c-5.9 7.2-15.7 9.6-24.5 6.8l-55.7-17.7c-13.4 10.3-28.2 18.9-44 25.4l-12.5 57.1c-2 9.1-9 16.3-18.2 17.8c-13.8 2.3-28 3.5-42.5 3.5s-28.7-1.2-42.5-3.5c-9.2-1.5-16.2-8.7-18.2-17.8l-12.5-57.1c-15.8-6.5-30.6-15.1-44-25.4L83.1 425.9c-8.8 2.8-18.6 .3-24.5-6.8c-8.1-9.8-15.5-20.2-22.1-31.2l-4.7-8.1c-6.1-11-11.4-22.4-15.8-34.3c-3.2-8.7-.5-18.4 6.4-24.6l43.3-39.4C64.6 273.1 64 264.6 64 256s.6-17.1 1.7-25.4L22.4 191.2c-6.9-6.2-9.6-15.9-6.4-24.6c4.4-11.9 9.7-23.3 15.8-34.3l4.7-8.1c6.6-11 14-21.4 22.1-31.2c5.9-7.2 15.7-9.6 24.5-6.8l55.7 17.7c13.4-10.3 28.2-18.9 44-25.4l12.5-57.1c2-9.1 9-16.3 18.2-17.8C227.3 1.2 241.5 0 256 0s28.7 1.2 42.5 3.5c9.2 1.5 16.2 8.7 18.2 17.8l12.5 57.1c15.8 6.5 30.6 15.1 44 25.4l55.7-17.7c8.8-2.8 18.6-.3 24.5 6.8c8.1 9.8 15.5 20.2 22.1 31.2l4.7 8.1c6.1 11 11.4 22.4 15.8 34.3zM256 336a80 80 0 1 0 0-160 80 80 0 1 0 0 160z" /></svg>
+            Settings
+            </div>
     </nav>
     <hr style="border-color: #D9D9D9; margin: 0;">
     <div class="sidebar-footer" style="padding: 20px;">
         @* <span>@HttpContextAccessor.HttpContext.Session.GetString("Name")</span> *@
-        <a asp-action="SignOutUser" asp-controller="Account" class="sidebar-link">Logout</a>
+        <div class="link-bg pl-3" onclick="window.location='@Url.Action("SignOutUser", "Account")'">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z" /></svg>
+            Logout
+        </div>
     </div>
 </div>
 
 <style>
-    .sidebar-link {
-        color: black;
+    svg{
+        height: 20px;
+        margin-right: 10px;
+    }
+    .link-bg{
+        color: white;
         font-size: 18px;
         font-weight: 500;
-        text-decoration: none;
         padding: 8px 0;
-        display: block;
     }
-
-        .sidebar-link:hover, .sidebar-link.active {
-            color: #820000;
-            font-weight: 700;
-        }
+    .link-bg:hover {
+        background-color: white;
+        color: var(--color1);
+        font-weight: 700;
+        cursor: pointer;
+    }
+    .active {
+        background-color: white;
+        color: var(--color1);
+        font-weight: 700;
+    }
+    .link-bg svg path {
+        fill: white; 
+    }
+    .active svg path {
+        fill: var(--color1);
+    }
+    .link-bg:hover svg path {
+        fill: var(--color1);
+    }
+    img {
+        -webkit-filter: drop-shadow(2px 2px 2px #222);
+        filter: drop-shadow(2px 2px 2px #222);
+    }
 </style>
+
