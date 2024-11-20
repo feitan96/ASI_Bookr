@@ -2,11 +2,11 @@
 
 .gradient-login {
     /* fallback for old browsers */
-    background: var(--cit-yellow); /* Red */
+    background: var(--color2); /* Red */
     /* Chrome 10-25, Safari 5.1-6 */
-    background: -webkit-linear-gradient(180deg, var(--cit-yellow), #FFFFFF);
+    background: -webkit-linear-gradient(180deg, var(--color2), #FFFFFF);
     /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-    background: linear-gradient(180deg, var(--cit-yellow), #FFFFFF);
+    background: linear-gradient(180deg, var(--color2), #FFFFFF);
 }
 
 label {
@@ -30,7 +30,7 @@ label {
 .login-btn {
     width: 400px;
     border-radius: 25px;
-    background-color: var(--background-color-login);
+    background-color: var(--color1);
     color: white;
 }
 
