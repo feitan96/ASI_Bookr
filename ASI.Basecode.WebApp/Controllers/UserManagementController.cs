@@ -84,6 +84,25 @@ namespace ASI.Basecode.WebApp.Controllers
             var data = _userService.GetUser(Id);
             return PartialView("_Delete", data);
         }
+
+        [HttpGet]
+        public IActionResult Search(string name, string role)
+        {
+            var users = _userService.GetAllUser();
+
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                users = users.Where(u => $"{u.FirstName} {u.LastName}".Contains(name, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            if (!string.IsNullOrWhiteSpace(role))
+            {
+                users = users.Where(u => u.Role.Equals(role, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            return PartialView("_UserTable", users);
+        }
+
         #endregion
 
         #region Posts Methods

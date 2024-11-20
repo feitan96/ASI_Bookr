@@ -6,6 +6,22 @@
 
 <h1>User Management</h1>
 
+<div class="row mb-3">
+    <div class="col-md-6">
+        <input type="text" id="searchName" class="form-control" placeholder="Search by name" />
+    </div>
+    <div class="col-md-4">
+        <select id="filterRole" class="form-control">
+            <option value="">All Roles</option>
+            <option value="Admin">Admin</option>
+            <option value="User">User</option>
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button class="btn btn-secondary w-100" onclick="clearSearch()">Clear Search</button>
+    </div>
+</div>
+
 <button class="btn btn-primary mb-3" onclick="openModal('@Url.Action("Create", "UserManagement")')">Add New User</button>
 
 <table class="table table-striped">
@@ -112,5 +128,40 @@
                 }
             });
         });
+
+        $(document).ready(function () {
+            // Trigger search when typing in the name field
+            $('#searchName').on('input', function () {
+                performSearchAndFilter();
+            });
+
+            // Trigger search when selecting a role
+            $('#filterRole').on('change', function () {
+                performSearchAndFilter();
+            });
+        });
+
+        // Function to perform search and filtering
+        function performSearchAndFilter() {
+            const name = $('#searchName').val();
+            const role = $('#filterRole').val();
+
+            showLoading('Searching...');
+            $.get('@Url.Action("Search", "UserManagement")', { name: name, role: role }, function (data) {
+                $('table tbody').html($(data).find('tbody').html());
+                hideLoading();
+            }).fail(function () {
+                hideLoading();
+                toastr.error('Failed to search or filter users.');
+            });
+        }
+
+        // Clear search and filtering
+        function clearSearch() {
+            $('#searchName').val('');
+            $('#filterRole').val('');
+            performSearchAndFilter();
+        }
+
     </script>
 }
