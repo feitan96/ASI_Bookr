@@ -142,6 +142,19 @@ namespace ASI.Basecode.WebApp.Controllers
         }
 
         [HttpGet]
+        // GET: UserRoomController/View/5
+        public IActionResult CalendarView(int roomId) //For Viewing Rooms
+        {
+            var bookings = _bookingservice.GetBookings().Where(booking => booking.RoomId == roomId).ToList();
+
+            if (bookings == null || !bookings.Any())
+            {
+                return NotFound();
+            }
+            return PartialView("_CalendarView", bookings);
+        }
+
+        [HttpGet]
         public IActionResult ViewBooking(int bookingId) //For Viewing Rooms
         {
             var booking = _bookingservice.GetBookings().Where(booking => booking.BookingId == bookingId).FirstOrDefault();

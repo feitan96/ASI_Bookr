@@ -25,10 +25,36 @@
                     <td>@room.Capacity</td>
                     @*<td>@string.Join(", ", room.RoomAmenitiesName)</td>*@
                     <td>
-                        <button onclick="openModal('@Url.Action("View", "UserRoom", new { roomId = room.RoomId })', 'crudModal1')" class="btn btn-info btn-sm">See Details</button>
+                        <button onclick="openModal('@Url.Action("View", "UserRoom", new { roomId = room.RoomId })', 'crudModal1')" class="btn btn-approve-main">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336l24 0 0-64-24 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l48 0c13.3 0 24 10.7 24 24l0 88 8 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-80 0c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z" /></svg>
+                        </button>
+                        @* <button onclick="openModal('@Url.Action("CalendarView", "UserRoom", new { roomId = room.RoomId })', 'crudModal1')" class="btn btn-info btn-sm">View Calendar</button> *@
                     </td>
                 </tr>
             }
         </tbody>
     </table>
 </div>
+
+
+<style>
+    .btn-approve-main {
+        background-color: var(--color2);
+    }
+
+        .btn-approve-main svg path {
+            fill: black;
+        }
+
+    .btn-disapprove-main svg path {
+        fill: white;
+    }
+
+    .btn-disapprove-main {
+        background-color: var(--color1);
+    }
+
+    svg {
+        width: 15px;
+    }
+</style>

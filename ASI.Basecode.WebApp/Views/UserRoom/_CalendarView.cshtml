@@ -1,0 +1,136 @@
+﻿@model IEnumerable<ASI.Basecode.Services.ServiceModels.BookingViewModel>
+@* ---------------- To be Fixed -------------------*@
+@{
+    var today = DateTime.Now;
+    var startOfMonth = new DateTime(today.Year, today.Month, 1);
+    var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
+
+    // Helper function to check if a date is booked
+    bool IsBooked(DateTime date)
+    {
+        return Model.Any(b => b.BookingStartDate.Date <= date.Date && (b.BookingEndDate == null || b.BookingEndDate.Value.Date >= date.Date));
+    }
+
+    // Helper function to check if a recurring booking occurs on a specific day
+    bool IsRecurringBooked(DateTime date)
+    {
+        return Model.Any(b =>
+            b.IsRecurring &&
+            b.SelectedDaysList.Contains(date.DayOfWeek.ToString()) && // Check if the day is selected for the recurring booking
+            b.BookingStartDate.Date <= date.Date &&
+            (b.BookingEndDate == null || b.BookingEndDate.Value.Date >= date.Date));
+    }
+}
+
+<div class="modal-header">
+    <h5 class="modal-title">Calendar View</h5>
+    <button type="button" class="close modal-close-btn" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div class="calendar-view">
+    <h2>@today.ToString("MMMM yyyy")</h2>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Sun</th>
+                <th>Mon</th>
+                <th>Tue</th>
+                <th>Wed</th>
+                <th>Thu</th>
+                <th>Fri</th>
+                <th>Sat</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (var week = 0; week < 6; week++)  // 6 weeks in a month
+            {
+                <tr>
+                    @for (var day = 0; day < 7; day++)
+                    {
+                        var currentDate = startOfMonth.AddDays(week * 7 + day);
+                        if (currentDate.Month == startOfMonth.Month)
+                        {
+                            <td class="@(
+                                IsBooked(currentDate) ? "booked" :
+                                IsRecurringBooked(currentDate) ? "recurring-booked" : "")">
+                                <span>@currentDate.Day</span>
+
+                                @if (IsBooked(currentDate))
+                                {
+                                    var booking = Model.FirstOrDefault(b => b.BookingStartDate.Date <= currentDate.Date && (b.BookingEndDate == null || b.BookingEndDate.Value.Date >= currentDate.Date));
+                                    <div class="booking-info">
+                                        <strong>@booking?.RoomName</strong>
+                                        <br />
+                                        @booking?.FormattedBookingStartDate
+                                        <br />
+                                        @booking?.FormattedBookingEndDate
+                                    </div>
+                                }
+
+                                @if (IsRecurringBooked(currentDate))
+                                {
+                                    var recurringBooking = Model.FirstOrDefault(b =>
+                                    b.IsRecurring &&
+                                    b.SelectedDaysList.Contains(currentDate.DayOfWeek.ToString()) &&
+                                    b.BookingStartDate.Date <= currentDate.Date &&
+                                    (b.BookingEndDate == null || b.BookingEndDate.Value.Date >= currentDate.Date));
+                                    <div class="recurring-booking-info">
+                                        <strong>@recurringBooking?.RoomName</strong>
+                                        <br />
+                                        Recurring: @recurringBooking?.FormattedBookingStartDate
+                                    </div>
+                                }
+                            </td>
+                        }
+                        else
+                        {
+                            <td></td>
+                        }
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .calendar-view table {
+        width: 100%;
+    }
+
+    .calendar-view td {
+        width: 14.28%;
+        text-align: center;
+        padding: 10px;
+        height: 100px;
+        position: relative;
+    }
+
+    .booked {
+        background-color: #f8d7da; /* Light red for booked */
+    }
+
+    .recurring-booked {
+        background-color: #d1ecf1; /* Light blue for recurring bookings */
+    }
+
+    .booking-info,
+    .recurring-booking-info {
+        position: absolute;
+        bottom: 5px;
+        left: 5px;
+        font-size: 10px;
+        color: #555;
+    }
+
+    .recurring-booking-info {
+        font-size: 8px;
+        color: #31708f;
+    }
+
+        .recurring-booking-info strong {
+            color: #0056b3;
+        }
+</style>
