@@ -25,6 +25,14 @@ namespace ASI.Basecode.Data.Repositories
             return bookings;
         }
 
+        public IQueryable<Booking> GetBookingsNoTracking()
+        {
+            var bookings = this.GetDbSet<Booking>().AsNoTracking().Include(booking => booking.Room).ThenInclude(room => room.RoomAmenities).ThenInclude(roomAmenity => roomAmenity.Amenity)
+                .Include(booking => booking.User).Include(booking => booking.RecurringBookings);
+
+            return bookings;
+        }
+
         public bool BookingExists(int bookingId)
         {
             return this.GetDbSet<Booking>().Any(booking => booking.BookingId == bookingId);

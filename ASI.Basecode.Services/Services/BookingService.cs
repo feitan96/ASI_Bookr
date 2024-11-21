@@ -132,6 +132,20 @@ namespace ASI.Basecode.Services.Services
             }
         }
 
+        public BookingViewModel? GetBookingByIdNoTracking(int bookingID)
+        {
+            var booking = _repository.GetBookingsNoTracking().Where(booking => booking.BookingId == bookingID).FirstOrDefault();
+            if (booking != null)
+            {
+                return _mapper.Map<BookingViewModel>(booking);
+            }
+            else
+            {
+                return null;
+            }
+
+        }
+
         #endregion
 
         #region Update (CRUD)

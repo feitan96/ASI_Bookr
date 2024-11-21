@@ -10,6 +10,7 @@ namespace ASI.Basecode.Data.Interfaces
     public interface IBookingRepository
     {
         IQueryable<Booking> GetBookings();
+        IQueryable<Booking> GetBookingsNoTracking();
         void AddBooking(Booking booking);
         bool BookingExists(int bookingId);
         void UpdateBookingInfo(Booking booking);

@@ -554,8 +554,13 @@ namespace ASI.Basecode.WebApp.Controllers
         [HttpPost]
         public IActionResult CancelBooking(BookingViewModel model) //For Viewing Rooms
         {
+            //Uncomment the following code if NoTracking option is preffered
+            //var bookingId = model.BookingId;
+            //var bookingModel = _bookingservice.GetBookingByIdNoTracking(bookingId);
+
             try
             {
+                //_bookingservice.UpdateBookingStatus(bookingModel, int.Parse(Id), "Cancelled"); //Cancel booking
                 _bookingservice.UpdateBookingStatus(model, int.Parse(Id), "Cancelled"); //Cancel booking
                 return Json(new
                 {

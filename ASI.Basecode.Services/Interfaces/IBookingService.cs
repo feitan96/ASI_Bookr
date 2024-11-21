@@ -19,6 +19,7 @@ namespace ASI.Basecode.Services.Interfaces
         List<BookingViewModel> GetBookings();
         List<BookingViewModel> GetBookingsByIds(List<int> bookingIds);
         BookingViewModel? GetBooking(int Id);
+        BookingViewModel? GetBookingByIdNoTracking(int bookingID);
 
         //UPDATE
         void UpdateBookingInfo(BookingViewModel model, int userId);
