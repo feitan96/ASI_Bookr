@@ -1,0 +1,254 @@
+﻿@using ASI.Basecode.Services.ServiceModels;
+@model IEnumerable<ASI.Basecode.Services.ServiceModels.BookingViewModel>
+
+<h1>My Bookings</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th hidden>@Html.DisplayNameFor(model => model.BookingId)</th>
+            <th>Room Name</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Check In Time</th>
+            <th>Check Out Time</th>
+            <th>@Html.DisplayNameFor(model => model.Status)</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var booking in Model)
+        {
+            var isDisabled = booking.Status == "Approved" || booking.Status == "Disapproved" || booking.Status == "Cancelled" ? "disabled" : "";
+@*          var btnClass = isDisabled == "disabled" ? "btn-secondary" : "btn-approve-main";
+            var disapproveBtnClass = isDisabled == "disabled" ? "btn-secondary" : "btn-disapprove-main"; *@
+            var cancelBtnClass = isDisabled == "disabled" ? "btn-secondary" : "btn-cancel-main";
+
+            <tr>
+                <td hidden>@Html.DisplayFor(modelItem => booking.BookingId)</td>
+                <td>@Html.DisplayFor(modelItem => booking.RoomName)</td>
+                <td>@Html.DisplayFor(modelItem => booking.FormattedBookingStartDate)</td>
+                <td>@Html.DisplayFor(modelItem => booking.FormattedBookingEndDate)</td>
+                <td>@Html.DisplayFor(modelItem => booking.CheckInTimeString)</td>
+                <td>@Html.DisplayFor(modelItem => booking.CheckInTimeString)</td>
+                <td>@Html.DisplayFor(modelItem => booking.Status)</td>
+                <td>
+                    @* <button onclick="openModal('@Url.Action("Approve", "Booking", new { bookingId = booking.BookingId })', 'crudModal1')" class="btn @btnClass btn-sm pr-0" @isDisabled>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
+                    </button> *@
+                    <button onclick="openModal('@Url.Action("CancelBooking", "UserRoom", new { bookingId = booking.BookingId })', 'crudModal1')" class="btn @cancelBtnClass btn-sm pr-0" @isDisabled>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" /></svg>
+                    </button>
+                    @* <button onclick="openModal('@Url.Action("Edit", "Booking", new { bookingId = booking.BookingId })', 'crudModal1')" class="btn btn-warning btn-sm">Edit</button> *@
+                    @* <button onclick="openModal('@Url.Action("Delete", "Booking", new { bookingId = booking.BookingId })', 'crudModal1')" class="btn btn-danger btn-sm">Delete</button> *@
+                </td>
+                <td>
+                    <svg onclick="openModal('@Url.Action("ViewBooking", "UserRoom", new { bookingId = booking.BookingId })', 'crudModal1')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M8 256a56 56 0 1 1 112 0A56 56 0 1 1 8 256zm160 0a56 56 0 1 1 112 0 56 56 0 1 1 -112 0zm216-56a56 56 0 1 1 0 112 56 56 0 1 1 0-112z" /></svg>
+                </td>
+
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+<!-- Modal Layer 1-->
+<div id="crudModal1" class="modal fade" tabindex="-1" role="dialog" style="z-index: 1050;">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Layer 2-->
+<div id="crudModal2" class="modal fade" tabindex="-1" role="dialog" style="z-index: 1060;">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Layer 3-->
+<div id="crudModal3" class="modal fade" tabindex="-1" role="dialog" style="z-index: 1070;">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .btn-approve-main {
+        background-color: var(--color2);
+    }
+
+        .btn-approve-main svg path {
+            fill: black;
+        }
+
+    .btn-disapprove-main svg path {
+        fill: white;
+    }
+
+    .btn-disapprove-main {
+        background-color: var(--color1);
+    }
+
+    svg {
+        width: 15px;
+        margin-right: 8px;
+    }
+</style>
+
+
+@section Scripts {
+    <script>
+
+        //Once the close button of the modal is clicked handling of the following modal is done:
+        $(document).on('click', '.modal-close-btn', function () {
+            const currentModal = $(this).closest('.modal');
+            console.log("Modal Close Button clicked");
+
+            // Check which modal is currently active
+            if (currentModal.attr('id') === 'crudModal2') {
+                // Hide modal 2 and go back to modal 1
+                $('#crudModal2').modal('hide');
+                $('#crudModal1').modal('show');
+            } else if (currentModal.attr('id') === 'crudModal3') {
+                // Hide modal 3 and go back to modal 2
+                $('#crudModal3').modal('hide');
+                $('#crudModal2').modal('show');
+            } else {
+                // Default behavior: hide the current modal
+                currentModal.modal('hide');
+            }
+        });
+
+        $(document).on('submit', '#cancelBookingForm', function (e) {
+
+            console.log("Submitting Form");
+            e.preventDefault();
+
+
+            const formData = new FormData(this);
+            console.log(formData);
+
+            // Add spinner and disable the form
+            const $form = $(this);
+            const $submitButton = $form.find('input[type="submit"]');
+            const $inputs = $form.find('input, select, textarea'); // All form inputs, selects, and textareas
+
+            // Disable the inputs and submit button
+            $inputs.prop('disabled', true);
+            $submitButton
+                .prop('disabled', true)
+                .val('Confirming...')
+                .addClass('disabled'); // Optional: Add a disabled state class
+
+            $.ajax({
+                type: 'POST',
+                url: $form.attr('action'),
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.success) {
+                        // Successful booking cancellation
+                        toastr.success('Booking cancelled successfully!', 'Success', { timeOut: 3000, closeButton: true });
+                        closeModal('crudModal1');
+                        location.reload();
+                    } else {
+                        // Booking cancellation failed
+                        toastr.error('Failed to cancel your booking request.', 'Error', { timeOut: 3000, closeButton: true });
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // Handle network or server errors
+                    toastr.error('An unexpected error occurred. Please try again.', 'Error', { timeOut: 0, extendedTimeOut: 0, closeButton: true });
+                    console.error('Error:', status, error);
+                },
+                complete: function () {
+                    // Re-enable inputs and restore button text
+                    $submitButton
+                        .prop('disabled', false)
+                        .val('Confirm')
+                        .removeClass('disabled');
+                    $inputs.prop('disabled', false);
+                }
+            });
+        });
+
+        // Single function to close any modal dynamically by passing the modal ID
+        function closeModal(modalId) {
+            $(`#${modalId}`).modal('hide'); // Using string interpolation
+        }
+
+        function showModal(modalId) {
+            $(`#${modalId}`).modal('show'); // Using string interpolation
+        }
+
+        function openModal(url, modalId) {
+            // Show a "Please wait" notification using Toastr
+            //toastr.info('Please wait...', 'Loading', { timeOut: 0, extendedTimeOut: 0, closeButton: true });
+
+            // Start the AJAX request
+            $.get(url)
+                .done(function (data) {
+                    // Load the content into the modal body
+                    $(`#${modalId} .modal-body`).html(data);
+
+                    // Initialize components based on modalId
+                    if (modalId === "crudModal1") {
+                    } else if (modalId === "crudModal2") {
+                        closeModal("crudModal1");
+                    } else if (modalId === "crudModal3") {
+                        closeModal("crudModal2");
+                    }
+
+                    // Hide the Toastr notification after loading completes
+                    toastr.clear();
+
+                    // Show the modal after content is fully loaded
+                    $(`#${modalId}`).modal('show');
+                })
+                .fail(function () {
+                    // Show error notification if the AJAX request fails
+                    toastr.error('Failed to load content. Please try again.', 'Error');
+
+                });
+
+        }
+
+        //For Cancel booking
+        function cancelBooking(url) {
+
+            $.post(url)
+                .done(function (response) {
+                    // Handle success
+                    if (response.success) {
+                        toastr.success('Booking was successfully cancelled', 'Success', { timeOut: 3000, closeButton: true });
+                        // You can perform further actions, like redirecting or updating the UI
+                    } else {
+                        toastr.error('Failed to cancel booking. Please call the administrator.', 'Error', { timeOut: 3000, extendedTimeOut: 0, closeButton: true });
+                        console.log("Error: " + response.message);  // Log error message from the response (if any)
+                    }
+                    closeModal('crudModal1');
+                })
+                .fail(function (xhr, status, error) {
+                    // Handle failure
+                    toastr.error('An error occurred while cancelling your booking request. Please call the administrator.', 'Error', { timeOut: 3000, extendedTimeOut: 0, closeButton: true });
+                    console.error('Error:', status, error);  // Log the error details for debugging
+                });
+        }
+
+    </script>
+}

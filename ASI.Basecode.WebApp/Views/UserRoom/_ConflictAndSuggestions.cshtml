@@ -27,7 +27,7 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>@Html.DisplayNameFor(model => model.BookingId)</th>
+                @* <th>@Html.DisplayNameFor(model => model.BookingId)</th> *@
                 <th>Start Date</th>
                 <th>End Date</th>
                 <th>Check In Time</th>
@@ -43,7 +43,7 @@
                 var disapproveBtnClass = isDisabled == "disabled" ? "btn-secondary" : "btn-danger";
 
                 <tr>
-                    <td >@Html.DisplayFor(modelItem => booking.BookingId)</td>
+                    @* <td >@Html.DisplayFor(modelItem => booking.BookingId)</td> *@
                     <td>@Html.DisplayFor(modelItem => booking.FormattedBookingStartDate)</td>
                     <td>@Html.DisplayFor(modelItem => booking.FormattedBookingEndDate)</td>
                     <td>@Html.DisplayFor(modelItem => booking.CheckInTimeString)</td>
@@ -84,7 +84,7 @@
                             <td>@room.Type</td>
                             <td>@room.Capacity</td>
                             <td>
-                                <button class="btn btn-success btn-sm" onclick="selectSuggestedRoom('@Url.Action("UpdatedBook", "UserRoom", new { bookingData = @Html.Raw(Json.Serialize(userSelectedBooking)), updatedRoomId = @room.RoomId })')">
+                                <button class="btn btn-success" onclick="selectSuggestedRoom('@Url.Action("UpdatedBook", "UserRoom", new { bookingData = @Html.Raw(Json.Serialize(userSelectedBooking)), updatedRoomId = @room.RoomId })')">
 
                                     @*change on click function to do post request booking*@
                                     Book

@@ -196,7 +196,10 @@ namespace ASI.Basecode.Services.Services
                 booking.UpdatedDate = DateTime.Now;
                 booking.UpdatedBy = userId;
                 booking.Status = status;
-                booking.ApproveDisapproveBy = userId;
+                if(status == "Approved" || status == "Disapproved")
+                {
+                    booking.ApproveDisapproveBy = userId;
+                }
 
                 _repository.UpdateBookingInfo(booking);
 

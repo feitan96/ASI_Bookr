@@ -408,7 +408,7 @@
                         toastr.error('Failed to book the room. Please try again.', 'Error', { timeOut: 0, extendedTimeOut: 0, closeButton: true });
                         console.log("Error: " + response.message);  // Log error message from the response (if any)
                     }
-                    closeModal('crudModal1')
+                    closeModal('crudModal1');
                 })
                 .fail(function (xhr, status, error) {
                     // Handle failure
@@ -454,18 +454,6 @@
             console.log("Submitting Form");
             e.preventDefault();
 
-            // Add spinner and disable the form
-            const $form = $(this);
-            const $submitButton = $form.find('input[type="submit"]');
-            const $inputs = $form.find('input, select, textarea');  // All form inputs, selects, and textareas
-
-
-            //$inputs.prop('disabled', true);
-            $submitButton.prop('disabled', true)
-                .val('Submitting...')
-                .addClass('disabled'); // Optional: Add a disabled state class
-
-
             // Check if the booking is not recurring
             const isRecurring = $('#IsRecurring').val() === 'false';
 
@@ -486,6 +474,18 @@
 
             // Convert the plain object to a JSON string
             const formDataJson = JSON.stringify(formDataObject);
+
+
+            // Add spinner and disable the form
+            const $form = $(this);
+            const $submitButton = $form.find('input[type="submit"]');
+            const $inputs = $form.find('input, select, textarea');  // All form inputs, selects, and textareas
+
+
+            //$inputs.prop('disabled', true);
+            $submitButton.prop('disabled', true)
+                .val('Submitting...')
+                .addClass('disabled'); // Optional: Add a disabled state class
 
             $.ajax({
                 type: 'POST',

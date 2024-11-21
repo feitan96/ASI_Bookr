@@ -15,11 +15,13 @@ using NetTopologySuite.Noding;
 using ASI.Basecode.Data.Models;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using System.Text.Json;
 using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
 using NuGet.Protocol.Core.Types;
+using ASI.Basecode.Data;
 
 namespace ASI.Basecode.WebApp.Controllers
 {
@@ -33,6 +35,7 @@ namespace ASI.Basecode.WebApp.Controllers
         private readonly IImageService _imageservice;
         private readonly IBookingService _bookingservice;
         private readonly IWebHostEnvironment _environment;
+        private readonly BookrDbContext _context;
 
         /// <summary>
         /// Constructor
@@ -42,7 +45,8 @@ namespace ASI.Basecode.WebApp.Controllers
         /// <param name="configuration"></param>
         /// <param name="localizer"></param>
         /// <param name="mapper"></param>
-        public UserRoomController(IAmenityService amenityService,
+        public UserRoomController(BookrDbContext context,
+                              IAmenityService amenityService,
                               IRoomAmenityService roomAmenityService,
                               IRoomService roomService,
                               IImageService imageService,
@@ -59,6 +63,7 @@ namespace ASI.Basecode.WebApp.Controllers
             this._environment = environment;  // Set the environment field
             this._imageservice = imageService;
             this._bookingservice = bookingService;
+            this._context = context;
         }
 
         // GET: UserRoomController
@@ -70,6 +75,15 @@ namespace ASI.Basecode.WebApp.Controllers
 
             var rooms = _roomservice.GetRooms();
             return View(rooms);
+        }
+
+        [HttpGet]
+        public IActionResult MyBookings()
+        {
+            var userId = int.Parse(Id);
+            var bookings = _bookingservice.GetBookings().Where(booking => booking.UserId == userId).ToList();
+
+            return View(bookings);
         }
 
 
@@ -116,7 +130,7 @@ namespace ASI.Basecode.WebApp.Controllers
 
         [HttpGet]
         // GET: UserRoomController/View/5
-        public IActionResult View(int roomId)
+        public IActionResult View(int roomId) //For Viewing Rooms
         {
             var room = _roomservice.GetRoomById(roomId);
 
@@ -125,6 +139,29 @@ namespace ASI.Basecode.WebApp.Controllers
                 return NotFound();
             }
             return PartialView("_View", room);
+        }
+
+        [HttpGet]
+        public IActionResult ViewBooking(int bookingId) //For Viewing Rooms
+        {
+            var booking = _bookingservice.GetBookings().Where(booking => booking.BookingId == bookingId).FirstOrDefault();
+
+            if (booking == null)
+            {
+                return NotFound();
+            }
+            return PartialView("_ViewBooking", booking);
+        }
+
+        [HttpGet]
+        public IActionResult CancelBooking(int bookingId) //For Viewing Rooms
+        {
+            var booking = _bookingservice.GetBookings().Where(booking => booking.BookingId == bookingId).FirstOrDefault();   
+            if(booking == null)
+            {
+                NotFound();
+            }
+            return PartialView("_CancelBooking", booking);
         }
 
         [HttpGet]
@@ -499,6 +536,33 @@ namespace ASI.Basecode.WebApp.Controllers
             }
             model.RoomId = updatedRoomId; //Change the RoomId
             return this.Book(model); //Reuse the Book method with the updated room Id
+        }
+
+        [HttpPost]
+        public IActionResult CancelBooking(BookingViewModel model) //For Viewing Rooms
+        {
+            try
+            {
+                _bookingservice.UpdateBookingStatus(model, int.Parse(Id), "Cancelled"); //Cancel booking
+                return Json(new
+                {
+                    success = true,
+                    message = "Booking was cancelled successfully!",
+                });
+            }
+            catch (ArgumentNullException ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
+            catch (InvalidDataException ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
+            return Json(new
+            {
+                success = false,
+                message = "Failed to cancel your bookings. Please call the administrator."
+            });
         }
 
 
