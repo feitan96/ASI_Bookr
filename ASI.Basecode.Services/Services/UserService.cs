@@ -36,33 +36,49 @@ namespace ASI.Basecode.Services.Services
 
             return user != null ? LoginResult.Success : LoginResult.Failed;
         }
-        
-        //unused
-        public PagedResult<UserViewModel> GetAllUsers(int pageNumber, int pageSize)
+
+        public UserPaginationViewModel GetPagedUsers(int page = 1, int pageSize = 1, string searchName = "", string filterRole = "")
         {
-            var users = _repository.GetUsers()
-                           .Where(x => (bool)!x.IsDeleted);
+            var query = _repository.GetUsers().Where(x => x.IsDeleted == false)
+                .Select(s => new UserViewModel
+                {
+                    Id = s.Id,
+                    FirstName = s.FirstName,
+                    LastName = s.LastName,
+                    Email = s.Email,
+                    Role = s.Role,
+                    PhoneNumber = s.PhoneNumber,
+                    CreatedDate = s.CreatedDate,
+                });
 
-            var totalRecords = users.Count();
-            var paginatedUsers = users.Skip((pageNumber - 1) * pageSize)
-                                      .Take(pageSize)
-                                      .Select(s => new UserViewModel
-                                      {
-                                          Id = s.Id,
-                                          FirstName = s.FirstName,
-                                          LastName = s.LastName,
-                                          Email = s.Email,
-                                          Role = s.Role,
-                                          PhoneNumber = s.PhoneNumber,
-                                      })
-                                      .ToList();
-
-            return new PagedResult<UserViewModel>
+            // Apply filters
+            if (!string.IsNullOrWhiteSpace(searchName))
             {
-                Items = paginatedUsers,
-                TotalRecords = totalRecords,
-                PageNumber = pageNumber,
-                PageSize = pageSize
+                query = query.Where(u =>
+                    (u.FirstName.ToLower() + " " + u.LastName.ToLower()).Contains(searchName.ToLower()));
+            }
+
+            if (!string.IsNullOrWhiteSpace(filterRole))
+            {
+                query = query.Where(u => u.Role.ToLower() == filterRole.ToLower());
+            }
+
+            // Pagination
+            var totalUsers = query.Count();
+            var users = query
+                .OrderBy(u => u.LastName)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            return new UserPaginationViewModel
+            {
+                Users = users,
+                CurrentPage = page,
+                TotalPages = (int)Math.Ceiling(totalUsers / (double)pageSize),
+                PageSize = pageSize,
+                SearchName = searchName,
+                FilterRole = filterRole
             };
         }
 

@@ -37,14 +37,13 @@ namespace ASI.Basecode.Services.ServiceModels
 
 
     }
-
-    public class PagedResult<T>
+    public class UserPaginationViewModel
     {
-        public List<T> Items { get; set; }
-        public int TotalRecords { get; set; }
-        public int PageNumber { get; set; }
-        public int PageSize { get; set; }
+        public List<UserViewModel> Users { get; set; }
         public int CurrentPage { get; set; }
-        public int TotalPages => (int)Math.Ceiling((double)TotalRecords / PageSize);
+        public int TotalPages { get; set; }
+        public int PageSize { get; set; }
+        public string SearchName { get; set; }
+        public string FilterRole { get; set; }
     }
 }

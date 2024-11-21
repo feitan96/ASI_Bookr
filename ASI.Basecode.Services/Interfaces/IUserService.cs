@@ -13,7 +13,7 @@ namespace ASI.Basecode.Services.Interfaces
         void UpdateUser(UserViewModel model, int userId);
         void SoftDelete(int Id);
         void HardDelete(int Id);
-        PagedResult<UserViewModel> GetAllUsers(int pageNumber, int pageSize);
+        UserPaginationViewModel GetPagedUsers(int page = 1, int pageSize = 10, string searchName = "", string filterRole = "");
         string GeneratePasswordResetToken(string email);
         Status ResetPassword(ResetPasswordModel model);
         ChangePassToken IsTokenValid(string token);
