@@ -122,66 +122,6 @@ namespace ASI.Basecode.Services.ServiceModels
             }
         }
 
-        // Custom validation logic
-        //public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        //{
-        //    if (IsRecurring && !BookingEndDate.HasValue)
-        //    {
-        //        yield return new ValidationResult(
-        //            "Booking End Date is required for recurring bookings.",
-        //            new[] { nameof(BookingEndDate) }
-        //        );
-        //    }
-        //}
-    }
 
-    //public class DateGreaterThanAttribute : ValidationAttribute, IClientValidatable
-    //{
-    //    private readonly string _comparisonDateProperty;
-
-    //    public DateGreaterThanAttribute(string comparisonDateProperty)
-    //    {
-    //        _comparisonDateProperty = comparisonDateProperty;
-    //        ErrorMessage = "{0} must be later than {1}.";
-    //    }
-
-    //    // Server-side validation
-    //    protected override ValidationResult IsValid(object value, ValidationContext validationContext)
-    //    {
-    //        var comparisonProperty = validationContext.ObjectType.GetProperty(_comparisonDateProperty);
-    //        if (comparisonProperty == null)
-    //        {
-    //            return new ValidationResult($"Unknown property: {_comparisonDateProperty}");
-    //        }
-
-    //        var comparisonDateValue = comparisonProperty.GetValue(validationContext.ObjectInstance, null) as DateTime?;
-
-    //        if (comparisonDateValue == null)
-    //        {
-    //            return ValidationResult.Success; // If comparison date is null, validation passes
-    //        }
-
-    //        if (value is DateTime currentDate && currentDate <= comparisonDateValue)
-    //        {
-    //            return new ValidationResult(string.Format(ErrorMessage, validationContext.DisplayName, comparisonProperty.Name));
-    //        }
-
-    //        return ValidationResult.Success;
-    //    }
-
-    //    // Client-side validation
-    //    public IEnumerable<ModelClientValidationRule> GetClientValidationRules(ModelMetadata metadata, ControllerContext context)
-    //    {
-    //        var rule = new ModelClientValidationRule
-    //        {
-    //            ValidationType = "dategreaterthan",
-    //            ErrorMessage = this.ErrorMessage
-    //        };
-
-    //        rule.ValidationParameters.Add("comparisondateproperty", _comparisonDateProperty);
-
-    //        yield return rule;
-    //    }
-    //}
-
+        }
 }

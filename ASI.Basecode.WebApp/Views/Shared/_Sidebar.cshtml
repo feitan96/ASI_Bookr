@@ -5,8 +5,8 @@
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
 }
 
-
-<div class="sidebar-container d-flex flex-column justify-content-between" style="width: 250px; position: fixed; height: 100vh;  border-top-right-radius: 10px; border-bottom-right-radius: 10px; background: -webkit-linear-gradient(90deg, #1C0000 0%, #310000 25%, #4F0000 60%, #820000 83%); box-shadow: 2px 0 5px rgba(0,0,0,0.1);">
+<div class="@((ViewBag.LoginView == true) ? "hide-navbar" : "")">
+    <div class="sidebar-container d-flex flex-column justify-content-between" style="width: 250px; position: fixed; height: 100vh;  border-top-right-radius: 10px; border-bottom-right-radius: 10px; background: -webkit-linear-gradient(90deg, #1C0000 0%, #310000 25%, #4F0000 60%, #820000 83%); box-shadow: 2px 0 5px rgba(0,0,0,0.1);">
     <div>
         <div class="sidebar-header d-flex align-content-start justify-content-center pr-4 pt-3 pb-3">
             <a asp-action="Index" asp-controller="Dashboard" style="display: flex; align-items: center; text-decoration: none;">
@@ -57,7 +57,7 @@
         </div>
     </div>
 </div>
-
+</div>
 <style>
     .link-bg {
         color: white;

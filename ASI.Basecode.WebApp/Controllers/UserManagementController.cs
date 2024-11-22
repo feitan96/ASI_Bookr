@@ -49,12 +49,26 @@ namespace ASI.Basecode.WebApp.Controllers
             return null;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int page = 1, int pageSize = 1)
         {
-            var users = _userService.GetAllUser();
-            return View(users);
+            var pagedUsers = _userService.GetPagedUsers(page, pageSize);
+            return View(pagedUsers);
         }
 
+        [HttpGet]
+        public IActionResult Search(string name, string role, int page = 1, int pageSize = 1)
+        {
+            var pagedUsers = _userService.GetPagedUsers(page, pageSize, name, role);
+
+            // If it's an AJAX request, return the partial view
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return PartialView("_UserTable", pagedUsers);
+            }
+
+            // Otherwise, return the full view
+            return View("Index", pagedUsers);
+        }
 
         #region Get Methods
         [HttpGet]
@@ -85,24 +99,7 @@ namespace ASI.Basecode.WebApp.Controllers
             return PartialView("_Delete", data);
         }
 
-        [HttpGet]
-        public IActionResult Search(string name, string role)
-        {
-            var users = _userService.GetAllUser();
-
-            if (!string.IsNullOrWhiteSpace(name))
-            {
-                users = users.Where(u => $"{u.FirstName} {u.LastName}".Contains(name, StringComparison.OrdinalIgnoreCase)).ToList();
-            }
-
-            if (!string.IsNullOrWhiteSpace(role))
-            {
-                users = users.Where(u => u.Role.Equals(role, StringComparison.OrdinalIgnoreCase)).ToList();
-            }
-
-            return PartialView("_UserTable", users);
-        }
-
+        
         #endregion
 
         #region Posts Methods
