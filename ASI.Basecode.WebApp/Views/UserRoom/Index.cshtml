@@ -67,8 +67,16 @@
 <div id="crudModal1" class="modal fade" tabindex="-1" role="dialog" style="z-index: 1050;">
     <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-body">
-                <!-- Content will be loaded here -->
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button type="button" class="close modal-close-btn" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body-container">
+                <div class="modal-body">
+                    <!-- Content will be loaded here -->
+                </div>
             </div>
         </div>
     </div>
@@ -78,8 +86,16 @@
 <div id="crudModal2" class="modal fade" tabindex="-1" role="dialog" style="z-index: 1060;">
     <div class="modal-dialog modal-dialog-scrollable" role="document">
         <div class="modal-content">
-            <div class="modal-body">
-                <!-- Content will be loaded here -->
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button type="button" class="close modal-close-btn" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body-container">
+                <div class="modal-body">
+                    <!-- Content will be loaded here -->
+                </div>
             </div>
         </div>
     </div>
@@ -89,8 +105,16 @@
 <div id="crudModal3" class="modal fade" tabindex="-1" role="dialog" style="z-index: 1070;">
     <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-body">
-                <!-- Content will be loaded here -->
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button type="button" class="close modal-close-btn" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body-container">
+                <div class="modal-body">
+                    <!-- Content will be loaded here -->
+                </div>
             </div>
         </div>
     </div>
@@ -364,7 +388,7 @@
 
         //------------------- Modal Handling: START ----------------------------
         // Update the openModal function to call initializeRoomSelection with modalId
-        function openModal(url, modalId) {
+        function openModal(url, modalId, title) {
             // Show a "Please wait" notification using Toastr
             toastr.info('Please wait...', 'Loading', { timeOut: 0, extendedTimeOut: 0, closeButton: true });
 
@@ -373,6 +397,7 @@
                 .done(function (data) {
                     // Load the content into the modal body
                     $(`#${modalId} .modal-body`).html(data);
+                    $(`#${modalId} .modal-title`).text(title || 'Booking Management');
 
                     // Initialize components based on modalId
                     if (modalId === "crudModal1") {

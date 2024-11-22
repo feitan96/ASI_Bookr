@@ -24,7 +24,7 @@
             var isDisabled = booking.Status == "Approved" || booking.Status == "Disapproved" || booking.Status == "Cancelled" ? "disabled" : "";
 @*          var btnClass = isDisabled == "disabled" ? "btn-secondary" : "btn-approve-main";
             var disapproveBtnClass = isDisabled == "disabled" ? "btn-secondary" : "btn-disapprove-main"; *@
-            var cancelBtnClass = isDisabled == "disabled" ? "btn-secondary" : "btn-cancel-main";
+            var cancelBtnClass = isDisabled == "disabled" ? "btn-secondary" : "cancel-modal";
 
             <tr>
                 <td hidden>@Html.DisplayFor(modelItem => booking.BookingId)</td>
@@ -39,14 +39,14 @@
                     @* <button onclick="openModal('@Url.Action("Approve", "Booking", new { bookingId = booking.BookingId })', 'crudModal1')" class="btn @btnClass btn-sm pr-0" @isDisabled>
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" /></svg>
                     </button> *@
-                    <button onclick="openModal('@Url.Action("CancelBooking", "UserRoom", new { bookingId = booking.BookingId })', 'crudModal1')" class="btn @cancelBtnClass btn-sm pr-0" @isDisabled>
+                    <button onclick="openModal('@Url.Action("CancelBooking", "UserRoom", new { bookingId = booking.BookingId })', 'crudModal1', 'Cancel Booking')" class="btn @cancelBtnClass btn-sm pr-0" @isDisabled>
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" /></svg>
                     </button>
                     @* <button onclick="openModal('@Url.Action("Edit", "Booking", new { bookingId = booking.BookingId })', 'crudModal1')" class="btn btn-warning btn-sm">Edit</button> *@
                     @* <button onclick="openModal('@Url.Action("Delete", "Booking", new { bookingId = booking.BookingId })', 'crudModal1')" class="btn btn-danger btn-sm">Delete</button> *@
                 </td>
                 <td>
-                    <svg onclick="openModal('@Url.Action("ViewBooking", "UserRoom", new { bookingId = booking.BookingId })', 'crudModal1')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M8 256a56 56 0 1 1 112 0A56 56 0 1 1 8 256zm160 0a56 56 0 1 1 112 0 56 56 0 1 1 -112 0zm216-56a56 56 0 1 1 0 112 56 56 0 1 1 0-112z" /></svg>
+                    <svg onclick="openModal('@Url.Action("ViewBooking", "UserRoom", new { bookingId = booking.BookingId })', 'crudModal1', 'Booking Details')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M8 256a56 56 0 1 1 112 0A56 56 0 1 1 8 256zm160 0a56 56 0 1 1 112 0 56 56 0 1 1 -112 0zm216-56a56 56 0 1 1 0 112 56 56 0 1 1 0-112z" /></svg>
                 </td>
 
             </tr>
@@ -54,35 +54,65 @@
     </tbody>
 </table>
 
+<style>
+    .cancel-modal {
+        fill: white;
+    }
+</style>
+
 
 <!-- Modal Layer 1-->
 <div id="crudModal1" class="modal fade" tabindex="-1" role="dialog" style="z-index: 1050;">
     <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-body">
-                <!-- Content will be loaded here -->
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button type="button" class="close modal-close-btn" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body-container">
+                <div class="modal-body">
+                    <!-- Content will be loaded here -->
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Modal Layer 2-->
-<div id="crudModal2" class="modal fade" tabindex="-1" role="dialog" style="z-index: 1060;">
-    <div class="modal-dialog modal-dialog-scrollable" role="document">
+<div id="crudModal2" class="modal fade" tabindex="-1" role="dialog" style="z-index: 1050;">
+    <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-body">
-                <!-- Content will be loaded here -->
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button type="button" class="close modal-close-btn" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body-container">
+                <div class="modal-body">
+                    <!-- Content will be loaded here -->
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Modal Layer 3-->
-<div id="crudModal3" class="modal fade" tabindex="-1" role="dialog" style="z-index: 1070;">
+<div id="crudModal3" class="modal fade" tabindex="-1" role="dialog" style="z-index: 1050;">
     <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
         <div class="modal-content">
-            <div class="modal-body">
-                <!-- Content will be loaded here -->
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button type="button" class="close modal-close-btn" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body-container">
+                <div class="modal-body">
+                    <!-- Content will be loaded here -->
+                </div>
             </div>
         </div>
     </div>
@@ -198,7 +228,7 @@
             $(`#${modalId}`).modal('show'); // Using string interpolation
         }
 
-        function openModal(url, modalId) {
+        function openModal(url, modalId, title) {
             // Show a "Please wait" notification using Toastr
             //toastr.info('Please wait...', 'Loading', { timeOut: 0, extendedTimeOut: 0, closeButton: true });
 
@@ -207,6 +237,7 @@
                 .done(function (data) {
                     // Load the content into the modal body
                     $(`#${modalId} .modal-body`).html(data);
+                    $(`#${modalId} .modal-title`).text(title || 'Booking Management');
 
                     // Initialize components based on modalId
                     if (modalId === "crudModal1") {

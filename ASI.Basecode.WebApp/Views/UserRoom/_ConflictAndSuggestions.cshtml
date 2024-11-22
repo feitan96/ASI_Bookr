@@ -32,7 +32,7 @@
             @foreach (var booking in Model)
             {
                 var isDisabled = booking.Status == "Approved" || booking.Status == "Disapproved" ? "disabled" : "";
-                var btnClass = isDisabled == "disabled" ? "btn-secondary" : "btn-success";
+                var btnClass = isDisabled == "disabled" ? "btn-secondary" : "cancel-modal";
                 var disapproveBtnClass = isDisabled == "disabled" ? "btn-secondary" : "btn-danger";
 
                 <tr>
@@ -77,7 +77,7 @@
                             <td>@room.Type</td>
                             <td>@room.Capacity</td>
                             <td>
-                                <button class="btn btn-success" onclick="selectSuggestedRoom('@Url.Action("UpdatedBook", "UserRoom", new { bookingData = @Html.Raw(Json.Serialize(userSelectedBooking)), updatedRoomId = @room.RoomId })')">
+                                <button class="btn cancel-modal" onclick="selectSuggestedRoom('@Url.Action("UpdatedBook", "UserRoom", new { bookingData = @Html.Raw(Json.Serialize(userSelectedBooking)), updatedRoomId = @room.RoomId })')">
 
                                     @*change on click function to do post request booking*@
                                     Book

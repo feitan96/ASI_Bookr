@@ -1,71 +1,39 @@
 ﻿@model ASI.Basecode.Services.ServiceModels.BookingViewModel
 
-<div class="modal-header">
-    <h4 class="modal-title">Booking Details</h4>
-    <button type="button" class="close modal-close-btn" data-dismiss="modal modal-close-btn" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
-</div>
 
-<div class="container">
-    <div class="text-left mb-4 pt-2">
-        <h5>Room Info</h5>
-    </div>
-    <dl class="row">
-        <dt class="col-sm-4 text-end">Room Name:</dt>
-        <dd class="col-sm-8">@Html.DisplayFor(model => model.Room.Name)</dd>
-        <!-- Room Details -->
-        <input type="hidden" asp-for="RoomId" />
+<dl class="row">
+    <dt class="col-sm-4 text-end">Room Name:</dt>
+    <dd class="col-sm-8">@Html.DisplayFor(model => model.Room.Name)</dd>
+    <!-- Room Details -->
+    <dt class="col-sm-4 text-end">Booker:</dt>
+    <dd class="col-sm-8">@($"{Model.User.FirstName} {Model.User.LastName}")</dd>
 
-        <dt class="col-sm-4 text-end">Type:</dt>
-        <dd class="col-sm-8">@Html.DisplayFor(model => model.Room.Type)</dd>
+    <dt class="col-sm-4 text-end">Meeting Title:</dt>
+    <dd class="col-sm-8">@Html.DisplayFor(model => model.Title)</dd>
 
-        <dt class="col-sm-4 text-end">Capacity:</dt>
-        <dd class="col-sm-8">@Html.DisplayFor(model => model.Room.Capacity)</dd>
+    <dt class="col-sm-4 text-end">Start Date:</dt>
+    <dd class="col-sm-8">@Html.DisplayFor(model => model.FormattedBookingStartDate)</dd>
 
-        <dt class="col-sm-4 text-end">Location:</dt>
-        <dd class="col-sm-8">@Html.DisplayFor(model => model.Room.Location)</dd>
+    <dt class="col-sm-4 text-end">End Date:</dt>
+    <dd class="col-sm-8">@Html.DisplayFor(model => model.FormattedBookingEndDate)</dd>
 
-        <dt class="col-sm-4 text-end">Amenities:</dt>
-        <dd class="col-sm-8">@string.Join(", ", Model.Room.RoomAmenitiesName)</dd>
-    </dl>
+    <!-- User Details -->
+    <dt class="col-sm-4 text-end">Status:</dt>
+    <dd class="col-sm-8">@Html.DisplayFor(model => model.Status)</dd>
 
-    <div class="text-left mb-4">
-        <h5>Booking Info</h5>
-    </div>
-    <dl class="row">
-        <dt class="col-sm-4 text-end">Meeting Title:</dt>
-        <dd class="col-sm-8">@Html.DisplayFor(model => model.Title)</dd>
+    <dt class="col-sm-4 text-end">Check In:</dt>
+    <dd class="col-sm-8">@Html.DisplayFor(model => model.CheckInTimeString)</dd>
 
-        <dt class="col-sm-4 text-end">Start Date:</dt>
-        <dd class="col-sm-8">@Html.DisplayFor(model => model.FormattedBookingStartDate)</dd>
+    <dt class="col-sm-4 text-end">Check Out:</dt>
+    <dd class="col-sm-8">@Html.DisplayFor(model => model.CheckOutTimeString)</dd>
 
-        <dt class="col-sm-4 text-end">End Date:</dt>
-        <dd class="col-sm-8">@Html.DisplayFor(model => model.FormattedBookingEndDate)</dd>
+    <dt class="col-sm-4 text-end">Is Recurring:</dt>
+    <dd class="col-sm-8">@(Model.IsRecurring ? "Yes" : "No")</dd>
 
-        <dt class="col-sm-4 text-end">Check In:</dt>
-        <dd class="col-sm-8">@Html.DisplayFor(model => model.CheckInTimeString)</dd>
+    @if (Model.IsRecurring)
+    {
+        <dt class="col-sm-4 text-end">Selected Days:</dt>
+        <dd class="col-sm-8">@string.Join(", ", Model.RecurringBookings.Select(x => x.Day).ToList())</dd>
+    }
+</dl>
 
-        <dt class="col-sm-4 text-end">Check Out:</dt>
-        <dd class="col-sm-8">@Html.DisplayFor(model => model.CheckOutTimeString)</dd>
-
-        <dt class="col-sm-4 text-end">Status:</dt>
-        <dd class="col-sm-8">@Html.DisplayFor(model => model.Status)</dd>
-
-        <dt class="col-sm-4 text-end">Is Recurring:</dt>
-        <dd class="col-sm-8">@(Model.IsRecurring ? "Yes" : "No")</dd>
-
-        @if (Model.IsRecurring)
-        {
-            <dt class="col-sm-4 text-end">Selected Days:</dt>
-            <dd class="col-sm-8">@string.Join(", ", Model.RecurringBookings.Select(x => x.Day).ToList())</dd> //Uncomment if doesn't consider ordering in UI
-@*             <dd class="col-sm-8">
-                @string.Join(", ", Model.RecurringBookings
-                         .OrderBy(x => new[] { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" } //Ensure ordering during printing
-                         .ToList()
-                         .IndexOf(x.Day))
-                         .Select(x => x.Day))
-            </dd> *@
-        }
-    </dl>
-</div>
