@@ -8,7 +8,7 @@
 
 <div class="row mb-3">
     <!-- Most Used Room Card -->
-    <div class="col-md-6">
+    <div class="col-md-6 mt-xl-4">
         <div class="card">
             <div class="card-header">
                 <h4>Most Used Room</h4>
@@ -25,8 +25,8 @@
     </div>
 
     <!-- User Statistics Card -->
-    <div class="col-md-6">
-        <div class="card">
+    <div class="col-md-6 mt-xl-4">
+        <div class="card" style="height:210px;">
             <div class="card-header">
                 <h4>User Statistics</h4>
             </div>
@@ -43,15 +43,31 @@
 </div>
 
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-6 mt-xl-3 chart-container">
             <h3>Booking Status Distribution</h3>
-            <div id="bookingStatusChart"></div>
+            <div style="width:87.5vw;"><div id="bookingStatusChart"></div></div>
+        
         </div>
     </div>
 
-<div class="mb-3">
-    <label for="timeFrameSelect" class="form-label">Time Frame:</label>
-    <select id="timeFrameSelect" class="form-select" style="width: auto;">
+<div hidden class="mb-xl-5">
+    <div class="btn-group">
+        <button id="exportBtn" class="btn btn-primary">
+            <i class="fas fa-file-excel"></i> Export to Excel
+        </button>
+    </div>
+</div>
+
+<div class="row  mt-xl-3">
+    <div class="col-md-12 mt-xl-3">
+        <h3>Room Usage Over Time</h3>
+        <div id="roomUsageChart"></div>
+    </div>
+</div>
+
+<div class="mt-xl-3 d-flex justify-content-center">
+    <h4 class="mt-xl-1 mr-xl-2">Time Frame:</h4>
+    <select id="timeFrameSelect" class="form-select form-control" style="width: auto;">
         @{
             var timeFrames = new[]
             {
@@ -75,21 +91,6 @@
     </select>
 </div>
 
-<div hidden class="mb-3">
-    <div class="btn-group">
-        <button id="exportBtn" class="btn btn-primary">
-            <i class="fas fa-file-excel"></i> Export to Excel
-        </button>
-    </div>
-</div>
-
-<div class="row">
-    <div class="col-md-12">
-        <h3>Room Usage Over Time</h3>
-        <div id="roomUsageChart"></div>
-    </div>
-</div>
-
 <div class="row">
     <div class="col-md-12">
         <h3>User Trends Over Time</h3>
@@ -98,6 +99,19 @@
 </div>
 
 
+<style>
+    .card-header {
+        background-color: var(--color1);
+        color: white;
+        border-radius: 10px 10px 10px 10px;
+    }
+    .card {
+        border-radius: 10px;
+    }
+    .chart-container {
+        border-radius: 10px;
+    }
+</style>
 @section Scripts {
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
@@ -109,7 +123,7 @@
             Highcharts.chart('bookingStatusChart', {
                 colors: ['var(--color3)', 'var(--color2)', 'var(--color1)', 'var(--color4)', 'var(--color5)'],
                 chart: {
-                    type: 'pie'
+                    type: 'pie',
                 },
                 title: {
                     text: 'Booking Status Distribution'
