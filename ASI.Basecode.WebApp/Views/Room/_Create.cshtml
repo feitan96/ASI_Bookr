@@ -5,29 +5,22 @@
     var amenities = ViewData["AmenitiesList"] as List<AmenityViewModel> ?? new List<AmenityViewModel>();
 }
 
-<div class="modal-header">
-    <h5 class="modal-title">Add Room</h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
-</div>
-<div class="modal-body">
     <form id="createForm" asp-action="Create" method="post" enctype="multipart/form-data">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group">
-            <label asp-for="Name" class="control-label"></label>
+        <label asp-for="Name" class="control-label">Name<span style="color: red;">*</span></label>
             <input asp-for="Name" class="form-control" placeholder="Enter room name" />
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
 
         <div class="form-group">
-            <label asp-for="Description" class="control-label"></label>
+            <label asp-for="Description" class="control-label">Description<span style="color: red;">*</span></label>
             <textarea asp-for="Description" class="form-control" placeholder="Enter room description"></textarea>
             <span asp-validation-for="Description" class="text-danger"></span>
         </div>
 
         <div class="form-group">
-            <label asp-for="Type" class="control-label"></label>
+        <label asp-for="Type" class="control-label">Type<span style="color: red;">*</span></label>
             <select asp-for="Type" class="form-control">
                 <option value="">Select Room Type</option>
                 <option value="MeetingRoom">Meeting Room (Has TV)</option>
@@ -40,13 +33,13 @@
         </div>
 
         <div class="form-group">
-            <label asp-for="Capacity" class="control-label"></label>
+        <label asp-for="Capacity" class="control-label">Capacity<span style="color: red;">*</span></label>
             <input asp-for="Capacity" class="form-control" placeholder="Enter room capacity" type="number" min="1" max="20" value="1" />
             <span asp-validation-for="Capacity" class="text-danger"></span>
         </div>
 
         <div class="form-group">
-            <label asp-for="Location" class="control-label"></label>
+        <label asp-for="Location" class="control-label">Location<span style="color: red;">*</span></label>
             <select asp-for="Location" class="form-control">
                 <option value="">Select Room Location</option>
                 <option value="FocusRoom">Focus Room (Dedicated space for quiet work and concentration)</option>
@@ -58,13 +51,13 @@
         </div>
 
         <div class="form-group">
-            <label asp-for="ImageFiles" class="control-label">Upload Room Image</label>
+        <label asp-for="ImageFiles" class="control-label">Upload Room Image<span style="color: red;">*</span></label>
             <input type="file" asp-for="ImageFiles" class="form-control" accept=".jpeg,.jpg,.png" multiple required/>
             <span asp-validation-for="ImageFiles" class="text-danger"></span>
         </div>
 
         <div class="form-group">
-            <label asp-for="RoomAmenitiesId" class="control-label">Select Amenities</label>
+        <label asp-for="RoomAmenitiesId" class="control-label">Select Amenities<span style="color: red;">*</span></label>
             <select asp-for="RoomAmenitiesId" class="form-control chosen-select" multiple>
                 @foreach (var amenity in amenities)
                 {
@@ -75,12 +68,19 @@
         </div>
 
 
-        <div class="form-group">
-            <input type="submit" value="Create New Room" class="btn btn-primary" />
-            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        <div class="form-group d-flex justify-content-end">
+        <button type="button" class="btn mr-2 cancel-modal" onclick="closeModal()">Cancel</button>
+            <input type="submit" value="Create New Room" class="btn submit-modal" />
         </div>
     </form>
-</div>
+
+    <style>
+        .file-button {
+            cursor: pointer;
+            border-radius: 10px;
+            background-color: var(--color1);
+        }
+    </style>
 
 @section Scripts {
     @{

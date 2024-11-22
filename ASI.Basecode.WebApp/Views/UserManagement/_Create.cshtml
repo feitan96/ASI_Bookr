@@ -1,46 +1,39 @@
 ﻿@model ASI.Basecode.Services.ServiceModels.UserViewModel
 
-<div class="modal-header">
-    <h5 class="modal-title">Add User</h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
-</div>
-<div class="modal-body">
     <form id="createForm" asp-action="Create" method="post" enctype="multipart/form-data">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
+        <label asp-for="Email" class="control-label">Email<span style="color: red;">*</span></label>
                 <input type="email" asp-for="Email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="FirstName" class="control-label"></label>
+        <label asp-for="FirstName" class="control-label">First Name<span style="color: red;">*</span></label>
                 <input asp-for="FirstName" class="form-control" />
                 <span asp-validation-for="FirstName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="LastName" class="control-label"></label>
+                <label asp-for="LastName" class="control-label">Last Name<span style="color: red;">*</span></label>
                 <input asp-for="LastName" class="form-control" />
                 <span asp-validation-for="LastName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Role" class="control-label"></label>
+        <label asp-for="Role" class="control-label">Role<span style="color: red;">*</span></label>
                 <select asp-for="Role" asp-items="ViewBag.Roles" class="form-control"></select>
                 <span asp-validation-for="Role" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="PhoneNumber" class="control-label">Phone Number</label>
+        <label asp-for="PhoneNumber" class="control-label">Phone Number<span style="color: red;">*</span></label>
                 <input asp-for="PhoneNumber" class="form-control" />
                 <span asp-validation-for="PhoneNumber" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Password" class="control-label"></label>
+        <label asp-for="Password" class="control-label">Password<span style="color: red;">*</span></label>
                 <input type="password"asp-for="Password" class="form-control" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ConfirmPassword" class="control-label"></label>
+        <label asp-for="ConfirmPassword" class="control-label">Confirm Password<span style="color: red;">*</span></label>
                 <input type="password" asp-for="ConfirmPassword" class="form-control" />
                 <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
             </div>
@@ -49,8 +42,9 @@
             <input asp-for="ImageFile" type="file" class="form-control" />
             <span asp-validation-for="ImageFile" class="text-danger"></span>
             </div> *@
-        <div class="form-group">
-            <input type="submit" value="Create" class="btn btn-primary" />
-        </div>
+
+    <div class="form-group d-flex justify-content-end">
+        <button type="button" class="btn mr-2 cancel-modal" onclick="closeModal()">Cancel</button>
+        <input type="submit" value="Create" class="btn submit-modal" />
+    </div>
     </form>
-</div>

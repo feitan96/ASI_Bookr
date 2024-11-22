@@ -1,12 +1,5 @@
 ﻿@model ASI.Basecode.Services.ServiceModels.UserViewModel
 
-<div class="modal-header">
-    <h5 class="modal-title">User Details</h5>
-    <button type="button" class="close modal-close-btn" data-dismiss="modal" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
-</div>
-<div>
     <dl class="row">
         <input type="hidden" asp-for="Id" />
 
@@ -35,4 +28,3 @@
             @Html.DisplayFor(model => model.PhoneNumber)
         </dd>
     </dl>
-</div>

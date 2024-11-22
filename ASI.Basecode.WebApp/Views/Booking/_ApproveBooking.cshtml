@@ -5,8 +5,8 @@
 
 <!-- Submit Button -->
 <div class="form-group d-flex justify-content-end mb-0">
-    <button type="button" class="btn btn-secondary mr-2 cancel-modal" onclick="closeModal('crudModal1')">Cancel</button>
-    <button type="button" class="btn btn-primary submit-modal" onclick="ApproveDisapproveBooking('@Url.Action("ApproveBookingById", "Booking", new { bookingId = bookingId })', 'approve')">Yes</button>
+    <button type="button" class="btn mr-2 cancel-modal" onclick="closeModal('crudModal1')">Cancel</button>
+    <button type="button" class="btn submit-modal" onclick="ApproveDisapproveBooking('@Url.Action("ApproveBookingById", "Booking", new { bookingId = bookingId })', 'approve')">Yes</button>
 </div>
         
 @section Scripts {

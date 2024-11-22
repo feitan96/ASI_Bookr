@@ -84,8 +84,16 @@
 <div id="crudModal" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-dialog-scrollable" role="document">
         <div class="modal-content">
-            <div class="modal-body">
-                <!-- Content will be loaded here -->
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button type="button" class="close modal-close-btn" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body-container">
+                <div class="modal-body">
+                    <!-- Content will be loaded here -->
+                </div>
             </div>
         </div>
     </div>
@@ -105,10 +113,31 @@
     <script src="~/js/loading.js"></script>
     <script>
         // Open modal and load content
-        function openModal(url) {
+        function openModal(url, title) {
             showLoading('Loading content...'); // Customizable loading message
             $.get(url, function (data) {
                 $('#crudModal .modal-body').html(data);
+
+                if (url.includes('Delete')) {
+                    title = 'Delete User';
+                }
+                else if (url.includes('Edit')) {
+                    title = 'Edit User';
+                }
+                else if (url.includes('View')) {
+                    title = 'User Details';
+                }
+                else if (url.includes('Create')) {
+                    title = 'Add User';
+                }
+                else if (url.includes('ChangeRoleModal')) {
+                    title = 'Change Role';
+                }
+                else {
+                    title = 'User Management';
+                }
+                $('#crudModal .modal-title').text(title);
+
                 $('#crudModal').modal('show');
                 hideLoading();
 
@@ -189,5 +218,8 @@
             performSearchAndFilter();
         }
 
+        function closeModal() {
+            $('#crudModal').modal('hide'); // Using string interpolation
+        }
     </script>
 }
