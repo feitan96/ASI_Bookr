@@ -7,29 +7,26 @@
             <span style="color: #820000; font-size: 24px; font-family: Inter; font-weight: 800;">Bookr</span>
         </a>
     </div>
-    @* <div>
-        <a asp-action="Index" asp-controller="Room">Room Management</a>
-    </div> *@
+
     <div class="logosec">
         @HttpContextAccessor.HttpContext.Session.GetString("Name")
-        <div class="mr-20 hover-pointer" style="position: relative">
-            <div class="dp">
-                <img src="~/img/profile-logo.png"
-                     class="dpicn hover-pointer"
-                     alt="dp">
+        <div class="mr-20 hover-pointer" style="position: relative;">
+            <div class="dp hover-pointer" onclick="toggleDropdown()">
+                <svg style="width: 6px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 512"><path d="M64 360a56 56 0 1 0 0 112 56 56 0 1 0 0-112zm0-160a56 56 0 1 0 0 112 56 56 0 1 0 0-112zM120 96A56 56 0 1 0 8 96a56 56 0 1 0 112 0z" />
+                </svg>
             </div>
-            <div class="dropdown">
-                <ul>
+            <div class="dropdown" id="profileDropdown" style="display: none; position: absolute; top: 30px; right: 0; background: white; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); border-radius: 8px; z-index: 10;">
+                <ul style="list-style: none; margin: 0; padding: 10px;">
                     <li>
                         <i class="fa-solid fa-gear"></i>
                         <a asp-action="MyBookings" asp-controller="UserRoom" class="sidebar-link">My Bookings</a>
                     </li>
                     <li>
-                        <i class="fa-solid fa-gear"></i>
+                        <i class="fa-solid fa-book"></i>
                         <a asp-action="Index" asp-controller="UserRoom" class="sidebar-link">Book</a>
                     </li>
                     <li>
-                        <i class="fa-solid fa-gear"></i>
+                        <i class="fa-solid fa-user-cog"></i>
                         <a asp-action="Index" asp-controller="Profile" class="sidebar-link">Settings</a>
                     </li>
                     <li>
@@ -41,3 +38,19 @@
         </div>
     </div>
 </header>
+
+<script>
+    function toggleDropdown() {
+        const dropdown = document.getElementById('profileDropdown');
+        dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (event) => {
+        const dropdown = document.getElementById('profileDropdown');
+        if (!dropdown.contains(event.target) && !event.target.closest('.dp')) {
+            dropdown.style.display = 'none';
+        }
+    });
+</script>
+

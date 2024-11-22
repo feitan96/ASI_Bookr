@@ -142,15 +142,15 @@ header {
 .dp {
     height: 40px;
     width: 40px;
-    background-color: #626262;
+    background-color: var(--background-color1);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    cursor: pointer; 
+    cursor: pointer;
     position: relative;
-    overflow: hidden; 
+    overflow: hidden;
 }
 
 .main-container {
