@@ -18,13 +18,7 @@ label {
     font-weight: 700;
     font-size: 45px;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.form-control {
-    width: 100%;
-    border-radius: 10px;
-    border: none;
-    outline: none !important;
+    color: var(--color1);
 }
 
 .login-btn {

@@ -1,53 +1,12 @@
 ﻿@model ASI.Basecode.Services.ServiceModels.BookingViewModel
 
-<div class="modal-header">
-    <h4 class="modal-title">Booking Details</h4>
-    <button type="button" class="close modal-close-btn" data-dismiss="modal modal-close-btn" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
-</div>
-
-<div class="container">
-    <div class="text-left mb-4 pt-2">
-        <h5>Room Info</h5>
-    </div>
     <dl class="row">
         <dt class="col-sm-4 text-end">Room Name:</dt>
         <dd class="col-sm-8">@Html.DisplayFor(model => model.Room.Name)</dd>
         <!-- Room Details -->
-        <input type="hidden" asp-for="RoomId" />
+    <dt class="col-sm-4 text-end">Booker:</dt>
+    <dd class="col-sm-8">@($"{Model.User.FirstName} {Model.User.LastName}")</dd>
 
-        <dt class="col-sm-4 text-end">Description:</dt>
-        <dd class="col-sm-8">@Html.DisplayFor(model => model.Room.Description)</dd>
-
-        <dt class="col-sm-4 text-end">Type:</dt>
-        <dd class="col-sm-8">@Html.DisplayFor(model => model.Room.Type)</dd>
-
-        <dt class="col-sm-4 text-end">Capacity:</dt>
-        <dd class="col-sm-8">@Html.DisplayFor(model => model.Room.Capacity)</dd>
-
-        <dt class="col-sm-4 text-end">Location:</dt>
-        <dd class="col-sm-8">@Html.DisplayFor(model => model.Room.Location)</dd>
-
-        <dt class="col-sm-4 text-end">Amenities:</dt>
-        <dd class="col-sm-8">@string.Join(", ", Model.Room.RoomAmenitiesName)</dd>
-    </dl>
-
-    <div class="text-left mb-4">
-        <h5>User Info</h5>
-    </div>
-    <dl class="row">
-        <dt class="col-sm-4 text-end">User Id:</dt>
-        <dd class="col-sm-8">@Html.DisplayFor(model => model.UserId)</dd>
-
-        <dt class="col-sm-4 text-end">User Full Name:</dt>
-        <dd class="col-sm-8">@($"{Model.User.FirstName} {Model.User.LastName}")</dd>
-    </dl>
-
-    <div class="text-left mb-4">
-        <h5>Booking Info</h5>
-    </div>
-    <dl class="row">
         <dt class="col-sm-4 text-end">Meeting Title:</dt>
         <dd class="col-sm-8">@Html.DisplayFor(model => model.Title)</dd>
 
@@ -58,7 +17,6 @@
         <dd class="col-sm-8">@Html.DisplayFor(model => model.FormattedBookingEndDate)</dd>
 
         <!-- User Details -->
-        <input type="hidden" asp-for="UserId" />
         <dt class="col-sm-4 text-end">Status:</dt>
         <dd class="col-sm-8">@Html.DisplayFor(model => model.Status)</dd>
 
@@ -77,4 +35,3 @@
             <dd class="col-sm-8">@string.Join(", ", Model.RecurringBookings.Select(x => x.Day).ToList())</dd>
         }
     </dl>
-</div>

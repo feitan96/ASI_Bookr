@@ -58,7 +58,7 @@
     </div>
 
     <div class="mt-sm-4">
-        <button style="background-color: var(--color2); color:var(--color1); border:none;" class="btn btn-primary mb-2" onclick="openModal('@Url.Action("Create", "Booking")', 'crudModal1')">
+        <button style="background-color: var(--color2); color:var(--color1); border:none;" class="btn btn-primary mb-2" onclick="openModal('@Url.Action("Create", "Booking")', 'crudModal1', 'Create Booking')">
             <svg style="fill:var(--color1); width: 18px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM232 344l0-64-64 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l64 0 0-64c0-13.3 10.7-24 24-24s24 10.7 24 24l0 64 64 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-64 0 0 64c0 13.3-10.7 24-24 24s-24-10.7-24-24z" /></svg>
             Add New Bookings
         </button>
@@ -73,8 +73,16 @@
     <div id="crudModal1" class="modal fade" tabindex="-1" role="dialog" style="z-index: 1050;">
         <div class="modal-dialog modal-dialog-scrollable " role="document">
             <div class="modal-content">
-                <div class="modal-body">
-                    <!-- Content will be loaded here -->
+                <div class="modal-header">
+                    <h5 class="modal-title"></h5>
+                    <button type="button" class="close modal-close-btn" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body-container">
+                    <div class="modal-body">
+                        <!-- Content will be loaded here -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -84,8 +92,16 @@
     <div id="crudModal2" class="modal fade" tabindex="-1" role="dialog" style="z-index: 1060;">
         <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
             <div class="modal-content">
-                <div class="modal-body">
+                <div class="modal-header">
+                    <h5 class="modal-title"></h5>
+                    <button type="button" class="close modal-close-btn" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body-container">
+                    <div class="modal-body">
                     <!-- Content will be loaded here -->
+                </div>
                 </div>
             </div>
         </div>
@@ -103,6 +119,15 @@
     </div>
 
 </body>
+
+<style>
+    .modal-content {
+        border-radius: 10px;
+    }
+    .modal-body {
+        padding: 10px !important;
+    }
+</style>
 
 @section Scripts {
     <script defer>
@@ -524,15 +549,13 @@
 
         //------------------- Modal Handling: START ----------------------------
         // Update the openModal function to call initializeRoomSelection with modalId
-        function openModal(url, modalId) {
-            // Show a "Please wait" notification using Toastr
-            //toastr.info('Please wait...', 'Loading', { timeOut: 0, extendedTimeOut: 0, closeButton: true });
-
+        function openModal(url, modalId, title) {
             // Start the AJAX request
             $.get(url)
                 .done(function (data) {
                     // Load the content into the modal body
                     $(`#${modalId} .modal-body`).html(data);
+                    $(`#${modalId} .modal-title`).text(title || 'Booking Management');
 
                     // Initialize components based on modalId
                     if (modalId === "crudModal1") {
@@ -633,7 +656,7 @@
                 // Convert the plain object to a JSON string
                 const formDataJson = JSON.stringify(formDataObject);
 
-
+                console.log(formDataJson);
                 // Add spinner and disable the form
                 const $form = $(this);
                 const $submitButton = $form.find('input[type="submit"]');
@@ -700,6 +723,7 @@
 
                 // Find the closest modal id using a parent element (form inside the modal)
                 var modalId = form.closest('.modal').attr('id');
+                console.log("Submitting Form...")
 
                 $.ajax({
                     type: form.attr('method'),
@@ -709,7 +733,7 @@
                     contentType: false,
                     success: function (response) {
                         $(`#${modalId}`).modal('hide'); // Hide the modal dynamically using modalId
-                        //location.reload(); // Reload the page or update data to reflect changes
+                        location.reload(); // Reload the page or update data to reflect changes
                     },
                     error: function (xhr) {
                         toastr.error('An error occurred. Please try again.');
@@ -738,6 +762,29 @@
                 .fail(function (xhr, status, error) {
                     // Handle failure
                     toastr.error('An error occurred while processing the booking request. Please try again.', 'Error', { timeOut: 0, extendedTimeOut: 0, closeButton: true });
+                    console.error('Error:', status, error);  // Log the error details for debugging
+                });
+        }
+
+                function ApproveDisapproveBooking(url, status) { //satus is whether approve or disapprove
+
+            $.post(url)
+                .done(function (response) {
+                    // Handle success
+                    toastr.success(`Booking ${status} successfully!`, 'Success', { timeOut: 3000, closeButton: true });
+                    // if (response.success) {
+                    //     // You can perform further actions, like redirecting or updating the UI
+                    // } else {
+                    //     toastr.error(`Failed to ${status} booking. Please try again.`, 'Error', { timeOut: 0, extendedTimeOut: 0, closeButton: true });
+                    //     console.log("Error: " + response.message);  // Log error message from the response (if any)
+                    // }
+                    closeModal('crudModal2');
+                    closeModal('crudModal1');
+                    location.reload();
+                })
+                .fail(function (xhr, status, error) {
+                    // Handle failure
+                    toastr.error('An error occurred while processing the your request. Please try again.', 'Error', { timeOut: 0, extendedTimeOut: 0, closeButton: true });
                     console.error('Error:', status, error);  // Log the error details for debugging
                 });
         }

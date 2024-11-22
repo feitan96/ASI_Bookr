@@ -123,17 +123,19 @@ namespace ASI.Basecode.WebApp.Controllers
         [HttpGet]
         public IActionResult Approve(int bookingId)
         {
-            var booking = _bookingservice.GetBooking(bookingId);
-
-            return PartialView("_ApproveBooking", booking);
+            //var booking = _bookingservice.GetBooking(bookingId);
+            //return PartialView("_ApproveBooking", bookingId);
+            ViewData["bookingId"] = bookingId;
+            return PartialView("_ApproveBooking");
         }
 
         [HttpGet]
         public IActionResult Disapprove(int bookingId)
         {
-            var booking = _bookingservice.GetBooking(bookingId);
-
-            return PartialView("_DisapproveBooking", booking);
+            //var booking = _bookingservice.GetBooking(bookingId);
+            //return PartialView("_DisapproveBooking", bookingId);
+            ViewData["bookingId"] = bookingId;
+            return PartialView("_DisapproveBooking");
         }
 
         [HttpGet]
@@ -408,6 +410,43 @@ namespace ASI.Basecode.WebApp.Controllers
             {
                 TempData["ErrorMessage"] = "Failed to disapprove booking. Please try again.";
                 return View(model);
+            }
+        }
+
+
+        [HttpPost]
+        public IActionResult ApproveBookingById(int bookingId)
+        {
+            //Uncomment the following code if NoTracking option is preferred
+            //var bookingid = model.bookingid;
+            var bookingModel = _bookingservice.GetBookingByIdNoTracking(bookingId);
+            try
+            {
+                _bookingservice.UpdateBookingStatus(bookingModel, int.Parse(Id), "Approved");
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Failed to disapprove booking. Please try again.";
+                return View(bookingModel);
+            }
+        }
+
+        [HttpPost]
+        public IActionResult DisapproveBookingById(int bookingId)
+        {
+            //Uncomment the following code if NoTracking option is preferred
+            //var bookingid = model.bookingid;
+            var bookingModel = _bookingservice.GetBookingByIdNoTracking(bookingId);
+            try
+            {
+                _bookingservice.UpdateBookingStatus(bookingModel, int.Parse(Id), "Disapproved");
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Failed to disapprove booking. Please try again.";
+                return View(bookingModel);
             }
         }
 

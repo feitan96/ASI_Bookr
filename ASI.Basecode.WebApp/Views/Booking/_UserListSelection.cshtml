@@ -1,30 +1,41 @@
 ﻿@model IEnumerable<ASI.Basecode.Services.ServiceModels.UserViewModel>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>@Html.DisplayNameFor(model => model.Id)</th>
-            <th>Full Name</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var user in Model)
-        {
-            @if(user.Role == "User")
+@if (Model.Count() > 0)
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
             {
-                <tr>
-                    <td>@Html.DisplayFor(modelItem => user.Id)</td>
-                    <td>@($"{user.FirstName} {user.LastName}")</td>
-                    <td>
-                        <button onclick="openModal('@Url.Action("View", "UserManagement", new { Id = user.Id })', 'crudModal3')" class="btn btn-info btn-sm">View</button>
-                        <button class="btn btn-success btn-sm" onclick="selectUser('@user.Id', '@($"{user.FirstName} {user.LastName}")')">Select</button>
-                    </td>
-                </tr>
+                @if (user.Role == "User")
+                {
+                    <tr>
+                        <td>@($"{user.FirstName} {user.LastName}")</td>
+                        <td>@($"{user.Email}")</td>
+                        <td>
+                            <button class="btn btn-sm cancel-modal" onclick="selectUser('@user.Id', '@($"{user.FirstName} {user.LastName}")')">Select</button>
+                        </td>
+                        <td>
+                            <svg onclick="openModal('@Url.Action("View", "UserManagement", new { Id = user.Id })', 'crudModal3')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M8 256a56 56 0 1 1 112 0A56 56 0 1 1 8 256zm160 0a56 56 0 1 1 112 0 56 56 0 1 1 -112 0zm216-56a56 56 0 1 1 0 112 56 56 0 1 1 0-112z" /></svg>
+                        </td>
+                    </tr>
+                }
             }
-        }
-    </tbody>
-</table>
+        </tbody>
+    </table>
+}
+else{
+    <div class="d-flex justify-content-center">
+        No User/s Found.
+    </div>
+}
 
 @section Scripts {
     <script>
