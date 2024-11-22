@@ -67,7 +67,7 @@
     </select>
 </div>
 
-<div class="mb-3">
+<div hidden class="mb-3">
     <div class="btn-group">
         <button id="exportBtn" class="btn btn-primary">
             <i class="fas fa-file-excel"></i> Export to Excel
@@ -91,11 +91,16 @@
 
 
 @section Scripts {
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             // Initialize the room usage chart
             function initRoomUsageChart(timeFrame) {
                 Highcharts.chart('roomUsageChart', {
+                    colors: ['var(--color1)', 'var(--color2)','var(--color3)','var(--color4)','var(--color5)'],
                     chart: {
                         type: 'area'
                     },
@@ -139,6 +144,7 @@
 
             // User Trends Chart
             Highcharts.chart('userTrendsChart', {
+                colors: ['var(--color1)', 'var(--color2)', 'var(--color3)', 'var(--color3)', 'var(--color4)', 'var(--color4)', 'var(--color5)'],
                 chart: {
                     type: 'area'
                 },

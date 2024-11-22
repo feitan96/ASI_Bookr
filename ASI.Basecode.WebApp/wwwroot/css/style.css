@@ -13,6 +13,8 @@
 :root {
     --color1: #610000; /* maroon */
     --color2: #FEC601; /* yellow */
+    --color3: #09274B; /* dark blue */
+    --color4: #E85C0D; /* orange */
     --background-color: #f8f9fa;
     --cit-yellow: #FEC601;
 }
