@@ -95,16 +95,18 @@ namespace ASI.Basecode.WebApp.Controllers
 
             // Compute most used room using the same approach as Dashboard
             var mostUsedRoomGroup = bookings
-                .GroupBy(b => b.Room)
-                .Select(group => new
-                {
-                    Room = group.Key,
-                    BookingCount = group.Count(),
-                    TotalHours = group.Sum(b => (b.CheckOutTime - b.CheckInTime).TotalHours),
-                    Bookings = group.ToList()
-                })
-                .OrderByDescending(g => g.BookingCount)
-                .FirstOrDefault();
+      .Where(b => b.Room != null)
+      .GroupBy(b => b.RoomId)
+      .Select(group => new
+      {
+          RoomId = group.Key,
+          RoomName = group.First().Room.Name,
+          BookingCount = group.Count(),
+          TotalHours = group.Sum(b => (b.CheckOutTime - b.CheckInTime).TotalHours),
+          Bookings = group.ToList()
+      })
+      .OrderByDescending(g => g.BookingCount)
+      .FirstOrDefault();
 
             var mostUsedRoom = new MostUsedRoomViewModel();
             if (mostUsedRoomGroup != null)
@@ -117,12 +119,13 @@ namespace ASI.Basecode.WebApp.Controllers
 
                 mostUsedRoom = new MostUsedRoomViewModel
                 {
-                    RoomName = mostUsedRoomGroup.Room.Name,
+                    RoomName = mostUsedRoomGroup.RoomName,
                     BookingFrequency = mostUsedRoomGroup.BookingCount,
-                    TotalUsageHours = mostUsedRoomGroup.TotalHours,  // Using the direct sum calculation
+                    TotalUsageHours = mostUsedRoomGroup.TotalHours,
                     PeakUsageHours = timeSlots?.Key ?? "N/A"
                 };
             }
+
             var users = _userService.GetAllUser();
             var recentUsers = users.Where(u => u.CreatedDate.HasValue && u.CreatedDate.Value >= DateTime.UtcNow.AddDays(-3)).ToList();
             var totalUsers = users.Count(u => u.Role == "User");
@@ -141,6 +144,21 @@ namespace ASI.Basecode.WebApp.Controllers
     })
     .ToList();
 
+            // Fetch booking status counts
+            var bookingStatusCounts = _bookingService.GetBookings()
+                .GroupBy(b => b.Status)
+                .Select(g => new
+                {
+                    Status = g.Key,
+                    Count = g.Count()
+                })
+                .ToList();
+
+            var bookingStatusData = bookingStatusCounts.Select(status => new
+            {
+                Name = status.Status,
+                Y = status.Count
+            }).ToList();
 
             var viewModel = new AnalyticsViewModel
             {
@@ -151,6 +169,7 @@ namespace ASI.Basecode.WebApp.Controllers
                 UserTrends = userTrends,
                 SelectedTimeFrame = timeFrame,
                 RoomUsage = roomUsageData,
+                BookingStatusData = bookingStatusData
             };
 
             return View(viewModel);

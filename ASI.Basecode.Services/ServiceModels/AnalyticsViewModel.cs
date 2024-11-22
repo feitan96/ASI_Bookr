@@ -22,6 +22,7 @@ namespace ASI.Basecode.Services.ServiceModels
         public List<UserTrend> UserTrends { get; set; }
         public TimeFrame SelectedTimeFrame { get; set; }
         public List<RoomUsageData> RoomUsage { get; set; }
+        public IEnumerable<object> BookingStatusData { get; set; }
     }
     public class DailyRoomUsageViewModel
     {

@@ -39,7 +39,15 @@
             </div>
         </div>
     </div>
+
 </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Booking Status Distribution</h3>
+            <div id="bookingStatusChart"></div>
+        </div>
+    </div>
 
 <div class="mb-3">
     <label for="timeFrameSelect" class="form-label">Time Frame:</label>
@@ -97,6 +105,33 @@
     <script src="https://code.highcharts.com/modules/accessibility.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            // Booking Status Donut Chart
+            Highcharts.chart('bookingStatusChart', {
+                colors: ['var(--color3)', 'var(--color2)', 'var(--color1)', 'var(--color4)', 'var(--color5)'],
+                chart: {
+                    type: 'pie'
+                },
+                title: {
+                    text: 'Booking Status Distribution'
+                },
+                tooltip: {
+                    pointFormat: '<b>{point.percentage:.1f}%</b> ({point.y} bookings)'
+                },
+                plotOptions: {
+                    pie: {
+                        innerSize: '50%', // For donut effect
+                        dataLabels: {
+                            enabled: true,
+                            format: '{point.name}: {point.y}'
+                        }
+                    }
+                },
+                series: [{
+                    name: 'Bookings',
+                    colorByPoint: true,
+                    data: @Html.Raw(Json.Serialize(Model.BookingStatusData))
+                    }]
+            });
             // Initialize the room usage chart
             function initRoomUsageChart(timeFrame) {
                 Highcharts.chart('roomUsageChart', {
