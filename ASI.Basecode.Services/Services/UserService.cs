@@ -149,8 +149,8 @@ namespace ASI.Basecode.Services.Services
 
             _mapper.Map(model, user);
 
-            var password = PasswordManager.DecryptPassword(model.Password);
-            if (!IsValidPassword(password)) throw new InvalidDataException(Resources.Messages.Errors.PasswordError);
+            //var password = PasswordManager.DecryptPassword(user.Password); //No editing of password
+            //if (!IsValidPassword(password)) throw new InvalidDataException(Resources.Messages.Errors.PasswordError);
 
             user.UpdatedDate = DateTime.Now;
             user.UpdatedBy = userId;

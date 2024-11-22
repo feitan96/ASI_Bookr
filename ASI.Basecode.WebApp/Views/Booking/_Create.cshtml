@@ -14,7 +14,7 @@
 </div>
 
 <div class="modal-body">
-    <form id="createBookingForm" asp-action="Create" method="post">
+    <form id="createBookingForm" asp-action="Book" method="post">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
         <!-- Meeting Title -->
@@ -30,7 +30,7 @@
             <button type="button" id="selectRoomBtn" class="btn btn-outline-primary form-control" onclick="openModal('@Url.Action("RoomSelection", "Booking")', 'crudModal2')">
                 Select a Room
             </button>
-            <input type="hidden" asp-for="RoomId" id="RoomId" value="" required/>
+            <input type="hidden" asp-for="RoomId" id="RoomId" required/>
             <div id="roomSelectionContainer" class="roomSelectionContainer">
                 <!-- Room Selection Content (Updates if room is selected) -->
             </div>
@@ -43,7 +43,7 @@
             <button type="button" id="selectRoomBtn" class="btn btn-outline-primary form-control" onclick="openModal('@Url.Action("UserSelection", "Booking")', 'crudModal2')">
                 Select User
             </button>
-            <input type="hidden" asp-for="UserId" id="UserId" value="" required/>
+            <input type="hidden" asp-for="UserId" id="UserId" required/>
             <input type="hidden" id="UserFullName" value="" />
             <div id="userSelectionContainer" class="userSelectionContainer">
                 <!-- User Selection Content (Updates if user is selected) -->
@@ -54,19 +54,19 @@
         <!-- Booking Check In Date and Time -->
         <div class="form-group">
             <label asp-for="BookingStartDate" class="control-label">Booking Start Date</label>
-            <input asp-for="BookingStartDate" class="form-control booking-date-input" type="text" placeholder="Start Date" />
+            <input asp-for="BookingStartDate" id="BookingStartDate" class="form-control booking-date-input" type="text" placeholder="Start Date" />
             <span asp-validation-for="BookingStartDate" class="text-danger"></span>
         </div>
 
          <div class="form-group">
             <label asp-for="CheckInTimeString" class="control-label">Check In Time</label>
-            <input asp-for="CheckInTimeString" class="form-control booking-time-input" type="text" placeholder="Check In Time" />
+            <input asp-for="CheckInTimeString" id="CheckInTime" class="form-control booking-time-input" type="text" placeholder="Check In Time" />
             <span asp-validation-for="CheckInTimeString" class="text-danger"></span>
         </div>
 
         <div class="form-group">
             <label asp-for="CheckOutTimeString" class="control-label">Check Out Time</label>
-            <input asp-for="CheckOutTimeString" class="form-control booking-time-input" type="text" placeholder="Check Out Time" />
+            <input asp-for="CheckOutTimeString" id="CheckOutTime" class="form-control booking-time-input" type="text" placeholder="Check Out Time" />
             <span asp-validation-for="CheckOutTimeString" class="text-danger"></span>
         </div>
         
@@ -86,7 +86,7 @@
             <!-- Booking Check Out Date and Time -->
             <div class="form-group">
                 <label asp-for="BookingEndDate" class="control-label">Recurring End Date</label>
-                <input asp-for="BookingEndDate" class="form-control booking-date-input" type="text" placeholder="End Date" />
+                <input asp-for="BookingEndDate" id="BookingEndDate" class="form-control booking-date-input" type="text" placeholder="End Date" />
                 <span asp-validation-for="BookingEndDate" class="text-danger"></span>
             </div>
 

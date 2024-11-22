@@ -1,0 +1,105 @@
+﻿@using ASI.Basecode.Services.ServiceModels;
+@model IEnumerable<ASI.Basecode.Services.ServiceModels.BookingViewModel>
+
+@{
+    var suggestedRooms = ViewData["SuggestedRooms"] as List<RoomViewModel>;
+    var userSelectedBooking = ViewData["BookingModel"];
+}
+
+@*currently in crudModal3 for showing conflicts and suggestions*@
+
+<div class="modal-header">
+    <h5 class="modal-title">Conflicts and Suggestions</h5>
+    <button type="button" class="close modal-close-btn" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div style="padding-top: 10px; padding-left: 15px;">
+    <h5>Your booking request has @(Model != null ? Model.Count() : 0) conflicts with other bookings. Check the details below or choose our suggestions instead.</h5>
+</div>
+
+<div style="padding-top: 10px; padding-left: 15px;">
+    <div class="text-left mb-4 pt-2">
+        <h5>Conflicts</h5>
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                @* <th>@Html.DisplayNameFor(model => model.BookingId)</th> *@
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Check In Time</th>
+                <th>Check Out Time</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var booking in Model)
+            {
+                var isDisabled = booking.Status == "Approved" || booking.Status == "Disapproved" ? "disabled" : "";
+                var btnClass = isDisabled == "disabled" ? "btn-secondary" : "btn-success";
+                var disapproveBtnClass = isDisabled == "disabled" ? "btn-secondary" : "btn-danger";
+
+                <tr>
+                    @* <td >@Html.DisplayFor(modelItem => booking.BookingId)</td> *@
+                    <td>@Html.DisplayFor(modelItem => booking.FormattedBookingStartDate)</td>
+                    <td>@Html.DisplayFor(modelItem => booking.FormattedBookingEndDate)</td>
+                    <td>@Html.DisplayFor(modelItem => booking.CheckInTimeString)</td>
+                    <td>@Html.DisplayFor(modelItem => booking.CheckOutTimeString)</td>
+                    <td>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    </divstyle>
+
+    <hr>
+
+    <div style="padding-top: 10px; padding-left: 15px;">
+        <div class="text-left mb-4 pt-2">
+            <h5>Suggestions</h5>
+        </div>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Room Name</th>
+                    <th>Location</th>
+                    <th>Type</th>
+                    <th>Capacity</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (suggestedRooms != null && suggestedRooms.Any())
+                {
+                    foreach (var room in suggestedRooms)
+                    {
+                        <tr>
+                            <td>@room.Name</td>
+                            <td>@room.Location</td>
+                            <td>@room.Type</td>
+                            <td>@room.Capacity</td>
+                            <td>
+                                <button class="btn btn-success" onclick="selectSuggestedRoom('@Url.Action("UpdatedBook", "Booking", new { bookingData = @Html.Raw(Json.Serialize(userSelectedBooking)), updatedRoomId = @room.RoomId })')">
+                                    @*change on click function to do post request booking*@
+                                    Book
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" class="text-center">No suggestions available.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+

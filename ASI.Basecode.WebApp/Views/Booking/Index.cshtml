@@ -71,7 +71,7 @@
 
     <!-- Modal Layer 1-->
     <div id="crudModal1" class="modal fade" tabindex="-1" role="dialog" style="z-index: 1050;">
-        <div class="modal-dialog modal-dialog-scrollable" role="document">
+        <div class="modal-dialog modal-dialog-scrollable " role="document">
             <div class="modal-content">
                 <div class="modal-body">
                     <!-- Content will be loaded here -->
@@ -215,38 +215,150 @@
         }
 
         $('#crudModal1').on('shown.bs.modal', function () {
+            $.validator.setDefaults({
+                ignore: [] //don't ignore hidden texts
+            });
             $.validator.unobtrusive.parse('#crudModal1 .modal-body');
+
+            //------------------ No Conflict Detection Above: START ---------------------
             // Destroy existing flatpickr instances for booking-time-input
-            $('.booking-time-input').each(function () {
-                if (this._flatpickr) {
-                    this._flatpickr.destroy();
+            // $('.booking-time-input').each(function () {
+            //     if (this._flatpickr) {
+            //         this._flatpickr.destroy();
+            //     }
+            // });
+
+            // Initialize flatpickr for time inputs
+            // flatpickr('.booking-time-input', {
+            //     enableTime: true,
+            //     noCalendar: true,
+            //     dateFormat: 'h:i K',
+            //     minTime: '07:00',
+            //     maxTime: '20:00',
+            //     minuteIncrement: 30,
+            //     time_24hr: false
+            // });
+
+            // // Destroy existing flatpickr instances for booking-date-input
+            // $('.booking-date-input').each(function () {
+            //     if (this._flatpickr) {
+            //         this._flatpickr.destroy();
+            //     }
+            // });
+
+            // // Initialize flatpickr for date inputs
+            // flatpickr('.booking-date-input', {
+            //     enableTime: false,
+            //     noCalendar: false,
+            //     dateFormat: 'Y-m-d'
+            //     //minDate: 'today'
+            // });
+
+            //------------------ No Conflict Detection Above: END ---------------------
+
+            flatpickr('.booking-date-input', {
+                enableTime: false,
+                noCalendar: false,
+                dateFormat: 'Y-m-d',
+                minDate: 'today'
+            });
+
+            // Initialize Booking Date Picker
+            $('#BookingStartDate').flatpickr({
+                dateFormat: 'Y-m-d',
+                minDate: 'today',
+                onChange: function (selectedDates, dateStr, instance) {
+                    // Enable Check-in Time input only if booking date is selected
+                    if (dateStr) {
+                        $('#CheckInTime').prop('disabled', false);
+                    } else {
+                        $('#CheckInTime').prop('disabled', true).val(''); // Disable and clear Check-in Time input
+                        $('#CheckOutTime').prop('disabled', true).val(''); // Also disable and clear Check-out Time input
+                    }
+
+                    // If Booking Start Date is changed, update minDate for Booking End Date
+                    if (selectedDates.length > 0) {
+                        var startDate = selectedDates[0]; // The selected start date
+                        console.log("Start Date is selected...");
+
+                        // Update minDate for Booking End Date dynamically without reinitializing flatpickr
+                        $('#BookingEndDate').flatpickr().set('minDate', new Date(startDate.getTime())); // One day after start date
+                        if ($('#IsRecurring').val() === "false") { //If Non-recurring automatically update BookingEndDate as the same as the BookingStartDate
+                            console.log("Booking Set to Non-recurring");
+
+                            $('#BookingEndDate').val($('#BookingStartDate').val()); //If non-recurring set bookingEndDate value equal to bookingStartDate
+                            $('#selectedDays').val('Dummy'); //Add this value, to evade the unobtrusive validation, remove  during handling of submission
+                        }
+                    }
                 }
             });
 
-            // Initialize flatpickr for time inputs
-            flatpickr('.booking-time-input', {
+            // Initialize Check-in Time Picker
+            let checkOutPicker = $('#CheckOutTime').flatpickr({
+                enableTime: true,
+                noCalendar: true,
+                dateFormat: "h:i K",
+                minTime: "07:00",
+                maxTime: "20:00",
+                minuteIncrement: 30,
+                time_24hr: false,
+                onOpen: function (selectedDates, dateStr, instance) {
+                    if (!$('#CheckInTime').val()) {
+                        instance.close();
+                    }
+                }
+            });
+
+
+            // Initialize Check-in Time Picker
+            $('#CheckInTime').flatpickr({
                 enableTime: true,
                 noCalendar: true,
                 dateFormat: 'h:i K',
                 minTime: '07:00',
                 maxTime: '20:00',
                 minuteIncrement: 30,
-                time_24hr: false
-            });
+                time_24hr: false,
+                onOpen: function (selectedDates, dateStr, instance) {
+                    // Prevent opening the Check-in Time picker if booking date is not selected
+                    if (!$('#BookingStartDate').val()) {
+                        instance.close();
+                    }
+                },
+                onChange: function (selectedDates, dateStr, instance) {
+                    // Enable Check-out Time input only if Check-in Time is selected
+                    if (dateStr) {
+                        $('#CheckOutTime').prop('disabled', false);
 
-            // Destroy existing flatpickr instances for booking-date-input
-            $('.booking-date-input').each(function () {
-                if (this._flatpickr) {
-                    this._flatpickr.destroy();
+                        // Parse the check-in time
+                        let checkInTime = dateStr;
+                        let [hours, minutes] = checkInTime.match(/(\d+):(\d+)/).slice(1);
+                        let period = checkInTime.includes('PM') ? 'PM' : 'AM';
+
+                        // Convert to 24-hour format if PM
+                        if (period === 'PM' && hours !== '12') {
+                            hours = parseInt(hours) + 12;
+                        }
+                        if (period === 'AM' && hours === '12') {
+                            hours = '00';
+                        }
+
+                        // Add 30 minutes for minimum check-out time
+                        minutes = parseInt(minutes) + 30;
+                        if (minutes >= 60) {
+                            hours = parseInt(hours) + 1;
+                            minutes = minutes - 60;
+                        }
+
+                        // Format the minTime
+                        let minTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+
+                        // Update the Check-out Time picker
+                        checkOutPicker.set('minTime', minTime);
+                    } else {
+                        $('#CheckOutTime').prop('disabled', true).val(''); // Disable and clear Check-out Time input
+                    }
                 }
-            });
-
-            // Initialize flatpickr for date inputs
-            flatpickr('.booking-date-input', {
-                enableTime: false,
-                noCalendar: false,
-                dateFormat: 'Y-m-d',
-                minDate: 'today'
             });
 
             //----------For Recurring Booking hide/show form: START ------------------
@@ -356,6 +468,9 @@
             closeModal("crudModal2");
             showModal("crudModal1");
             updateRoomSelection("crudModal1");
+            // if ($('#IsRecurring').val() === 'false') {
+            //     $('#selectedDays').val('Dummy'); //Add this value, to evade the unobtrusive validation, remove during handling of submission (after user is selected)
+            // }
         }
 
         //------------------- Room Selection on _Create.cshtml: END ----------------------------
@@ -387,6 +502,7 @@
             });
         }
 
+
         // Function to handle user selection and update UserId and UserFullName inputs
         function selectUser(userId, userFullName) {
             // Update the hidden input fields with the selected UserId and UserFullName
@@ -398,6 +514,9 @@
             closeModal("crudModal2");
             showModal("crudModal1");
             updateUserSelection("crudModal1");
+            // if($('#IsRecurring').val() === 'false'){
+            //     $('#selectedDays').val('Dummy'); //Add this value, to evade the unobtrusive validation, remove during handling of submission (after user is selected)
+            // }
         }
 
         //------------------- User Selection on _Create.cshtml: END ----------------------------
@@ -487,30 +606,141 @@
         // Handle form submission inside any modal dynamically
         // Mainly for create, view, edit, and delete function, explore for the 2nd modal handling
         $(document).on('submit', 'form', function (e) {
-            e.preventDefault();  // Prevent the default form submission
             var form = $(this);
-            var formData = new FormData(this);
 
-            if (!form.length) return; // Ensure form exists
+            if (form.is('#createBookingForm')) {
+                e.preventDefault();
+                console.log("Submitting Form");
+                
+                // Check if the booking is not recurring
+                const isRecurring = $('#IsRecurring').val() === 'false';
 
-            // Find the closest modal id using a parent element (form inside the modal)
-            var modalId = form.closest('.modal').attr('id');
-
-            $.ajax({
-                type: form.attr('method'),
-                url: form.attr('action'),
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function (response) {
-                    $(`#${modalId}`).modal('hide'); // Hide the modal dynamically using modalId
-                    location.reload(); // Reload the page or update data to reflect changes
-                },
-                error: function (xhr) {
-                    toastr.error('An error occurred. Please try again.');
+                // If it's not recurring, set the BookingEndDate to be the same as BookingStartDate
+                // and clear selectedDays
+                if (isRecurring) {
+                    $('#BookingEndDate').val($('#BookingStartDate').val());
+                    $('#selectedDays').val(''); // Clear any dummy text or values
+                    selectedDays.clear(); // Clear the selectedDays Set
                 }
-            });
+                const formData = new FormData(this);
+
+                // Serialize FormData into a plain object
+                const formDataObject = {};
+                formData.forEach((value, key) => {
+                    formDataObject[key] = value;
+                });
+
+                // Convert the plain object to a JSON string
+                const formDataJson = JSON.stringify(formDataObject);
+
+
+                // Add spinner and disable the form
+                const $form = $(this);
+                const $submitButton = $form.find('input[type="submit"]');
+                const $inputs = $form.find('input, select, textarea');  // All form inputs, selects, and textareas
+
+
+                //$inputs.prop('disabled', true);
+                $submitButton.prop('disabled', true)
+                    .val('Submitting...')
+                    .addClass('disabled'); // Optional: Add a disabled state class
+
+                $.ajax({
+                    type: 'POST',
+                    url: $(this).attr('action'),
+                    data: formData,
+                    dataType: 'json',  // Explicitly specify JSON dataType
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response.success) {
+                            // Successful booking
+                            toastr.success('Room booked successfully!', 'Success', { timeOut: 3000, closeButton: true });
+                            // closeModal('crudModal2');
+                            closeModal('crudModal1');
+                            location.reload();
+                        } else {
+                            // Booking failed due to conflicts
+                            toastr.warning('Failed to process your booking request. A conflict occurred', 'Warning', { timeOut: 0, extendedTimeOut: 0, closeButton: true });
+                            console.log("Conflict Booking Occured");
+
+                            if (response.conflictBookingIds && response.conflictBookingIds.length > 0) { //Show conflicts and suggestions
+                                // closeModal('crudModal2');
+                                closeModal('crudModal1');
+                                openModal('@Url.Action("ShowConflictsAndSuggestions", "Booking")' +
+                                    '?conflictBookingIds=' + encodeURIComponent(JSON.stringify(response.conflictBookingIds)) +
+                                    '&roomSuggestionIds=' + encodeURIComponent(JSON.stringify(response.roomSuggestionIds)) +
+                                    '&bookingData=' + encodeURIComponent(formDataJson),
+                                    'crudModal2');
+                            } else {
+                                alert('Failed to book the room for an unknown reason.');
+                            }
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        // This will catch network errors or server errors that prevent a response
+                        toastr.error('An unexpected error occurred. Please try again.', 'Error', { timeOut: 0, extendedTimeOut: 0, closeButton: true });
+                        console.error('Error:', status, error);
+                    },
+                    complete: function () {
+                        $submitButton.prop('disabled', false)
+                            .val('Save')
+                            .removeClass('disabled');
+                        $inputs.prop('disabled', false);
+                    }
+
+                });
+            }
+            else{
+                e.preventDefault();  // Prevent the default form submission
+                var form = $(this);
+                var formData = new FormData(this);
+
+                if (!form.length) return; // Ensure form exists
+
+                // Find the closest modal id using a parent element (form inside the modal)
+                var modalId = form.closest('.modal').attr('id');
+
+                $.ajax({
+                    type: form.attr('method'),
+                    url: form.attr('action'),
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        $(`#${modalId}`).modal('hide'); // Hide the modal dynamically using modalId
+                        //location.reload(); // Reload the page or update data to reflect changes
+                    },
+                    error: function (xhr) {
+                        toastr.error('An error occurred. Please try again.');
+                    }
+                });
+            }
         });
+
+        function selectSuggestedRoom(url) {
+            toastr.info('Booking Room...', 'Loading', { timeOut: 0, extendedTimeOut: 0, closeButton: true });
+
+            $.post(url)
+                .done(function (response) {
+                    // Handle success
+                    if (response.success) {
+                        toastr.success('Room booked successfully!', 'Success', { timeOut: 3000, closeButton: true });
+                        // You can perform further actions, like redirecting or updating the UI
+                    } else {
+                        toastr.error('Failed to book the room. Please try again.', 'Error', { timeOut: 0, extendedTimeOut: 0, closeButton: true });
+                        console.log("Error: " + response.message);  // Log error message from the response (if any)
+                    }
+                    closeModal('crudModal2');
+                    closeModal('crudModal1');
+                    location.reload();
+                })
+                .fail(function (xhr, status, error) {
+                    // Handle failure
+                    toastr.error('An error occurred while processing the booking request. Please try again.', 'Error', { timeOut: 0, extendedTimeOut: 0, closeButton: true });
+                    console.error('Error:', status, error);  // Log the error details for debugging
+                });
+        }
 
         // Handle dynamic placeholder text change
         $('#searchTextBox').on('change keyup', function () {

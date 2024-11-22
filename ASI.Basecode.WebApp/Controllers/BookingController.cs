@@ -14,6 +14,7 @@ using ASI.Basecode.Services.ServiceModels;
 using System.IO;
 using ASI.Basecode.Data.Models;
 using Serilog.Core;
+using System.Text.Json;
 
 namespace ASI.Basecode.WebApp.Controllers
 {
@@ -284,7 +285,60 @@ namespace ASI.Basecode.WebApp.Controllers
             return PartialView("_BookingList", bookings);
         }
 
+        [HttpGet]
+        public IActionResult ShowConflictsAndSuggestions(string conflictBookingIds, string roomSuggestionIds, string bookingData)
+        {
+            if (string.IsNullOrEmpty(conflictBookingIds))
+            {
+                return BadRequest("No conflict booking IDs provided.");
+            }
 
+            // Deserialize the JSON array of conflict booking IDs
+            var bookingIds = JsonSerializer.Deserialize<List<int>>(conflictBookingIds);
+            var roomIds = JsonSerializer.Deserialize<List<int>>(roomSuggestionIds);
+
+            // Deserialize the bookingData JSON into the BookingViewModel
+            BookingViewModel bookingViewModel = null;
+            if (!string.IsNullOrEmpty(bookingData))
+            {
+                try
+                {
+                    // Manually mapping the values from the JSON string to the BookingViewModel properties
+                    var bookingDataJson = JsonSerializer.Deserialize<JsonElement>(bookingData);
+
+                    bookingViewModel = new BookingViewModel
+                    {
+                        // Convert RoomId from string to integer using int.Parse (or int.TryParse for safety)
+                        RoomId = int.TryParse(bookingDataJson.GetProperty("RoomId").GetString(), out int roomId) ? roomId : 0,
+                        UserId = int.TryParse(bookingDataJson.GetProperty("UserId").GetString(), out int userId) ? userId : 0,
+                        Status = bookingDataJson.GetProperty("Status").GetString(),
+                        Title = bookingDataJson.GetProperty("Title").GetString(),
+                        BookingStartDate = DateTime.Parse(bookingDataJson.GetProperty("BookingStartDate").GetString()),
+                        CheckInTimeString = bookingDataJson.GetProperty("CheckInTimeString").GetString(),
+                        CheckOutTimeString = bookingDataJson.GetProperty("CheckOutTimeString").GetString(),
+                        // Convert IsRecurring from string to boolean using bool.TryParse
+                        IsRecurring = bool.TryParse(bookingDataJson.GetProperty("IsRecurring").GetString(), out bool isRecurring) ? isRecurring : false,
+                        BookingEndDate = DateTime.TryParse(bookingDataJson.GetProperty("BookingEndDate").GetString(), out DateTime endDate) ? endDate : (DateTime?)null,
+                        SelectedDays = bookingDataJson.GetProperty("SelectedDays").GetString()
+                    };
+                }
+                catch (JsonException ex)
+                {
+                    return BadRequest($"Error deserializing booking data: {ex.Message}");
+                }
+
+            }
+
+
+            // Fetch conflict bookings using the provided IDs
+            var conflictBookings = _bookingservice.GetBookingsByIds(bookingIds);
+            var suggestedRooms = _roomservice.GetRoomsByIds(roomIds);
+
+            ViewData["SuggestedRooms"] = suggestedRooms;
+            ViewData["BookingModel"] = bookingViewModel;
+
+            return PartialView("_ConflictAndSuggestions", conflictBookings);
+        }
         #endregion
 
 
@@ -373,6 +427,97 @@ namespace ASI.Basecode.WebApp.Controllers
             }
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Book(BookingViewModel model)
+        {
+            //bool successBooking = false;
+            //Try not to use Model.IsValid as not all fields will be populated depending on whether booking is recurring or not.
+            try
+            {
+                List<BookingViewModel> conflictBookings = _bookingservice.GetConflictBookings(model, null);
+
+                if (conflictBookings == null || !conflictBookings.Any())
+                {
+                    // No conflicts, proceed to book
+                    _bookingservice.AddBooking(model);
+
+                    // Return JSON success message
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Booking was successful!",
+                    });
+                }
+                else
+                {
+                    // There are conflicts, return conflict details
+                    var conflictBookingIds = conflictBookings.Select(b => b.BookingId).ToList();
+                    var roomSuggestions = _bookingservice.GetAvailableRoomsForBooking(model);
+                    var roomSuggestionIds = roomSuggestions.Select(room => room.RoomId).ToList();
+
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Booking failed due to conflicts.",
+                        conflictBookingIds = conflictBookingIds,
+                        roomSuggestionIds = roomSuggestionIds
+                    });
+                }
+            }
+            catch (ArgumentNullException ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
+            catch (InvalidDataException ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = Resources.Messages.Errors.ServerError;
+            }
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult UpdatedBook(string bookingData, int updatedRoomId)
+        {
+            BookingViewModel model = null;
+            try
+            {
+                var bookingDataJson = JsonSerializer.Deserialize<JsonElement>(bookingData);
+
+                model = new BookingViewModel
+                {
+                    // Use the exact property names from the JSON
+                    RoomId = bookingDataJson.GetProperty("roomId").GetInt32(),
+                    UserId = bookingDataJson.GetProperty("userId").GetInt32(),
+                    Status = bookingDataJson.GetProperty("status").GetString(),
+                    Title = bookingDataJson.GetProperty("title").GetString(),
+                    BookingStartDate = DateTime.Parse(bookingDataJson.GetProperty("bookingStartDate").GetString()),
+                    CheckInTimeString = bookingDataJson.GetProperty("checkInTimeString").GetString(),
+                    CheckOutTimeString = bookingDataJson.GetProperty("checkOutTimeString").GetString(),
+                    IsRecurring = bookingDataJson.GetProperty("isRecurring").GetBoolean(),
+                    BookingEndDate = DateTime.Parse(bookingDataJson.GetProperty("bookingEndDate").GetString()),
+                    SelectedDays = bookingDataJson.GetProperty("selectedDays").GetString()
+                };
+            }
+            catch (ArgumentNullException ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
+            catch (InvalidDataException ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = Resources.Messages.Errors.ServerError;
+            }
+            model.RoomId = updatedRoomId; //Change the RoomId
+            return this.Book(model); //Reuse the Book method with the updated room Id
+        }
 
         // POST: BookingController/Delete/5
         [HttpPost]

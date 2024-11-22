@@ -25,7 +25,7 @@ using ASI.Basecode.Data;
 
 namespace ASI.Basecode.WebApp.Controllers
 {
-    [Authorize(Roles = "User")]
+    //[Authorize(Roles = "User")]
 
     public class UserRoomController : ControllerBase<UserRoomController>
     {
