@@ -8,11 +8,18 @@
 
 @*currently in crudModal3 for showing conflicts and suggestions*@
 
+<div class="modal-header">
+    <h5 class="modal-title">Conflicts and Suggestions</h5>
+    <button type="button" class="close modal-close-btn" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
 <div style="padding-top: 10px; padding-left: 15px;">
     <h5>Your booking request has @(Model != null ? Model.Count() : 0) conflicts with other bookings. Check the details below or choose our suggestions instead.</h5>
 </div>
 
-<div style ="padding-top: 10px; padding-left: 15px;">
+<div style="padding-top: 10px; padding-left: 15px;">
     <div class="text-left mb-4 pt-2">
         <h5>Conflicts</h5>
     </div>
@@ -47,11 +54,11 @@
             }
         </tbody>
     </table>
-</divstyle>
+    </divstyle>
 
-<hr>
+    <hr>
 
-<div style="padding-top: 10px; padding-left: 15px;">
+    <div style="padding-top: 10px; padding-left: 15px;">
         <div class="text-left mb-4 pt-2">
             <h5>Suggestions</h5>
         </div>
@@ -77,8 +84,7 @@
                             <td>@room.Type</td>
                             <td>@room.Capacity</td>
                             <td>
-                                <button class="btn btn-success" onclick="selectSuggestedRoom('@Url.Action("UpdatedBook", "UserRoom", new { bookingData = @Html.Raw(Json.Serialize(userSelectedBooking)), updatedRoomId = @room.RoomId })')">
-
+                                <button class="btn btn-success" onclick="selectSuggestedRoom('@Url.Action("UpdatedBook", "Booking", new { bookingData = @Html.Raw(Json.Serialize(userSelectedBooking)), updatedRoomId = @room.RoomId })')">
                                     @*change on click function to do post request booking*@
                                     Book
                                 </button>
@@ -94,6 +100,6 @@
                 }
             </tbody>
         </table>
-</div>
+    </div>
 
 

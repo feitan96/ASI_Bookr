@@ -1,27 +1,36 @@
 ﻿@model IEnumerable<ASI.Basecode.Services.ServiceModels.RoomViewModel>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>@Html.DisplayNameFor(model => model.RoomId)</th>
-            <th>@Html.DisplayNameFor(model => model.Name)</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var room in Model)
-        {
+@if (Model.Count() > 0) {
+    <table class="table table-striped">
+        <thead>
             <tr>
-                <td>@Html.DisplayFor(modelItem => room.RoomId)</td>
-                <td>@Html.DisplayFor(modelItem => room.Name)</td>
-                <td>
-                    <button onclick="openModal('@Url.Action("View", "Room", new { roomId = room.RoomId })', 'crudModal3')" class="btn btn-info btn-sm">View</button>
-                    <button class="btn btn-success btn-sm" onclick="selectRoom('@room.RoomId')">Select</button>
-                </td>
+                <th>@Html.DisplayNameFor(model => model.Name)</th>
+                <th></th>
+                <th></th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var room in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => room.Name)</td>
+                    <td style="width:1%; white-space:nowrap;">
+                        <button class="btn btn-sm cancel-modal" onclick="selectRoom('@room.RoomId')">Select</button>
+                    </td>
+                    <td style="width:1%; white-space:nowrap;">
+                        <svg onclick="openModal('@Url.Action("View", "Room", new { roomId = room.RoomId })', 'crudModal3')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M8 256a56 56 0 1 1 112 0A56 56 0 1 1 8 256zm160 0a56 56 0 1 1 112 0 56 56 0 1 1 -112 0zm216-56a56 56 0 1 1 0 112 56 56 0 1 1 0-112z" /></svg>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="d-flex justify-content-center">
+        No Room/s Found.
+    </div>
+}
 
 @section Scripts {
     <script>

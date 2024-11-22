@@ -12,6 +12,7 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <input type="hidden" asp-for="Role" />
+            <input type="hidden" asp-for="Password" value="@Model.Password" class="form-control" />
             <div class="form-group">
                 <label asp-for="Email" class="control-label"></label>
                 <input type="email" asp-for="Email" class="form-control" />
@@ -31,11 +32,6 @@
                 <label asp-for="PhoneNumber" class="control-label"></label>
                 <input asp-for="PhoneNumber" class="form-control" />
                 <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Password" class="control-label"></label>
-                <input type="password" asp-for="Password" value="@Model.Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
             </div>
             @* <div class="form-group">
             <label asp-for="ImageFile" class="control-label"></label>

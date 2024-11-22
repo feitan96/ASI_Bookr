@@ -143,7 +143,7 @@ namespace ASI.Basecode.WebApp.Controllers
                 _amenityservice.DeleteAmenity(amenityId);
                 return RedirectToAction("Index");
             }
-            catch
+            catch (Exception ex)
             {
                 return View();
             }

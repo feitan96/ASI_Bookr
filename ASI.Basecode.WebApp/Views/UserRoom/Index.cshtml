@@ -402,7 +402,7 @@
                 .done(function (response) {
                     // Handle success
                     if (response.success) {
-                        toastr.success('Room booked successfully!', 'Success', { timeOut: 3000, closeButton: true });
+                        toastr.success('Room booked successfully! No confilcts occured.', 'Success', { timeOut: 3000, closeButton: true });
                         // You can perform further actions, like redirecting or updating the UI
                     } else {
                         toastr.error('Failed to book the room. Please try again.', 'Error', { timeOut: 0, extendedTimeOut: 0, closeButton: true });

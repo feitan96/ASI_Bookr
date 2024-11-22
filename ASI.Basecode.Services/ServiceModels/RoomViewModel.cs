@@ -57,7 +57,7 @@ namespace ASI.Basecode.Services.ServiceModels
 
         public int UpdatedBy { get; set; }
 
-        [Required(ErrorMessage = "The {0} field is required")]
+        //[Required(ErrorMessage = "The {0} field is required")]
         [Display(Name = "Image")]
         [DataType(DataType.Upload)]
         public IFormFileCollection? ImageFiles { get; set; }

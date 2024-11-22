@@ -40,12 +40,19 @@
 
 <!-- Modal -->
 <div id="crudModal" class="modal fade" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-dialog-scrollable" role="document">
         <div class="modal-content">
-
-            <div class="modal-body">
-                <!-- Content will be loaded here -->
-            </div>
+            <div class="modal-header">
+    <h5 class="modal-title"></h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+            <div class="modal-body-container">
+                    <div class="modal-body">
+                        <!-- Content will be loaded here -->
+                    </div>
+                </div>
         </div>
     </div>
 </div>
@@ -53,9 +60,22 @@
 @section Scripts {
     <script>
         // Open modal and load content
-        function openModal(url) {
+        function openModal(url, title) {
             $.get(url, function (data) {
                 $('#crudModal .modal-body').html(data);
+                
+                if (url.includes('Create')) {
+            title = 'Add New Amenity';
+        } else if (url.includes('Edit')) {
+            title = 'Edit Amenity';
+        } else if (url.includes('Delete')) {
+            title = 'Delete Amenity';
+        } else {
+            title = 'Room Amenities Management';
+        }
+        
+        $('#crudModal .modal-title').text(title);
+
                 $('#crudModal').modal('show');
 
                 // Initialize client-side validation
@@ -89,6 +109,10 @@
                 }
             });
         });
+
+        function closeModal() {
+            $('#crudModal').modal('hide'); // Using string interpolation
+        }
     </script>
 }
 

@@ -59,7 +59,7 @@
 
         <div class="form-group">
             <label asp-for="ImageFiles" class="control-label">Upload Room Image</label>
-            <input type="file" asp-for="ImageFiles" class="form-control" accept=".jpeg,.jpg,.png" multiple />
+            <input type="file" asp-for="ImageFiles" class="form-control" accept=".jpeg,.jpg,.png" multiple required/>
             <span asp-validation-for="ImageFiles" class="text-danger"></span>
         </div>
 

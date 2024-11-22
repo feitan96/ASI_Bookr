@@ -1,32 +1,14 @@
 ﻿@model ASI.Basecode.Services.ServiceModels.AmenityViewModel
 
-<div class="modal-header">
-    <h5 class="modal-title">Delete Amenity</h5>
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
-</div>
-
-<h3>Are you sure you want to delete this amenity?</h3>
+<h6>Are you sure you want to delete this amenity?</h6>
 <div>
-    <dl class="row">
-        <dt class="col-sm-4">
-            Amenity Id
-        </dt>
-        <dd class="col-sm-8">
-            @Html.DisplayFor(model => model.AmenityId)
-        </dd>
-        <dt class="col-sm-4">
-            Name
-        </dt>
-        <dd class="col-sm-8">
-            @Html.DisplayFor(model => model.AmenityName)
-        </dd>
-    </dl>
+    <b>Name:</b> @Html.DisplayFor(model => model.AmenityName)
 
-    <form asp-action="HardDelete">
-        <input type="hidden" asp-for="AmenityId" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to Amenities List</a>
-    </form>
+    <div class="d-flex justify-content-end pt-4">
+        <form asp-action="HardDelete">
+            <input type="hidden" asp-for="AmenityId" />
+            <button type="button" class="btn mr-2 cancel-modal" onclick="closeModal()">Cancel</button>
+            <input type="submit" value="Delete" class="btn submit-modal" />
+        </form>
+    </div>
 </div>

@@ -5,26 +5,18 @@
     
 }
 
-<div class="modal-header">
-    <h5 class="modal-title">Select a User</h5>
-    <button type="button" class="close modal-close-btn" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
-</div>
-
 <!-- Search and Filter Section -->
 <div class="mb-4">
     <!-- Search User Textbox -->
     <div class="form-group">
         <label for="searchUser">Search:</label>
-        <input type="text" id="searchUser" class="form-control" placeholder="Enter Id" />
+        <input type="text" id="searchUser" class="form-control" placeholder="Enter Email" />
     </div>
 
     <!-- Search By Dropdown -->
     <div class="form-group">
         <label for="searchBy">Search By:</label>
         <select id="searchBy" class="form-control">
-            <option value="id">Search by Id</option>
             <option value="email">Search by Email</option>
             <option value="firstName">Search by First Name</option>
             <option value="lastName">Search by Last Name</option>
@@ -32,9 +24,9 @@
     </div>
 
     <!-- Buttons for Search and Show All -->
-    <div class="form-group">
-        <button id="userSearchButton" class="btn btn-primary">Search</button>
-        <button id="userShowAllButton" class="btn btn-primary">Show All</button>
+    <div class="form-group d-flex justify-content-end">
+        <button id="userShowAllButton" class="btn mr-2 cancel-modal">Clear Search</button>
+        <button id="userSearchButton" class="btn submit-modal">Search</button>
     </div>
 </div>
 

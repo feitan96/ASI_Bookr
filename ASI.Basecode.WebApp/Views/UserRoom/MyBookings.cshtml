@@ -1,12 +1,13 @@
 ﻿@using ASI.Basecode.Services.ServiceModels;
 @model IEnumerable<ASI.Basecode.Services.ServiceModels.BookingViewModel>
 
-<h1>My Bookings</h1>
+<h3>My Bookings</h3>
 
 <table class="table table-striped">
     <thead>
         <tr>
             <th hidden>@Html.DisplayNameFor(model => model.BookingId)</th>
+            <th>Title</th>
             <th>Room Name</th>
             <th>Start Date</th>
             <th>End Date</th>
@@ -27,11 +28,12 @@
 
             <tr>
                 <td hidden>@Html.DisplayFor(modelItem => booking.BookingId)</td>
+                <td>@Html.DisplayFor(modelItem => booking.Title)</td>
                 <td>@Html.DisplayFor(modelItem => booking.RoomName)</td>
                 <td>@Html.DisplayFor(modelItem => booking.FormattedBookingStartDate)</td>
                 <td>@Html.DisplayFor(modelItem => booking.FormattedBookingEndDate)</td>
                 <td>@Html.DisplayFor(modelItem => booking.CheckInTimeString)</td>
-                <td>@Html.DisplayFor(modelItem => booking.CheckInTimeString)</td>
+                <td>@Html.DisplayFor(modelItem => booking.CheckOutTimeString)</td>
                 <td>@Html.DisplayFor(modelItem => booking.Status)</td>
                 <td>
                     @* <button onclick="openModal('@Url.Action("Approve", "Booking", new { bookingId = booking.BookingId })', 'crudModal1')" class="btn @btnClass btn-sm pr-0" @isDisabled>
