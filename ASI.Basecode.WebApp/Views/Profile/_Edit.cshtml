@@ -1,51 +1,91 @@
 ﻿@model ASI.Basecode.Services.ServiceModels.ProfileViewModel
 
-<div class="modal-body">
     <form id="editProfileForm" asp-action="Edit" asp-controller="Profile" method="post">
         <input type="hidden" asp-for="Id" />
 
         <div class="form-group">
-            <label for="FirstName">First Name</label>
+        <label for="FirstName">First Name<span style="color: red;">*</span></label>
             <input type="text" class="form-control" id="FirstName" name="FirstName" asp-for="FirstName" />
             <span asp-validation-for="FirstName" class="text-danger"></span> <!-- Validation message -->
         </div>
 
         <div class="form-group">
-            <label for="LastName">Last Name</label>
+        <label for="LastName">Last Name<span style="color: red;">*</span></label>
             <input type="text" class="form-control" id="LastName" name="LastName" asp-for="LastName" />
             <span asp-validation-for="LastName" class="text-danger"></span> <!-- Validation message -->
         </div>
 
         <div class="form-group">
-            <label for="Email">Email</label>
+        <label for="Email">Email<span style="color: red;">*</span></label>
             <input type="email" class="form-control" id="Email" name="Email" asp-for="Email" />
             <span asp-validation-for="Email" class="text-danger"></span> <!-- Validation message -->
         </div>
 
         <div class="form-group">
-            <label for="PhoneNumber">Phone Number</label>
+        <label for="PhoneNumber">Phone Number<span style="color: red;">*</span></label>
             <input type="tel" class="form-control" id="PhoneNumber" name="PhoneNumber" asp-for="PhoneNumber" />
             <span asp-validation-for="PhoneNumber" class="text-danger"></span> <!-- Validation message -->
         </div>
 
-        <div class="form-group">
-            <label for="AllowNotifications">Allow Notifications</label>
+        <div class="form-group d-flex align-content-center">
+        <label style="margin-right: 5px;" for="AllowNotifications">Allow Notifications</label>
             <input type="checkbox" asp-for="AllowNotifications" />
             <span asp-validation-for="AllowNotifications" class="text-danger"></span> <!-- Validation message -->
         </div>
 
-        <div class="form-group">
-            <label for="IsDarkMode">Enable Dark Mode</label>
-            <input type="checkbox" asp-for="IsDarkMode" />
-            <span asp-validation-for="IsDarkMode" class="text-danger"></span> <!-- Validation message -->
+        <div class="d-flex justify-content-end">
+        <button type="button" class="btn mr-2 cancel-modal" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn submit-modal">Save Changes</button>
         </div>
-
-        <div class="form-group">
-            <label for="DefaultBookDuration">Default Booking Duration</label>
-            <input type="number" class="form-control" id="DefaultBookDuration" name="DefaultBookDuration" asp-for="DefaultBookDuration" min="1" max="6" />
-            <span asp-validation-for="DefaultBookDuration" class="text-danger"></span> <!-- Validation message -->
-        </div>
-
-        <button type="submit" class="btn btn-success">Save Changes</button>
+        
     </form>
-</div>
+
+<style>
+    /* Hide default checkbox */
+    input[type="checkbox"] {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--color1);
+        border-radius: 3px;
+        background-color: #fff;
+        cursor: pointer;
+        position: relative; /* Ensure pseudo-element positions relative to this */
+    }
+
+        /* Checked state */
+        input[type="checkbox"]:checked {
+            background-color: var(--color1);
+            border-color: var(--color1);
+        }
+
+            /* Add checkmark */
+            input[type="checkbox"]:checked::before {
+                content: '✔';
+                color: white;
+                font-size: 14px;
+                position: absolute; /* Position relative to the checkbox */
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%); /* Center the checkmark */
+                display: block;
+                width: 100%; /* Matches checkbox dimensions */
+                height: 100%;
+                text-align: center;
+                line-height: 20px; /* Matches the height of the checkbox */
+            }
+
+        /* Ensure consistent alignment when unchecked */
+        input[type="checkbox"]::before {
+            content: ''; /* Empty content to avoid shifting */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+        }
+
+</style>
