@@ -6,28 +6,20 @@
     var users = ViewData["UsersList"] as List<UserViewModel> ?? new List<UserViewModel>();
 }
 
-<div class="modal-header">
-    <h5 class="modal-title">Create Booking</h5>
-    <button type="button" class="close modal-close-btn" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
-</div>
-
-<div class="modal-body">
     <form id="createBookingForm" asp-action="Create" method="post">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
         <!-- Meeting Title -->
         <div class="form-group">
-            <label asp-for="Title" class="control-label">Meeting Title</label>
+            <label asp-for="Title" class="control-label">Meeting Title<span style="color: red;">*</span></label>
             <input asp-for="Title" class="form-control" type="text" placeholder="Title" />
             <span asp-validation-for="Title" class="text-danger"></span>
         </div>
 
         <!-- Room Selection Button -->
         <div class="form-group">
-            <label class="control-label">Select Room</label>
-            <button type="button" id="selectRoomBtn" class="btn btn-outline-primary form-control" onclick="openModal('@Url.Action("RoomSelection", "Booking")', 'crudModal2')">
+            <label class="control-label">Select Room<span style="color: red;">*</span></label>
+            <button type="button" id="selectRoomBtn" class="btn btn-outline-primary form-control" onclick="openModal('@Url.Action("RoomSelection", "Booking")', 'crudModal2', 'Select a Room')">
                 Select a Room
             </button>
             <input type="hidden" asp-for="RoomId" id="RoomId" value="" required/>
@@ -39,8 +31,8 @@
 
         <!-- User Selection -->
         <div class="form-group">
-            <label class="control-label">Select User</label>
-            <button type="button" id="selectRoomBtn" class="btn btn-outline-primary form-control" onclick="openModal('@Url.Action("UserSelection", "Booking")', 'crudModal2')">
+            <label class="control-label">Select User<span style="color: red;">*</span></label>
+            <button type="button" id="selectRoomBtn" class="btn btn-outline-primary form-control" onclick="openModal('@Url.Action("UserSelection", "Booking")', 'crudModal2', 'Select User')">
                 Select User
             </button>
             <input type="hidden" asp-for="UserId" id="UserId" value="" required/>
@@ -53,19 +45,19 @@
 
         <!-- Booking Check In Date and Time -->
         <div class="form-group">
-            <label asp-for="BookingStartDate" class="control-label">Booking Start Date</label>
+            <label asp-for="BookingStartDate" class="control-label">Booking Start Date<span style="color: red;">*</span></label>
             <input asp-for="BookingStartDate" class="form-control booking-date-input" type="text" placeholder="Start Date" />
             <span asp-validation-for="BookingStartDate" class="text-danger"></span>
         </div>
 
          <div class="form-group">
-            <label asp-for="CheckInTimeString" class="control-label">Check In Time</label>
+            <label asp-for="CheckInTimeString" class="control-label">Check In Time<span style="color: red;">*</span></label>
             <input asp-for="CheckInTimeString" class="form-control booking-time-input" type="text" placeholder="Check In Time" />
             <span asp-validation-for="CheckInTimeString" class="text-danger"></span>
         </div>
 
         <div class="form-group">
-            <label asp-for="CheckOutTimeString" class="control-label">Check Out Time</label>
+            <label asp-for="CheckOutTimeString" class="control-label">Check Out Time<span style="color: red;">*</span></label>
             <input asp-for="CheckOutTimeString" class="form-control booking-time-input" type="text" placeholder="Check Out Time" />
             <span asp-validation-for="CheckOutTimeString" class="text-danger"></span>
         </div>
@@ -73,7 +65,7 @@
         
         <!-- Is Recurring -->
         <div class="form-group">
-            <label asp-for="IsRecurring" class="control-label">Is Recurring?</label>
+            <label asp-for="IsRecurring" class="control-label">Is Recurring?<span style="color: red;">*</span></label>
             <select asp-for="IsRecurring" id="IsRecurring" class="form-control">
                 <option value="false">No</option>
                 <option value="true">Yes</option>
@@ -85,7 +77,7 @@
         <div class="recurring-booking-form" hidden="true">
             <!-- Booking Check Out Date and Time -->
             <div class="form-group">
-                <label asp-for="BookingEndDate" class="control-label">Recurring End Date</label>
+                <label asp-for="BookingEndDate" class="control-label">Recurring End Date<span style="color: red;">*</span></label>
                 <input asp-for="BookingEndDate" class="form-control booking-date-input" type="text" placeholder="End Date" />
                 <span asp-validation-for="BookingEndDate" class="text-danger"></span>
             </div>
@@ -93,22 +85,22 @@
             <!-- Hidden input for selected days -->
             <input type="hidden" asp-for="SelectedDays" id="selectedDays" name="SelectedDays" />
 
-            <label id="DaySelections" class="control-label">Select Days</label>
-            <div class="day-selector d-flex flex-wrap gap-2">
-                <button type="button" class="btn btn-outline-primary day-option" data-day="Monday">Mon</button>
-                <button type="button" class="btn btn-outline-primary day-option" data-day="Tuesday">Tue</button>
-                <button type="button" class="btn btn-outline-primary day-option" data-day="Wednesday">Wed</button>
-                <button type="button" class="btn btn-outline-primary day-option" data-day="Thursday">Thu</button>
-                <button type="button" class="btn btn-outline-primary day-option" data-day="Friday">Fri</button>
-                <button type="button" class="btn btn-outline-primary day-option" data-day="Saturday">Sat</button>
+            <label id="DaySelections" class="control-label">Select Days<span style="color: red;">*</span></label>
+            <div class="day-selector d-flex flex-wrap justify-content-between mb-3">
+                <button type="button" style="width:70px;" class="btn btn-outline-primary day-option" data-day="Monday">Mon</button>
+                <button type="button" style="width:70px;" class="btn btn-outline-primary day-option" data-day="Tuesday">Tue</button>
+                <button type="button" style="width:70px;" class="btn btn-outline-primary day-option" data-day="Wednesday">Wed</button>
+                <button type="button" style="width:70px;" class="btn btn-outline-primary day-option" data-day="Thursday">Thu</button>
+                <button type="button" style="width:70px;" class="btn btn-outline-primary day-option" data-day="Friday">Fri</button>
+                <button type="button" style="width:70px;" class="btn btn-outline-primary day-option" data-day="Saturday">Sat</button>
             </div>
         
         </div>
 
 
         <!-- Status -->
-        <div class="form-group">
-            <label asp-for="Status" class="control-label">Status</label>
+        <div class="form-groupdata
+            <label asp-for="Status" class="control-label">Status<span style="color: red;">*</span></label>
             <select asp-for="Status" class="form-control">
                 <option value="Pending">Pending</option>
                 <option value="Approved">Approve</option>
@@ -120,12 +112,13 @@
 
 
         <!-- Submit Button -->
-        <div class="form-group">
-            <input type="submit" value="Create Booking" class="btn btn-primary" />
-            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-        </div>
+    <div class="form-group d-flex justify-content-end">
+        <!-- Cancel Button as a Button (Triggers closing the modal) -->
+        <button type="button" class="btn mr-2 cancel-modal" onclick="closeModal('crudModal1')">Cancel</button>
+        <!-- Submit Button -->
+        <input type="submit" value="Create Booking" class="btn submit-modal" />
+    </div>
     </form>
-</div>
 
 @section Scripts {
     @{

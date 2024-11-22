@@ -4,18 +4,8 @@
 @{
 }
 
-<div class="modal-header">
-    <h3 class="modal-title">Disapprove Booking</h3>
-    <button type="button" class="close modal-close-btn" data-dismiss="modal" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
-</div>
+<h6 class="mb-4">Are you sure you want to disapprove this booking? We will notify the user after disapproval.</h6>
 
-<div style="padding-top: 10px; padding-left: 15px;">
-    <h5>Are you sure you want to disapprove this booking? We will notify the user after disapproval.</h5>
-</div>
-
-<div class="modal-body">
     <form id="disapproveBookingForm" asp-action="DisapproveBooking" method="post">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <input type="hidden" asp-for="Title" />
@@ -32,12 +22,12 @@
         <input type="hidden" asp-for="SelectedDays" />
 
         <!-- Submit Button -->
-        <div class="form-group">
-            <input type="submit" value="Yes" class="btn btn-success" />
-            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    <div class="form-group d-flex justify-content-end mb-0">
+        <button type="button" class="btn btn-secondary mr-2 cancel-modal" onclick="closeModal('crudModal1')">Cancel</button>
+            <input type="submit" value="Yes" class="btn btn-success submit-modal" />
         </div>
     </form>
-</div>
+
 
 @section Scripts {
     @{
