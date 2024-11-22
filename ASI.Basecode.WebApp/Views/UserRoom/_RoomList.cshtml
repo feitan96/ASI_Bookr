@@ -1,41 +1,77 @@
 ﻿@model IEnumerable<ASI.Basecode.Services.ServiceModels.RoomViewModel>
 
-<!-- Room Table -->
-<div id="roomTable">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>@Html.DisplayNameFor(model => model.Name)</th>
-                @*<th>@Html.DisplayNameFor(model => model.Description)</th>*@
-                <th>@Html.DisplayNameFor(model => model.Type)</th>
-                <th>@Html.DisplayNameFor(model => model.Location)</th>
-                <th>@Html.DisplayNameFor(model => model.Capacity)</th>
-                @*<th>Amenities</th>*@
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var room in Model)
-            {
-                <tr>
-                    <td>@room.Name</td>
-                    @*<td>@room.Description</td>*@
-                    <td>@room.Type</td>
-                    <td>@room.Location</td>
-                    <td>@room.Capacity</td>
-                    @*<td>@string.Join(", ", room.RoomAmenitiesName)</td>*@
-                    <td>
-                        <button onclick="openModal('@Url.Action("View", "UserRoom", new { roomId = room.RoomId })', 'crudModal1')" class="btn btn-approve-main">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336l24 0 0-64-24 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l48 0c13.3 0 24 10.7 24 24l0 88 8 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-80 0c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z" /></svg>
-                        </button>
-                        @* <button onclick="openModal('@Url.Action("CalendarView", "UserRoom", new { roomId = room.RoomId })', 'crudModal1')" class="btn btn-info btn-sm">View Calendar</button> *@
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</div>
+<!-- Room Card -->
+@if (!Model.Any())
+{
+    <div style="display: flex; justify-content: center; align-items: flex-start; height: 100vh; font-size: 24px; color: #5F2A2A; padding-top: 16px;">
+        No room/s found.
+    </div>
+}
+else
+{
+    <div id="roomGrid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+        @foreach (var room in Model)
+        {
+            <div style="width: 100%; height: 100%; padding: 15px; background: rgba(255, 255, 255, 0.60); box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); border-radius: 10px; overflow: hidden; border: 1px rgba(100.94, 50.89, 50.89, 0.18) solid; justify-content: flex-start; align-items: flex-start; gap: 15px; display: inline-flex; margin-bottom: 0;">
+                <div style="width: 241px; border-radius: 10px; overflow: hidden; justify-content: flex-end; align-items: center; display: flex;">
+                    @if (@room.Images != null && @room.Images.Count > 0)
+                    {
+                        <div class="form-group w-100">
+                            <div class="text-left">
+                                <div id="roomImagesCarousel" class="carousel slide mx-auto" data-ride="carousel" style="max-width: 600px;">
+                                    <div class="carousel-inner">
+                                        @for (int i = 0; i < @room.Images.Count; i++)
+                                        {
+                                            var image = @room.Images[i];
+                                            <div class="carousel-item @(i == 0 ? "active" : "") text-left">
+                                                <div class="d-flex justify-content-center">
+                                                    <img src="@Url.Content($"~/uploads/rooms/{image.Guid}")"
+                                                         class="object-fit-cover rounded"
+                                                         alt="Room Image"
+                                                         style="width: 200px; height: 200px;" />
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                    <!-- Carousel controls with custom icons -->
+                                    <!-- Previous Button with grey background and text color -->
+                                    <a class="carousel-control-prev bg-secondary text-dark" href="#roomImagesCarousel" role="button" data-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span class="sr-only">Previous</span>
+                                    </a>
 
+                                    <!-- Next Button with grey background and text color -->
+                                    <a class="carousel-control-next bg-secondary text-dark" href="#roomImagesCarousel" role="button" data-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="sr-only">Next</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div style="flex: 1 1 0; align-self: stretch; border-radius: 10px; overflow: hidden; border:none; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 6px; display: inline-flex;">
+                    <div style="align-self: stretch; justify-content: space-between; align-items: flex-start; display: inline-flex;">
+                        <div style="height: 35px; padding: 6px; justify-content: center; align-items: center; gap: 10px; display: flex;">
+                            <div style="flex: 1 1 0; height: 23px; color: black; font-size: 20px; font-family: Inter; font-weight: 700; word-wrap: break-word;">@room.Name</div>
+                        </div>
+                        <svg onclick="openModal('@Url.Action("View", "UserRoom", new { roomId = room.RoomId })', 'crudModal1')" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336l24 0 0-64-24 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l48 0c13.3 0 24 10.7 24 24l0 88 8 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-80 0c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z" /></svg>
+                    </div>
+                    <div style="width: 287px; height: 1px; background: #D9D9D9;"></div>
+                    <div style="align-self: stretch; height: 24px; padding-left: 6px; padding-right: 6px; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex;">
+                        <div style="flex: 1 1 0; height: 16px; color: #5F2A2A; font-size: 18px; font-family: Inter; font-weight: 400; word-wrap: break-word;">Type: @room.Type</div>
+                    </div>
+                    <div style="align-self: stretch; height: 24px; padding-left: 6px; padding-right: 6px; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex;">
+                        <div style="flex: 1 1 0; height: 16px; color: #5F2A2A; font-size: 18px; font-family: Inter; font-weight: 400; word-wrap: break-word;">Location: @room.Location</div>
+                    </div>
+                    <div style="align-self: stretch; height: 24px; padding-left: 6px; padding-right: 6px; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex;">
+                        <div style="flex: 1 1 0; height: 16px; color: #5F2A2A; font-size: 18px; font-family: Inter; font-weight: 400; word-wrap: break-word;">Capacity: @room.Capacity</div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
 
 <style>
     .btn-approve-main {
@@ -55,6 +91,29 @@
     }
 
     svg {
-        width: 15px;
+        width: 24px;
+        fill: var(--color1);
+        cursor: pointer;
+    }
+
+    .chosen-container-multi .chosen-choices {
+        max-height: 37px; /* Adjust this value to your desired height */
+        min-height: 37px;
+        overflow-y: scroll;
+        border-radius: 10px;
+        border-color: #CED4DA;
+    }
+
+    .chosen-container-multi .chosen-choices li.search-field input[type="text"] {
+        height: 37px;
+        font-size: 18px;
+    }
+
+    .chosen-container-multi .chosen-choices li.search-choice {
+        box-shadow: none !important;
+        background-image: none !important;
+        background-color: #f0f0f0 !important;
+        border: 1px solid #ddd !important;
+        font-size: 15px;
     }
 </style>
