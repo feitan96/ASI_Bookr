@@ -97,11 +97,11 @@ namespace ASI.Basecode.WebApp.Controllers
                 this._session.SetString("Name", $"{user.FirstName} {user.LastName}");
 
                 // Redirect based on role
-                if (User.IsInRole("Admin") || User.IsInRole("Superadmin"))
+                if (user.Role == "Admin" || user.Role == "Superadmin")
                 {
                     return RedirectToAction("Index", "Dashboard");
                 }
-                else if (User.IsInRole("User"))
+                else if (user.Role == "User")
                 {
                     return RedirectToAction("Index", "UserRoom");
                 }

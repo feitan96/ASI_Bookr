@@ -24,6 +24,7 @@ namespace ASI.Basecode.Services.ServiceModels
         public string Role { get; set; }
 
         [Required(ErrorMessage = "Phone Number is required.")]
+        [RegularExpression(@"^\+63 \d{10}$", ErrorMessage = "Phone number must start with +63 and contain 10 digits after it.")]
         public string PhoneNumber { get; set; }
 
         [Required(ErrorMessage = "Password is required.")]

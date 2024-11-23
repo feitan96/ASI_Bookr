@@ -339,5 +339,23 @@ else
         function closeModal() {
             $('#crudModal').modal('hide'); // Using string interpolation
         }
+        
+    function restrictPhoneNumberInput(event) {
+        const phoneNumberInput = event.target;
+        let value = phoneNumberInput.value;
+
+        // Ensure the value starts with +63 
+        if (!value.startsWith("+63 ")) {
+            value = "+63 ";
+        }
+
+        // Limit the total length to 14 characters: +63  + 10 digits
+        if (value.length > 14) {
+            value = value.substring(0, 14);
+        }
+
+        // Update the input value
+        phoneNumberInput.value = value;
+    }
     </script>
 }

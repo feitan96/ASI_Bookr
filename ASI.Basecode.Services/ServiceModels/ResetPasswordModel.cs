@@ -12,6 +12,7 @@ namespace ASI.Basecode.Services.ServiceModels
         public string Token { get; set; }
 
         [Required]
+        [RegularExpression(@"^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$", ErrorMessage = "Password must contain atleast one uppercase letter, digit, special character, and a minimum of 8 characters")]
         [DataType(DataType.Password)]
         [Display(Name = "New Password")]
         public string NewPassword { get; set; }
